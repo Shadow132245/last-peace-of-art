@@ -22,3 +22,17 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     return NextResponse.json({ error: msg }, { status: msg === "Forbidden" ? 403 : 500 });
   }
 }
+
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    await requireAdmin();
+    const { id } = await params;
+    const { published } = await request.json();
+    const updated = await prisma.thread.update({ where: { id }, data: { published } });
+    logger.info({ threadId: id, published }, "Thread status changed by admin");
+    return NextResponse.json(updated);
+  } catch (error) {
+    const msg = error instanceof Error && error.message === "Forbidden" ? "Forbidden" : "Internal server error";
+    return NextResponse.json({ error: msg }, { status: msg === "Forbidden" ? 403 : 500 });
+  }
+}

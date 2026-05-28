@@ -50,20 +50,20 @@
 
 ## [SESSION_LOG]
 
-### Session 2026-05-29 (Evening — commit `awaiting`)
-**GitHub: `d12cf8e` → `154c009` → `bc1ba52` pushed earlier**
+### Session 2026-05-29 (Final — commit `e3c0fd9` → `awaiting`)
 
-1. **Production DB sync** — ran `npx prisma db push` against Neon DB (applied Like, Report, views, polymorphic Comment schema)
-2. **Publish/Draft toggle fixed** — moved to shared `src/components/ui/toggle-publish.tsx` with `entityType` param; added PATCH `/api/projects/[id]` and PATCH `/api/forum/[threadId]` endpoints
-3. **`published` field added to Thread** — schema + db push + PATCH API
-4. **Admin panel overhaul** — complete refactor with:
+1. **Email changed** — `support@lastpeaceofart.com` → `fghfghffdgfhfgh@gmail.com` in Terms & Privacy pages
+2. **Admin publish/approve toggle** — added `AdminPublishToggle` component for posts/projects/threads in admin panel with PATCH endpoints (`/api/admin/posts/[id]`, `/api/admin/projects/[id]`, `/api/admin/threads/[id]`)
+3. **Production DB sync** — ran `npx prisma db push` against Neon DB (applied Like, Report, views, polymorphic Comment schema, Thread.published)
+4. **Publish/Draft toggle fixed** — moved to shared `src/components/ui/toggle-publish.tsx` with `entityType` param; added PATCH `/api/projects/[id]` and PATCH `/api/forum/[threadId]` endpoints
+5. **`published` field added to Thread** — schema + db push + PATCH API
+6. **Admin panel overhaul** — complete refactor with:
    - Animated sidebar (`motion.aside` with staggered nav items, active indicator, glass effect)
    - Overview page with animated stat cards (`staggerContainer`/`staggerItem`, gradient bars, hover scale)
    - All listing pages (Users, Posts, Projects, Threads, Reports) use `AdminPageHeader`, `AdminTable`, `AdminTableRow` with entrance animations
    - Buttons (Delete, Ban, Resolve) with `whileHover`/`whileTap` scale animations
-   - Badge component with color variants
-5. **Animation library** — `src/lib/animations.ts` with reusable Motion variants (fadeIn, fadeInUp, staggerContainer, staggerItem, pageTransition, etc.)
-6. **CSS fix** — removed broken `.group-hover\\:animate-float` rule causing Turbopack warning
+7. **Animation library** — `src/lib/animations.ts` with reusable Motion variants
+8. **CSS fix** — removed broken `.group-hover\\:animate-float` rule
 
 ### Session 2026-05-28 — commit `ab372d0` / `fb488ac`
 1. **Profile editor page** — `/dashboard/profile` with avatar upload + size slider, banner upload + height slider, bio, skills, live preview

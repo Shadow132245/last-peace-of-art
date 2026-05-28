@@ -89,7 +89,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">14. Contact</h2>
-          <p>For questions about these terms, contact us at <a href="mailto:support@lastpeaceofart.com" className="text-amber-600 hover:underline dark:text-amber-400">support@lastpeaceofart.com</a>.</p>
+          <p>For questions about these terms, contact us at <a href="mailto:fghfghffdgfhfgh@gmail.com" className="text-amber-600 hover:underline dark:text-amber-400">fghfghffdgfhfgh@gmail.com</a>.</p>
         </section>
       </div>
     </div>

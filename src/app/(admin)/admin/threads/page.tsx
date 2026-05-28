@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { DeleteButton } from "../delete-button";
-import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
+import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminEmpty } from "@/components/ui/admin-page";
+import { AdminPublishToggle } from "@/components/ui/admin-publish-toggle";
 import Link from "next/link";
 
 export default async function AdminThreadsPage() {
@@ -32,7 +33,7 @@ export default async function AdminThreadsPage() {
               </AdminCell>
               <AdminCell className="text-zinc-500">{thread.user.name}</AdminCell>
               <AdminCell>
-                <AdminBadge variant={thread.published ? "green" : "zinc"}>{thread.published ? "Published" : "Draft"}</AdminBadge>
+                <AdminPublishToggle entityType="threads" entityId={thread.id} published={thread.published} />
               </AdminCell>
               <AdminCell className="text-zinc-500">{thread._count.comments}</AdminCell>
               <AdminCell>{thread.pinned ? "📌" : "—"}</AdminCell>

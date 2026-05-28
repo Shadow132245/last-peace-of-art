@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { DeleteButton } from "../delete-button";
-import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
+import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminEmpty } from "@/components/ui/admin-page";
+import { AdminPublishToggle } from "@/components/ui/admin-publish-toggle";
 
 export default async function AdminPostsPage() {
   const posts = await prisma.post.findMany({
@@ -28,7 +29,7 @@ export default async function AdminPostsPage() {
               <AdminCell className="max-w-xs truncate font-medium">{post.title}</AdminCell>
               <AdminCell className="text-zinc-500">{post.user.name}</AdminCell>
               <AdminCell>
-                <AdminBadge variant={post.published ? "green" : "zinc"}>{post.published ? "Published" : "Draft"}</AdminBadge>
+                <AdminPublishToggle entityType="posts" entityId={post.id} published={post.published} />
               </AdminCell>
               <AdminCell className="text-zinc-500">{post.views}</AdminCell>
               <AdminCell className="text-zinc-500">{post.createdAt.toLocaleDateString()}</AdminCell>
