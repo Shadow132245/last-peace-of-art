@@ -3,15 +3,6 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { prisma } from "./db";
 
-declare module "better-auth" {
-  interface User {
-    role: string;
-    banned: boolean;
-    banReason: string | null;
-    banExpires: Date | null;
-  }
-}
-
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
