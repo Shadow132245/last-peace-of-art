@@ -3,6 +3,8 @@ import { DeleteButton } from "../delete-button";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminEmpty } from "@/components/ui/admin-page";
 import { AdminPublishToggle } from "@/components/ui/admin-publish-toggle";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminPostsPage() {
   const posts = await prisma.post.findMany({
     include: { user: { select: { name: true } } },

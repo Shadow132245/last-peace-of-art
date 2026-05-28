@@ -19,6 +19,10 @@ model User {
   banned        Boolean   @default(false)
   banReason     String?
   banExpires    DateTime?
+  suspended     Boolean   @default(false)
+  suspendedAt   DateTime?
+  suspendedUntil DateTime?
+  suspensionReason String?
 
   sessions    Session[]
   accounts    Account[]
@@ -28,10 +32,27 @@ model User {
   comments    Comment[]
   likes       Like[]
   reports     Report[]
+  appeals     Appeal[]
   profile     Profile?
 
   @@unique([email])
   @@map("user")
+}
+
+model Appeal {
+  id            String    @id
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason        String
+  description   String?
+  status        String    @default("pending")
+  adminResponse String?
+  createdAt     DateTime  @default(now())
+  reviewedAt    DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@map("appeal")
 }
 
 model Session {

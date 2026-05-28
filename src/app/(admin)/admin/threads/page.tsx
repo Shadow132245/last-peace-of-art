@@ -4,6 +4,8 @@ import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTable
 import { AdminPublishToggle } from "@/components/ui/admin-publish-toggle";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminThreadsPage() {
   const threads = await prisma.thread.findMany({
     include: { user: { select: { name: true } }, _count: { select: { comments: true } } },

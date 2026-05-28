@@ -30,6 +30,20 @@ export const auth = betterAuth({
         type: "date",
         input: false,
       },
+      suspended: {
+        type: "boolean",
+        required: true,
+        defaultValue: false,
+        input: false,
+      },
+      suspensionReason: {
+        type: "string",
+        input: false,
+      },
+      suspendedUntil: {
+        type: "date",
+        input: false,
+      },
     },
   },
   emailAndPassword: {

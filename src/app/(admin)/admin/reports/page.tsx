@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import { ResolveButton } from "./resolve-button";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminReportsPage() {
   const reports = await prisma.report.findMany({
     include: { user: { select: { name: true, email: true } } },

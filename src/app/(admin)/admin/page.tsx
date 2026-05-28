@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
 import { OverviewCards } from "./overview-cards";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminOverviewPage() {
   const [userCount, projectCount, postCount, threadCount, commentCount, reportCount] = await Promise.all([
     prisma.user.count(),

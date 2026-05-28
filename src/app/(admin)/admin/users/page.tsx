@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/db";
 import { BanButton } from "./ban-button";
+import { SuspendButton } from "./suspend-button";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
   const users = await prisma.user.findMany({
@@ -30,11 +33,20 @@ export default async function AdminUsersPage() {
                 <AdminBadge variant={user.role === "admin" ? "purple" : "zinc"}>{user.role}</AdminBadge>
               </AdminCell>
               <AdminCell>
-                <AdminBadge variant={user.banned ? "red" : "green"}>{user.banned ? "Banned" : "Active"}</AdminBadge>
+                {user.banned ? (
+                  <AdminBadge variant="red">Banned</AdminBadge>
+                ) : user.suspended ? (
+                  <AdminBadge variant="amber">Suspended</AdminBadge>
+                ) : (
+                  <AdminBadge variant="green">Active</AdminBadge>
+                )}
               </AdminCell>
               <AdminCell className="text-zinc-500">{user.createdAt.toLocaleDateString()}</AdminCell>
               <AdminCell>
-                <BanButton userId={user.id} banned={user.banned} />
+                <div className="flex gap-2">
+                  <BanButton userId={user.id} banned={user.banned} />
+                  <SuspendButton userId={user.id} suspended={user.suspended} suspensionReason={user.suspensionReason} suspendedUntil={user.suspendedUntil?.toISOString() ?? null} />
+                </div>
               </AdminCell>
             </AdminTableRow>
           ))}
