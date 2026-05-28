@@ -1,0 +1,44 @@
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { logger } from "@/lib/logger";
+import { NextResponse } from "next/server";
+import { writeFile, mkdir } from "node:fs/promises";
+import { join } from "node:path";
+import crypto from "node:crypto";
+
+export async function POST(request: Request) {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const formData = await request.formData();
+    const file = formData.get("file") as File | null;
+
+    if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: "File too large (max 5MB)" }, { status: 400 });
+    }
+
+    const ext = file.name.split(".").pop() ?? "bin";
+    const filename = `${crypto.randomUUID()}.${ext}`;
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const uploadDir = join(process.cwd(), "public", "uploads");
+    await mkdir(uploadDir, { recursive: true });
+    await writeFile(join(uploadDir, filename), buffer);
+
+    const url = `/uploads/${filename}`;
+
+    logger.info({ filename, size: file.size }, "File uploaded");
+    return NextResponse.json({ url });
+  } catch (error) {
+    logger.error({ error }, "Upload failed");
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+  }
+}
