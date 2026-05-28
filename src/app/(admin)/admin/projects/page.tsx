@@ -29,7 +29,11 @@ export default async function AdminProjectsPage() {
               <AdminCell className="max-w-xs truncate font-medium">{project.title}</AdminCell>
               <AdminCell className="text-zinc-500">{project.user.name}</AdminCell>
               <AdminCell>
-                <AdminPublishToggle entityType="projects" entityId={project.id} published={project.published} />
+                {project.published ? (
+                  <span className="inline-block rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">Accepted</span>
+                ) : (
+                  <AdminPublishToggle entityType="projects" entityId={project.id} published={project.published} />
+                )}
               </AdminCell>
               <AdminCell className="text-zinc-500">{project.views}</AdminCell>
               <AdminCell className="text-zinc-500">{project.createdAt.toLocaleDateString()}</AdminCell>

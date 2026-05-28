@@ -27,24 +27,20 @@ export function AdminPublishToggle({ entityType, entityId, published }: { entity
     }
   };
 
+  if (published) return null;
+
   return (
     <motion.button
       onClick={handleToggle}
       disabled={loading}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className={`cursor-pointer rounded-full px-2.5 py-0.5 text-xs font-medium transition-all duration-200 disabled:opacity-50 ${
-        published
-          ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900 dark:text-emerald-300 dark:hover:bg-emerald-800"
-          : "bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-300 dark:hover:bg-amber-800"
-      }`}
+      className="cursor-pointer rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700 transition-all duration-200 hover:bg-amber-200 disabled:opacity-50 dark:bg-amber-900 dark:text-amber-300 dark:hover:bg-amber-800"
     >
       {loading ? (
         <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
-      ) : published ? (
-        "Accept"
       ) : (
-        "Reject"
+        "Accept"
       )}
     </motion.button>
   );

@@ -29,7 +29,11 @@ export default async function AdminPostsPage() {
               <AdminCell className="max-w-xs truncate font-medium">{post.title}</AdminCell>
               <AdminCell className="text-zinc-500">{post.user.name}</AdminCell>
               <AdminCell>
-                <AdminPublishToggle entityType="posts" entityId={post.id} published={post.published} />
+                {post.published ? (
+                  <span className="inline-block rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">Accepted</span>
+                ) : (
+                  <AdminPublishToggle entityType="posts" entityId={post.id} published={post.published} />
+                )}
               </AdminCell>
               <AdminCell className="text-zinc-500">{post.views}</AdminCell>
               <AdminCell className="text-zinc-500">{post.createdAt.toLocaleDateString()}</AdminCell>
