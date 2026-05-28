@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { title, description, tags } = await request.json();
+    const { title, description, content, tags, media } = await request.json();
 
     if (!title || !description) {
       return NextResponse.json({ error: "Title and description are required" }, { status: 400 });
@@ -26,8 +26,9 @@ export async function POST(request: Request) {
         id: crypto.randomUUID(),
         title,
         description,
+        content: content ?? null,
         tags: tags ?? [],
-        media: [],
+        media: media ?? [],
         userId: session.user.id,
       },
     });

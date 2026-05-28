@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function NewThreadPage() {
   const router = useRouter();
@@ -44,7 +45,10 @@ export default function NewThreadPage() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Content</label>
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Content</label>
+            <ImageUpload mode="markdown" onInsert={(url) => setContent((c) => c + "\n" + url)} />
+          </div>
           <textarea
             className="min-h-[200px] rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 transition-colors focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
             rows={8}

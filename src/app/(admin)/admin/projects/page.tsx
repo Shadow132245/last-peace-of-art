@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import Link from "next/link";
 import { DeleteButton } from "../delete-button";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminEmpty } from "@/components/ui/admin-page";
 import { AdminPublishToggle } from "@/components/ui/admin-publish-toggle";
@@ -28,7 +29,9 @@ export default async function AdminProjectsPage() {
         <AdminTableBody>
           {projects.map((project, i) => (
             <AdminTableRow key={project.id} index={i}>
-              <AdminCell className="max-w-xs truncate font-medium">{project.title}</AdminCell>
+              <AdminCell className="max-w-xs truncate font-medium">
+                <Link href={`/projects/${project.id}`} className="hover:underline">{project.title}</Link>
+              </AdminCell>
               <AdminCell className="text-zinc-500">{project.user.name}</AdminCell>
               <AdminCell>
                 {project.published ? (

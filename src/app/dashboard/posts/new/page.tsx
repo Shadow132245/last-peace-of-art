@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Markdown } from "@/components/ui/markdown";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -52,13 +53,16 @@ export default function NewPostPage() {
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Content (Markdown)</label>
-            <button
-              type="button"
-              onClick={() => setPreview(!preview)}
-              className="text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-            >
-              {preview ? "Edit" : "Preview"}
-            </button>
+            <div className="flex items-center gap-2">
+              <ImageUpload mode="markdown" onInsert={(url) => setContent((c) => c + "\n" + url)} />
+              <button
+                type="button"
+                onClick={() => setPreview(!preview)}
+                className="text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                {preview ? "Edit" : "Preview"}
+              </button>
+            </div>
           </div>
           {preview ? (
             <div className="min-h-[300px] rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
