@@ -18,7 +18,7 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
 
   const session = await auth.api.getSession({ headers: await headers() });
 
-  const [threads, total] = await Promise.all([
+  const [threads, total, trending] = await Promise.all([
     prisma.thread.findMany({
       include: {
         user: { select: { name: true, image: true } },
@@ -29,51 +29,82 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
       take,
     }),
     prisma.thread.count(),
+    prisma.thread.findMany({
+      include: { user: { select: { name: true } }, _count: { select: { comments: true } } },
+      orderBy: { likesCount: "desc" },
+      take: 5,
+    }),
   ]);
 
   const meta = buildPaginationMeta(total, params);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Forum</h1>
-        {session && (
-          <Link
-            href="/dashboard/forum/new"
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
-          >
-            New Thread
-          </Link>
-        )}
-      </div>
+    <div className="mx-auto max-w-6xl px-4 py-12">
+      <div className="flex gap-10">
+        <div className="min-w-0 flex-1">
+          <div className="mb-8 flex items-center justify-between">
+            <h1 className="text-3xl font-bold">Forum</h1>
+            {session && (
+              <Link
+                href="/dashboard/forum/new"
+                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
+              >
+                New Thread
+              </Link>
+            )}
+          </div>
 
-      {threads.length === 0 ? (
-        <p className="text-zinc-500 dark:text-zinc-400">No discussions yet. Start one!</p>
-      ) : (
-        <div className="grid gap-4">
-          {threads.map((thread) => (
-            <Link
-              key={thread.id}
-              href={`/forum/${thread.id}`}
-              className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:border-amber-200 hover:shadow-md dark:border-zinc-800 dark:bg-transparent dark:hover:border-zinc-600 dark:hover:shadow-none"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold">{thread.pinned && "📌 "}{thread.title}</h3>
-                  <p className="mt-1 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{thread.content}</p>
-                </div>
-                <span className="shrink-0 text-sm text-zinc-400">{thread._count.comments}</span>
-              </div>
-              <div className="mt-3 flex items-center gap-3 text-xs text-zinc-400">
-                <span>{thread.user.name}</span>
-                <span>{thread.createdAt.toLocaleDateString()}</span>
-              </div>
-            </Link>
-          ))}
+          {threads.length === 0 ? (
+            <p className="text-zinc-500 dark:text-zinc-400">No discussions yet. Start one!</p>
+          ) : (
+            <div className="grid gap-4">
+              {threads.map((thread) => (
+                <Link
+                  key={thread.id}
+                  href={`/forum/${thread.id}`}
+                  className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:border-amber-200 hover:shadow-md dark:border-zinc-800 dark:bg-transparent dark:hover:border-zinc-600 dark:hover:shadow-none"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-semibold">{thread.pinned && "📌 "}{thread.title}</h3>
+                      <p className="mt-1 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{thread.content}</p>
+                    </div>
+                    <span className="shrink-0 text-sm text-zinc-400">{thread._count.comments}</span>
+                  </div>
+                  <div className="mt-3 flex items-center gap-3 text-xs text-zinc-400">
+                    <span>{thread.user.name}</span>
+                    <span>{thread.createdAt.toLocaleDateString()}</span>
+                    <span>{thread.views} views</span>
+                    <span>{thread.likesCount} likes</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+
+          <Pagination basePath="/forum" {...meta} />
         </div>
-      )}
 
-      <Pagination basePath="/forum" {...meta} />
+        <aside className="hidden w-64 shrink-0 lg:block">
+          <div className="sticky top-24 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">Hot Threads</h3>
+            <div className="space-y-4">
+              {trending.map((thread, i) => (
+                <Link key={thread.id} href={`/forum/${thread.id}`} className="group block">
+                  <div className="flex items-start gap-3">
+                    <span className="mt-0.5 text-lg font-bold text-zinc-300 dark:text-zinc-600">#{i + 1}</span>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium group-hover:text-amber-600 dark:group-hover:text-amber-400">{thread.title}</p>
+                      <p className="text-xs text-zinc-400">{thread.likesCount} likes &middot; {thread._count.comments} comments</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+              {trending.length === 0 && <p className="text-sm text-zinc-400">No discussions yet.</p>}
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

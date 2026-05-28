@@ -26,6 +26,8 @@ model User {
   posts       Post[]
   threads     Thread[]
   comments    Comment[]
+  likes       Like[]
+  reports     Report[]
   profile     Profile?
 
   @@unique([email])
@@ -107,13 +109,19 @@ model Project {
   tags        String[]
   links       Json?
   published   Boolean  @default(false)
+  views       Int      @default(0)
+  likesCount  Int      @default(0)
+  dislikesCount Int    @default(0)
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments    Comment[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([userId])
   @@index([published])
+  @@index([views])
+  @@index([likesCount])
   @@map("project")
 }
 
@@ -126,14 +134,20 @@ model Post {
   coverImage String?
   tags      String[]
   published Boolean  @default(false)
+  views     Int      @default(0)
+  likesCount Int     @default(0)
+  dislikesCount Int  @default(0)
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments  Comment[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([published])
   @@index([slug])
+  @@index([views])
+  @@index([likesCount])
   @@map("post")
 }
 
@@ -143,6 +157,9 @@ model Thread {
   content   String
   tags      String[]
   pinned    Boolean  @default(false)
+  views     Int      @default(0)
+  likesCount Int     @default(0)
+  dislikesCount Int  @default(0)
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments  Comment[]
@@ -150,20 +167,58 @@ model Thread {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@index([views])
+  @@index([likesCount])
   @@map("thread")
 }
 
 model Comment {
   id        String   @id
   content   String
-  threadId   String
-  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  threadId  String?
+  thread    Thread?  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  postId    String?
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([threadId])
+  @@index([postId])
+  @@index([projectId])
   @@index([userId])
   @@map("comment")
+}
+
+model Like {
+  id         String   @id
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String
+  entityId   String
+  type       String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, entityType, entityId])
+  @@index([entityType, entityId])
+  @@map("like")
+}
+
+model Report {
+  id          String   @id
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType  String
+  entityId    String
+  reason      String
+  description String?
+  resolved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([resolved])
+  @@map("report")
 }
