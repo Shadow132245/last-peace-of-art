@@ -157,6 +157,7 @@ model Thread {
   content   String
   tags      String[]
   pinned    Boolean  @default(false)
+  published Boolean  @default(false)
   views     Int      @default(0)
   likesCount Int     @default(0)
   dislikesCount Int  @default(0)

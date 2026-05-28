@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { ResolveButton } from "./resolve-button";
+import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
 
 export default async function AdminReportsPage() {
   const reports = await prisma.report.findMany({
@@ -29,53 +30,45 @@ export default async function AdminReportsPage() {
 
   return (
     <div>
-      <h1 className="mb-8 text-3xl font-bold">Reports</h1>
-
-      <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
-            <tr>
-              <th className="px-4 py-3 font-medium">Type</th>
-              <th className="px-4 py-3 font-medium">Content</th>
-              <th className="px-4 py-3 font-medium">Author</th>
-              <th className="px-4 py-3 font-medium">Reported by</th>
-              <th className="px-4 py-3 font-medium">Reason</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Date</th>
-              <th className="px-4 py-3 font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-            {enriched.map((report) => (
-              <tr key={report.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
-                <td className="px-4 py-3">
-                  <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium dark:bg-zinc-800">{report.entityType}</span>
-                </td>
-                <td className="max-w-[200px] truncate px-4 py-3 font-medium">
-                  {report.entity?.title ?? report.entity?.content ?? "—"}
-                  <span className="ml-1 text-xs text-zinc-400">by {report.entity?.authorName ?? "?"}</span>
-                </td>
-                <td className="px-4 py-3 text-zinc-500">{report.entity?.authorName ?? "?"}</td>
-                <td className="px-4 py-3 text-zinc-500">{report.user.name}</td>
-                <td className="px-4 py-3">
-                  <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900 dark:text-red-300">{report.reason}</span>
-                </td>
-                <td className="px-4 py-3">
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${report.resolved ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300" : "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300"}`}>
-                    {report.resolved ? "Resolved" : "Open"}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-zinc-500">{report.createdAt.toLocaleDateString()}</td>
-                <td className="px-4 py-3">
-                  {!report.resolved && <ResolveButton reportId={report.id} />}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {enriched.length === 0 && <p className="mt-8 text-zinc-500 dark:text-zinc-400">No reports yet.</p>}
+      <AdminPageHeader title="Reports" />
+      <AdminTable>
+        <AdminTableHead>
+          <tr>
+            <th className="px-4 py-3 font-medium">Type</th>
+            <th className="px-4 py-3 font-medium">Content</th>
+            <th className="px-4 py-3 font-medium">Reported by</th>
+            <th className="px-4 py-3 font-medium">Reason</th>
+            <th className="px-4 py-3 font-medium">Status</th>
+            <th className="px-4 py-3 font-medium">Date</th>
+            <th className="px-4 py-3 font-medium">Actions</th>
+          </tr>
+        </AdminTableHead>
+        <AdminTableBody>
+          {enriched.map((report, i) => (
+            <AdminTableRow key={report.id} index={i}>
+              <AdminCell>
+                <span className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium dark:bg-zinc-800">{report.entityType}</span>
+              </AdminCell>
+              <AdminCell className="max-w-[200px] truncate font-medium">
+                {report.entity?.title ?? report.entity?.content ?? "—"}
+                <span className="ml-1 text-xs text-zinc-400">by {report.entity?.authorName ?? "?"}</span>
+              </AdminCell>
+              <AdminCell className="text-zinc-500">{report.user.name}</AdminCell>
+              <AdminCell>
+                <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs text-red-700 dark:bg-red-900 dark:text-red-300">{report.reason}</span>
+              </AdminCell>
+              <AdminCell>
+                <AdminBadge variant={report.resolved ? "green" : "amber"}>{report.resolved ? "Resolved" : "Open"}</AdminBadge>
+              </AdminCell>
+              <AdminCell className="text-zinc-500">{report.createdAt.toLocaleDateString()}</AdminCell>
+              <AdminCell>
+                {!report.resolved && <ResolveButton reportId={report.id} />}
+              </AdminCell>
+            </AdminTableRow>
+          ))}
+        </AdminTableBody>
+      </AdminTable>
+      {enriched.length === 0 && <AdminEmpty message="No reports yet." />}
     </div>
   );
 }

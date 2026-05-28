@@ -61,6 +61,4 @@ main {
   animation: fadeIn 0.5s ease both;
 }
 
-.group:hover .group-hover\\:animate-float {
-  animation: float 2s ease-in-out infinite;
-}
+

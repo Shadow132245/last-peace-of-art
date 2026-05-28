@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
-import { TogglePublish } from "./toggle-publish";
+import { TogglePublish } from "@/components/ui/toggle-publish";
 
 export default async function PostsPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -36,7 +36,7 @@ export default async function PostsPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-3">
                     <h3 className="truncate font-semibold">{post.title}</h3>
-                    <TogglePublish postId={post.id} published={post.published} />
+                    <TogglePublish entityType="posts" entityId={post.id} published={post.published} />
                   </div>
                   <p className="mt-1 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{post.excerpt}</p>
                   <p className="mt-1 text-xs text-zinc-400">{post.createdAt.toLocaleDateString()}</p>

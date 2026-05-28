@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅**
+> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅**
 
 ---
 
@@ -44,21 +44,26 @@
 | M8 | Admin content management, Avatar/Banner upload, Landing auth awareness, Forum public create | ✅ |
 | M9 | Profile editor with resize controls, Terms & Privacy pages, CV removal, Settings cleanup | ✅ |
 | M10 | Interactions — unified comments, likes/dislikes, reports, views, trending sidebars, admin reports | ✅ |
+| M11 | Admin panel redesign + animations — publish/draft toggle, motion animations, shared components, page transitions | ✅ |
 
 ---
 
 ## [SESSION_LOG]
 
-### Session 2026-05-29 (Latest)
-**Changes pushed to GitHub — commit `154c009`**
+### Session 2026-05-29 (Evening — commit `awaiting`)
+**GitHub: `d12cf8e` → `154c009` → `bc1ba52` pushed earlier**
 
-1. **Unified Comment system** — polymorphic Comment model supporting `postId`, `projectId`, `threadId` (all optional); shared `CommentSection` component reused across blog, projects, and forum detail pages
-2. **Like/Dislike system** — `Like` model with `@@unique([userId, entityType, entityId])`, `LikeButton` component with optimistic UI, SVG icons, sign-in prompt
-3. **Report system** — `Report` model with `reason`, `description`, `resolved` fields; `ReportButton` component with modal dialog
-4. **View tracking** — `views` counter on Post/Project/Thread incremented via `ViewTracker` client component (POSTs `/api/views` once on mount)
-5. **Trending sidebars** — trending projects (by views), popular posts (by likes), hot threads (by comments) on listing pages
-6. **Admin reports page** — `/admin/reports` with enriched entity data (title + author) and inline resolve button
-7. **Project detail page** — `/projects/[id]` with media gallery, Markdown content, comments, likes, views, report
+1. **Production DB sync** — ran `npx prisma db push` against Neon DB (applied Like, Report, views, polymorphic Comment schema)
+2. **Publish/Draft toggle fixed** — moved to shared `src/components/ui/toggle-publish.tsx` with `entityType` param; added PATCH `/api/projects/[id]` and PATCH `/api/forum/[threadId]` endpoints
+3. **`published` field added to Thread** — schema + db push + PATCH API
+4. **Admin panel overhaul** — complete refactor with:
+   - Animated sidebar (`motion.aside` with staggered nav items, active indicator, glass effect)
+   - Overview page with animated stat cards (`staggerContainer`/`staggerItem`, gradient bars, hover scale)
+   - All listing pages (Users, Posts, Projects, Threads, Reports) use `AdminPageHeader`, `AdminTable`, `AdminTableRow` with entrance animations
+   - Buttons (Delete, Ban, Resolve) with `whileHover`/`whileTap` scale animations
+   - Badge component with color variants
+5. **Animation library** — `src/lib/animations.ts` with reusable Motion variants (fadeIn, fadeInUp, staggerContainer, staggerItem, pageTransition, etc.)
+6. **CSS fix** — removed broken `.group-hover\\:animate-float` rule causing Turbopack warning
 
 ### Session 2026-05-28 — commit `ab372d0` / `fb488ac`
 1. **Profile editor page** — `/dashboard/profile` with avatar upload + size slider, banner upload + height slider, bio, skills, live preview
