@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-28 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅**
+> Generated: 2026-05-28 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅**
 
 ---
 
@@ -42,18 +42,29 @@
 | M6 | UI Polish — responsive navbar, dark mode, animations, Markdown | ✅ |
 | M7 | Admin panel, Pagination, Search, Testing | ✅ |
 | M8 | Admin content management, Avatar/Banner upload, Landing auth awareness, Forum public create | ✅ |
+| M9 | Profile editor with resize controls, Terms & Privacy pages, CV removal, Settings cleanup | ✅ |
 
 ---
 
 ## [SESSION_LOG]
 
 ### Session 2026-05-28 (Latest)
-**Changes pushed to GitHub — commit `ea8ca63`**
+**Changes pushed to GitHub — commit `ab372d0`**
 
-1. **Admin content management** — new pages: `/admin/projects`, `/admin/posts`, `/admin/threads` — each with table listing all items + delete button; new API routes: `DELETE /api/admin/projects/[id]`, `/api/admin/posts/[id]`, `/api/admin/threads/[id]`; reusable `DeleteButton` client component; admin sidebar updated with links
-2. **Avatar + Banner upload** — Settings page (`/dashboard/settings`) now has: profile photo upload (stored in `Profile.avatar`), cover banner upload (stored in `Profile.social.banner` JSON), bio + skills editor; Profile API updated to handle all fields; user profile page (`/user/[username]`) displays avatar and banner
-3. **Landing page auth-aware** — when logged in: hero buttons show "Go to Dashboard" instead of sign-up, "Ready to share your work?" CTA section is completely hidden
-4. **Forum public create button** — "New Thread" button appears on `/forum` for logged-in users (redirects to `/dashboard/forum/new`)
+1. **Profile editor page** — new `/dashboard/profile` page (separate from Settings) with: avatar upload + size slider (40-200px), banner upload + height slider (100-400px), bio editor, skills editor, and a **live preview panel** showing how the profile looks on the public page
+2. **Terms of Service page** — `/terms` with 14 sections covering all legal aspects
+3. **Privacy Policy page** — `/privacy` with 11 sections covering data collection, usage, sharing, rights, cookies, and third-party services
+4. **Footer updated** — links to Terms + Privacy added
+5. **CV removed** — `/dashboard/cv` deleted, CV link replaced with Profile link in dashboard, CV references in landing page replaced with "Profile"
+6. **Settings simplified** — now only shows account info (name, email) + sign out; profile editing moved to `/dashboard/profile`
+7. **User profile page** — reads stored `avatarSize` and `bannerHeight` from `social` JSON and applies them to avatar/banner display
+8. **Immediate upload preview** — `URL.createObjectURL` for instant local preview before server upload completes
+
+Previous session — commit `ea8ca63`:
+1. **Admin content management** — `/admin/projects`, `/admin/posts`, `/admin/threads` with delete
+2. **Avatar + Banner upload** in Settings (later moved to `/dashboard/profile`)
+3. **Landing page auth-aware** — CTA hidden when logged in
+4. **Forum public create button** — visible for logged-in users
 
 ### Previous Sessions
 - Facebook OAuth removed (Google + Email only)
@@ -96,6 +107,8 @@ src/
 │   │   ├── projects/             # Project gallery
 │   │   ├── forum/                # Forum — "New Thread" button if logged in
 │   │   ├── search/               # Full-text search
+│   │   ├── terms/                # Terms of Service
+│   │   ├── privacy/              # Privacy Policy
 │   │   └── user/[username]/      # Public profile — shows avatar, banner, bio, skills
 │   ├── (auth)/                   # Login / Register
 │   ├── (admin)/                  # Admin panel
@@ -110,9 +123,9 @@ src/
 │   ├── dashboard/                # Protected dashboard
 │   │   ├── projects/             # My projects CRUD
 │   │   ├── posts/                # My posts CRUD
-│   │   ├── cv/                   # Profile/bio/skills editor
+│   │   ├── profile/              # Avatar, banner, bio, skills + live preview + resize
 │   │   ├── forum/                # My threads + new thread
-│   │   └── settings/             # Avatar, banner, account, bio, skills
+│   │   └── settings/             # Account info + sign out only
 │   ├── api/
 │   │   ├── auth/[...all]/        # Better Auth handler
 │   │   ├── projects/             # User projects CRUD
