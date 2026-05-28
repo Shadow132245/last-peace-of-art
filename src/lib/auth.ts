@@ -3,11 +3,44 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { prisma } from "./db";
 
+declare module "better-auth" {
+  interface User {
+    role: string;
+    banned: boolean;
+    banReason: string | null;
+    banExpires: Date | null;
+  }
+}
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
   plugins: [nextCookies()],
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: true,
+        defaultValue: "user",
+        input: false,
+      },
+      banned: {
+        type: "boolean",
+        required: true,
+        defaultValue: false,
+        input: false,
+      },
+      banReason: {
+        type: "string",
+        input: false,
+      },
+      banExpires: {
+        type: "date",
+        input: false,
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
   },
