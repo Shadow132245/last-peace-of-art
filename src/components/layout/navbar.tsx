@@ -51,7 +51,7 @@ export function Navbar() {
 
           {session ? (
             <div className="flex items-center gap-3">
-              {session.user.role === "admin" && (
+              {(session.user as { role: string }).role === "admin" && (
                 <Link href="/admin" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
                   Admin
                 </Link>
