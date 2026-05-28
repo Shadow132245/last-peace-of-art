@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅**
+> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅**
 
 ---
 
@@ -47,12 +47,13 @@
 | M11 | Admin panel redesign + animations — publish/draft toggle, motion animations, shared components, page transitions | ✅ |
 | M12 | Admin moderation — Accept/Reject workflow, optimistic UI, forum published filter, contact email, build fixes | ✅ |
 | M13 | Suspension + Appeals system — proxy check, suspend modal, admin appeals page, appeal form, suspension notice | ✅ |
+| M14 | Admin clickable titles, image upload in editors, security headers, rate limiting middleware | ✅ |
 
 ---
 
 ## [SESSION_LOG]
 
-### Session 2026-05-29 (Current — latest commit `7e75875`)
+### Session 2026-05-29 (Latest — commits `7e75875` → `93333dd`)
 
 1. **Suspension check in proxy.ts** — redirects suspended users to `/suspended` (bypass for `/suspended` and `/appeal` pages)
 2. **`suspended` added to Better Auth additionalFields** — session now includes `suspended`, `suspensionReason`, `suspendedUntil`
@@ -63,7 +64,15 @@
 7. **Users page updated** — shows `Suspended` badge + suspension reason in status column
 8. **Admin sidebar** — added "Appeals" nav item
 9. **`force-dynamic` added to all admin pages** — fixed prerender errors against Neon DB
-10. **All pushed to GitHub** — commit `7e75875`
+10. **Admin clickable titles** — posts link to `/blog/[slug]`, projects link to `/projects/[id]` (threads already had it)
+11. **ImageUpload component** — `src/components/ui/image-upload.tsx`: reusable upload button (supports markdown insert, URL insert, media array)
+12. **Image upload in post editor** — "Add Image" button inserts `![alt](url)` into markdown content
+13. **Image upload in project editor** — "Add Image" for content + media gallery with thumbnails (add/remove)
+14. **Image upload in forum editor** — "Add Image" button inserts `![alt](url)` into content
+15. **Project POST API** — now accepts `content` (markdown) and `media` (string[]) fields
+16. **Security headers** — `next.config.ts`: HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy + production source maps disabled
+17. **Rate limiting middleware** — `middleware.ts`: 60 req/min per IP on all `/api/*` routes with cleanup
+18. **All pushed to GitHub** — commit `93333dd`
 
 ### Session 2026-05-28 — commit `ab372d0` / `fb488ac`
 1. **Profile editor page** — `/dashboard/profile` with avatar upload + size slider, banner upload + height slider, bio, skills, live preview
@@ -167,9 +176,11 @@ src/
 │   ├── appeals/                  # POST submit appeal (suspended users only)
 │   └── layout.tsx                # Root — dark mode flash prevention script
 │
+├── next.config.ts                # Security headers + source maps disabled
+├── middleware.ts                 # Rate limiting (60 req/min per IP on /api/*)
 ├── proxy.ts                      # Route protection + suspension redirect (Next.js 16)
 ├── components/
-│   ├── ui/                       # Button, Input, Markdown, Pagination
+│   ├── ui/                       # Button, Input, Markdown, Pagination, ImageUpload
 │   ├── layout/                   # Navbar (dark toggle, auth-aware), Footer
 │   ├── auth/                     # LoginForm, RegisterForm
 │   ├── comments/                 # CommentSection (shared b/w blog/projects/forum)
@@ -222,6 +233,9 @@ Appeal      → id, userId, user, reason, description?, status ("pending"/"appro
 | Appeal one-pending limit | API rejects second appeal if one is already pending |
 | `suspended` in Better Auth session | Added to `additionalFields` in `auth.ts` so `(session.user as any).suspended` works client-side |
 | `force-dynamic` on admin pages | All admin server components need it to prevent prerender errors against Neon |
+| Rate limiting | In-memory middleware (60 req/min/IP) on `/api/*` — resets on stale entries cleanup |
+| Security headers | Set via `next.config.ts` headers() — HSTS 2yr, X-Frame-Options DENY, X-Content-Type-Options nosniff |
+| Source maps | `productionBrowserSourceMaps: false` prevents source code leak |
 
 ---
 
