@@ -28,20 +28,40 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
 
   if (!user) notFound();
 
+  const banner = user.profile?.social ? (user.profile.social as Record<string, string>)?.banner : null;
+  const avatar = user.profile?.avatar ?? user.image;
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">{user.name}</h1>
-        {user.profile?.bio && (
-          <p className="mt-2 text-zinc-500 dark:text-zinc-400">{user.profile.bio}</p>
-        )}
-        {user.profile && user.profile.skills.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {user.profile.skills.map((skill) => (
-              <span key={skill} className="rounded-full bg-zinc-100 px-3 py-1 text-sm dark:bg-zinc-800">{skill}</span>
-            ))}
-          </div>
-        )}
+      {banner && (
+        <div className="mb-6 h-48 w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800">
+          <img src={banner} alt="Banner" className="h-full w-full object-cover" />
+        </div>
+      )}
+
+      <div className="mb-8 flex items-start gap-6">
+        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+          {avatar ? (
+            <img src={avatar} alt={user.name} className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-2xl text-zinc-400">
+              {user.name[0].toUpperCase()}
+            </div>
+          )}
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold">{user.name}</h1>
+          {user.profile?.bio && (
+            <p className="mt-2 text-zinc-500 dark:text-zinc-400">{user.profile.bio}</p>
+          )}
+          {user.profile && user.profile.skills.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {user.profile.skills.map((skill) => (
+                <span key={skill} className="rounded-full bg-zinc-100 px-3 py-1 text-sm dark:bg-zinc-800">{skill}</span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {user.projects.length > 0 && (

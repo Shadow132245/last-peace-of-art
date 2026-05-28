@@ -33,19 +33,24 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { bio, skills } = await request.json();
+    const { bio, skills, avatar, social } = await request.json();
+
+    const data: Record<string, unknown> = {};
+    if (bio !== undefined) data.bio = bio;
+    if (skills !== undefined) data.skills = skills;
+    if (avatar !== undefined) data.avatar = avatar;
+    if (social !== undefined) data.social = social;
 
     const profile = await prisma.profile.upsert({
       where: { userId: session.user.id },
-      update: {
-        bio: bio ?? null,
-        skills: skills ?? [],
-      },
+      update: data,
       create: {
         id: crypto.randomUUID(),
         userId: session.user.id,
         bio: bio ?? null,
         skills: skills ?? [],
+        avatar: avatar ?? null,
+        social: social ?? null,
       },
     });
 

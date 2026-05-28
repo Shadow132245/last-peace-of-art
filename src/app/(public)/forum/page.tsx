@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { parsePagination, buildPaginationMeta, getSkipTake } from "@/lib/pagination";
 import { Pagination } from "@/components/ui/pagination";
 
@@ -13,6 +15,8 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
   const searchParams = await props.searchParams;
   const params = parsePagination(new URLSearchParams(searchParams ?? {}));
   const { skip, take } = getSkipTake(params);
+
+  const session = await auth.api.getSession({ headers: await headers() });
 
   const [threads, total] = await Promise.all([
     prisma.thread.findMany({
@@ -33,6 +37,14 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
     <div className="mx-auto max-w-4xl px-4 py-12">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Forum</h1>
+        {session && (
+          <Link
+            href="/dashboard/forum/new"
+            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
+          >
+            New Thread
+          </Link>
+        )}
       </div>
 
       {threads.length === 0 ? (
