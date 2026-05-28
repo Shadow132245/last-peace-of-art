@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type EntityType = "posts" | "projects" | "forum";
@@ -14,7 +13,6 @@ export function TogglePublish({
   entityId: string;
   published: boolean;
 }) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleToggle = async () => {
@@ -25,11 +23,13 @@ export function TogglePublish({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ published: !published }),
       });
-      if (!res.ok) throw new Error("Failed to toggle");
-      router.refresh();
+      if (res.ok) {
+        window.location.reload();
+        return;
+      }
+      throw new Error("Failed to toggle");
     } catch {
       console.error("Toggle failed");
-    } finally {
       setLoading(false);
     }
   };

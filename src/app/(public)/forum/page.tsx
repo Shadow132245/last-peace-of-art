@@ -20,6 +20,7 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
 
   const [threads, total, trending] = await Promise.all([
     prisma.thread.findMany({
+      where: { published: true },
       include: {
         user: { select: { name: true, image: true } },
         _count: { select: { comments: true } },
@@ -28,8 +29,9 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
       skip,
       take,
     }),
-    prisma.thread.count(),
+    prisma.thread.count({ where: { published: true } }),
     prisma.thread.findMany({
+      where: { published: true },
       include: { user: { select: { name: true } }, _count: { select: { comments: true } } },
       orderBy: { likesCount: "desc" },
       take: 5,

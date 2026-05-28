@@ -1,13 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "motion/react";
 
 type EntityType = "posts" | "projects" | "threads";
 
 export function AdminPublishToggle({ entityType, entityId, published }: { entityType: EntityType; entityId: string; published: boolean }) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleToggle = async () => {
@@ -18,11 +16,13 @@ export function AdminPublishToggle({ entityType, entityId, published }: { entity
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ published: !published }),
       });
-      if (!res.ok) throw new Error("Failed");
-      router.refresh();
+      if (res.ok) {
+        window.location.reload();
+        return;
+      }
+      throw new Error("Failed");
     } catch {
       console.error("Toggle failed");
-    } finally {
       setLoading(false);
     }
   };
@@ -35,16 +35,16 @@ export function AdminPublishToggle({ entityType, entityId, published }: { entity
       whileTap={{ scale: 0.95 }}
       className={`cursor-pointer rounded-full px-2.5 py-0.5 text-xs font-medium transition-all duration-200 disabled:opacity-50 ${
         published
-          ? "bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800"
-          : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
+          ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900 dark:text-emerald-300 dark:hover:bg-emerald-800"
+          : "bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-300 dark:hover:bg-amber-800"
       }`}
     >
       {loading ? (
         <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
       ) : published ? (
-        "Published"
+        "Accept"
       ) : (
-        "Draft"
+        "Reject"
       )}
     </motion.button>
   );
