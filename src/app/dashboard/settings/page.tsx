@@ -11,6 +11,8 @@ export default function SettingsPage() {
 
   const [avatar, setAvatar] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [bio, setBio] = useState("");
   const [skills, setSkills] = useState("");
   const [uploading, setUploading] = useState<"avatar" | "banner" | null>(null);
@@ -31,9 +33,27 @@ export default function SettingsPage() {
       .catch(() => {});
   }, []);
 
+  // Cleanup blob URLs when component unmounts or previews change
+  useEffect(() => {
+    return () => {
+      if (avatarPreview?.startsWith("blob:")) URL.revokeObjectURL(avatarPreview);
+      if (bannerPreview?.startsWith("blob:")) URL.revokeObjectURL(bannerPreview);
+    };
+  }, [avatarPreview, bannerPreview]);
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "avatar" | "banner") => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Show local preview immediately
+    const localUrl = URL.createObjectURL(file);
+    if (type === "avatar") {
+      setAvatarPreview(localUrl);
+      setAvatar(localUrl);
+    } else {
+      setBannerPreview(localUrl);
+      setBanner(localUrl);
+    }
 
     setUploading(type);
     const formData = new FormData();
@@ -43,6 +63,7 @@ export default function SettingsPage() {
     const data = await res.json();
 
     if (res.ok) {
+      // Replace blob URL with server URL
       if (type === "avatar") setAvatar(data.url);
       else setBanner(data.url);
     }
