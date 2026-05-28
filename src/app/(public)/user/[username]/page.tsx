@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
   const { username } = await params;
-  const user = await prisma.user.findUnique({ where: { name: username } });
+  const user = await prisma.user.findFirst({ where: { name: username } });
 
   if (!user) return { title: "User Not Found" };
 
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
 export default async function UserProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: { name: username },
     include: {
       profile: true,
