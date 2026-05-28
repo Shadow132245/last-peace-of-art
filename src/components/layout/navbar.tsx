@@ -40,7 +40,7 @@ export function Navbar() {
             Projects
           </Link>
           <Link href="/blog" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-            Blog
+            Posts
           </Link>
           <Link href="/forum" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
             Forum
@@ -110,7 +110,7 @@ export function Navbar() {
           >
             <div className="flex flex-col gap-3 px-4 py-4">
               <Link href="/projects" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Projects</Link>
-              <Link href="/blog" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Blog</Link>
+              <Link href="/blog" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Posts</Link>
               <Link href="/forum" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Forum</Link>
               <Link href="/search" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Search</Link>
               {session ? (

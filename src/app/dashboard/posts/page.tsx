@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
+import { TogglePublish } from "./toggle-publish";
 
 export default async function PostsPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -32,13 +33,14 @@ export default async function PostsPage() {
           {posts.map((post) => (
             <div key={post.id} className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
               <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold">{post.title}</h3>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-3">
+                    <h3 className="truncate font-semibold">{post.title}</h3>
+                    <TogglePublish postId={post.id} published={post.published} />
+                  </div>
                   <p className="mt-1 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{post.excerpt}</p>
+                  <p className="mt-1 text-xs text-zinc-400">{post.createdAt.toLocaleDateString()}</p>
                 </div>
-                <span className={`shrink-0 rounded-full px-2 py-1 text-xs font-medium ${post.published ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300" : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"}`}>
-                  {post.published ? "Published" : "Draft"}
-                </span>
               </div>
             </div>
           ))}

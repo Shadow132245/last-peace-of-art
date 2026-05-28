@@ -5,7 +5,7 @@ import { parsePagination, buildPaginationMeta, getSkipTake } from "@/lib/paginat
 import { Pagination } from "@/components/ui/pagination";
 
 export const metadata: Metadata = {
-  title: "Blog",
+  title: "Posts",
   description: "Read articles and posts from the community.",
 };
 

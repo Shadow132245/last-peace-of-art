@@ -92,7 +92,7 @@ export default async function LandingPage() {
 
 const features = [
   { icon: "🚀", title: "Projects", desc: "Upload and showcase your work with rich media, tags, and links." },
-  { icon: "✍️", title: "Blog", desc: "Write about any topic and share your knowledge with the world." },
+  { icon: "✍️", title: "Posts", desc: "Write about any topic and share your knowledge with the world." },
   { icon: "📄", title: "Profile", desc: "Create a stunning public profile to present your skills and experience." },
   { icon: "💬", title: "Forum", desc: "Start discussions, ask questions, and connect with the community." },
 ];

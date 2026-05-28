@@ -12,7 +12,7 @@ export function Footer() {
             Projects
           </Link>
           <Link href="/blog" className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
-            Blog
+            Posts
           </Link>
           <Link href="/forum" className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
             Forum
