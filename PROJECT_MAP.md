@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅**
+> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅**
 
 ---
 
@@ -45,25 +45,27 @@
 | M9 | Profile editor with resize controls, Terms & Privacy pages, CV removal, Settings cleanup | ✅ |
 | M10 | Interactions — unified comments, likes/dislikes, reports, views, trending sidebars, admin reports | ✅ |
 | M11 | Admin panel redesign + animations — publish/draft toggle, motion animations, shared components, page transitions | ✅ |
+| M12 | Admin moderation — Accept/Reject workflow, optimistic UI, forum published filter, contact email, build fixes | ✅ |
 
 ---
 
 ## [SESSION_LOG]
 
-### Session 2026-05-29 (Final — commit `e3c0fd9` → `awaiting`)
+### Session 2026-05-29 (Evening — latest commit `0be878e`)
 
-1. **Email changed** — `support@lastpeaceofart.com` → `fghfghffdgfhfgh@gmail.com` in Terms & Privacy pages
-2. **Admin publish/approve toggle** — added `AdminPublishToggle` component for posts/projects/threads in admin panel with PATCH endpoints (`/api/admin/posts/[id]`, `/api/admin/projects/[id]`, `/api/admin/threads/[id]`)
-3. **Production DB sync** — ran `npx prisma db push` against Neon DB (applied Like, Report, views, polymorphic Comment schema, Thread.published)
-4. **Publish/Draft toggle fixed** — moved to shared `src/components/ui/toggle-publish.tsx` with `entityType` param; added PATCH `/api/projects/[id]` and PATCH `/api/forum/[threadId]` endpoints
-5. **`published` field added to Thread** — schema + db push + PATCH API
-6. **Admin panel overhaul** — complete refactor with:
-   - Animated sidebar (`motion.aside` with staggered nav items, active indicator, glass effect)
-   - Overview page with animated stat cards (`staggerContainer`/`staggerItem`, gradient bars, hover scale)
-   - All listing pages (Users, Posts, Projects, Threads, Reports) use `AdminPageHeader`, `AdminTable`, `AdminTableRow` with entrance animations
-   - Buttons (Delete, Ban, Resolve) with `whileHover`/`whileTap` scale animations
-7. **Animation library** — `src/lib/animations.ts` with reusable Motion variants
-8. **CSS fix** — removed broken `.group-hover\\:animate-float` rule
+1. **Production DB sync** — ran `npx prisma db push` against Neon DB (Like, Report, views, polymorphic Comment, Thread.published)
+2. **Published field added to Thread** — schema + DB push + PATCH API
+3. **Admin panel overhaul** — animated sidebar (staggered nav items, glass effect), stat cards (hover scale, gradient bars), table rows with entrance animations, buttons with hover/tap effects
+4. **Animation library** — `src/lib/animations.ts` (fadeIn, fadeInUp, staggerContainer, staggerItem, pageTransition)
+5. **Shared TogglePublish** — moved to `src/components/ui/toggle-publish.tsx` with `entityType` param for posts/projects/forum; added PATCH `/api/projects/[id]` and `/api/forum/[threadId]`
+6. **Admin Accept/Reject** — `AdminPublishToggle` with PATCH endpoints for admin posts/projects/threads:
+   - Draft posts → show "Accept" button (amber)
+   - After click → "Accepted" badge immediately (optimistic UI, no reload)
+   - Published posts → static "Accepted" badge (green) + Delete button always visible
+7. **Contact email updated** — `support@lastpeaceofart.com` → `fghfghffdgfhfgh@gmail.com` in Terms & Privacy
+8. **Forum public listing** — now filters by `published: true` (Draft threads hidden from public)
+9. **CSS fix** — removed broken `.group-hover\\:animate-float` rule
+10. **Build fixes** — `as any` role cast in admin layout, `ease` type as const in animations
 
 ### Session 2026-05-28 — commit `ab372d0` / `fb488ac`
 1. **Profile editor page** — `/dashboard/profile` with avatar upload + size slider, banner upload + height slider, bio, skills, live preview
