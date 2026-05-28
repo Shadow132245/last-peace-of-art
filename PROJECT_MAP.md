@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-28 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅**
+> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅**
 
 ---
 
@@ -43,22 +43,32 @@
 | M7 | Admin panel, Pagination, Search, Testing | ✅ |
 | M8 | Admin content management, Avatar/Banner upload, Landing auth awareness, Forum public create | ✅ |
 | M9 | Profile editor with resize controls, Terms & Privacy pages, CV removal, Settings cleanup | ✅ |
+| M10 | Interactions — unified comments, likes/dislikes, reports, views, trending sidebars, admin reports | ✅ |
 
 ---
 
 ## [SESSION_LOG]
 
-### Session 2026-05-28 (Latest)
-**Changes pushed to GitHub — commit `ab372d0`**
+### Session 2026-05-29 (Latest)
+**Changes pushed to GitHub — commit `154c009`**
 
-1. **Profile editor page** — new `/dashboard/profile` page (separate from Settings) with: avatar upload + size slider (40-200px), banner upload + height slider (100-400px), bio editor, skills editor, and a **live preview panel** showing how the profile looks on the public page
-2. **Terms of Service page** — `/terms` with 14 sections covering all legal aspects
-3. **Privacy Policy page** — `/privacy` with 11 sections covering data collection, usage, sharing, rights, cookies, and third-party services
-4. **Footer updated** — links to Terms + Privacy added
-5. **CV removed** — `/dashboard/cv` deleted, CV link replaced with Profile link in dashboard, CV references in landing page replaced with "Profile"
-6. **Settings simplified** — now only shows account info (name, email) + sign out; profile editing moved to `/dashboard/profile`
-7. **User profile page** — reads stored `avatarSize` and `bannerHeight` from `social` JSON and applies them to avatar/banner display
-8. **Immediate upload preview** — `URL.createObjectURL` for instant local preview before server upload completes
+1. **Unified Comment system** — polymorphic Comment model supporting `postId`, `projectId`, `threadId` (all optional); shared `CommentSection` component reused across blog, projects, and forum detail pages
+2. **Like/Dislike system** — `Like` model with `@@unique([userId, entityType, entityId])`, `LikeButton` component with optimistic UI, SVG icons, sign-in prompt
+3. **Report system** — `Report` model with `reason`, `description`, `resolved` fields; `ReportButton` component with modal dialog
+4. **View tracking** — `views` counter on Post/Project/Thread incremented via `ViewTracker` client component (POSTs `/api/views` once on mount)
+5. **Trending sidebars** — trending projects (by views), popular posts (by likes), hot threads (by comments) on listing pages
+6. **Admin reports page** — `/admin/reports` with enriched entity data (title + author) and inline resolve button
+7. **Project detail page** — `/projects/[id]` with media gallery, Markdown content, comments, likes, views, report
+
+### Session 2026-05-28 — commit `ab372d0` / `fb488ac`
+1. **Profile editor page** — `/dashboard/profile` with avatar upload + size slider, banner upload + height slider, bio, skills, live preview
+2. **Terms of Service + Privacy Policy** pages — full legal policies
+3. **CV removed** — replaced with Profile in dashboard/landing
+4. **Settings simplified** — account info only
+5. **User profile page** — reads `avatarSize`/`bannerHeight` from social JSON
+6. **Immediate upload preview** — `URL.createObjectURL`
+7. **"Blog" renamed to "Posts"** — navbar, footer, metadata, feature cards
+8. **Publish/Draft toggle** — clickable status badge in `/dashboard/posts`
 
 Previous session — commit `ea8ca63`:
 1. **Admin content management** — `/admin/projects`, `/admin/posts`, `/admin/threads` with delete
@@ -103,42 +113,48 @@ src/
 ├── app/
 │   ├── (public)/                 # Public routes
 │   │   ├── page.tsx              # Landing — auth-aware (hides CTA when logged in)
-│   │   ├── blog/                 # Blog listing + [slug]
-│   │   ├── projects/             # Project gallery
-│   │   ├── forum/                # Forum — "New Thread" button if logged in
+│   │   ├── blog/                 # Blog listing + [slug] — popular sidebar, comments, likes, views
+│   │   ├── projects/             # Project gallery + [id] detail — trending sidebar, media, comments, likes
+│   │   ├── forum/                # Forum listing + [threadId] detail — hot sidebar, comments, likes
 │   │   ├── search/               # Full-text search
 │   │   ├── terms/                # Terms of Service
 │   │   ├── privacy/              # Privacy Policy
-│   │   └── user/[username]/      # Public profile — shows avatar, banner, bio, skills
+│   │   └── user/[username]/      # Public profile — avatar, banner, bio, skills
 │   ├── (auth)/                   # Login / Register
 │   ├── (admin)/                  # Admin panel
-│   │   ├── layout.tsx            # Sidebar with all admin links
+│   │   ├── layout.tsx            # Sidebar (reports link added)
 │   │   └── admin/
 │   │       ├── page.tsx          # Overview stats
-│   │       ├── delete-button.tsx  # Reusable delete client component
+│   │       ├── delete-button.tsx # Reusable delete client component
 │   │       ├── users/            # User list + ban/unban
 │   │       ├── projects/         # All projects + delete
 │   │       ├── posts/            # All posts + delete
-│   │       └── threads/          # All threads + delete
+│   │       ├── threads/          # All threads + delete
+│   │       └── reports/          # Reports list + inline resolve
 │   ├── dashboard/                # Protected dashboard
 │   │   ├── projects/             # My projects CRUD
-│   │   ├── posts/                # My posts CRUD
+│   │   ├── posts/                # My posts CRUD + publish/draft toggle
 │   │   ├── profile/              # Avatar, banner, bio, skills + live preview + resize
 │   │   ├── forum/                # My threads + new thread
 │   │   └── settings/             # Account info + sign out only
 │   ├── api/
 │   │   ├── auth/[...all]/        # Better Auth handler
 │   │   ├── projects/             # User projects CRUD
-│   │   ├── posts/                # User posts CRUD
+│   │   ├── posts/                # User posts CRUD + publish toggle
 │   │   ├── profile/              # GET/PUT profile (avatar, bio, skills, social)
 │   │   ├── forum/                # Threads + comments
 │   │   ├── upload/               # File upload (images, 5MB limit)
 │   │   ├── search/               # Full-text search
+│   │   ├── comments/             # Unified POST/GET/DELETE comments
+│   │   ├── likes/                # POST toggle like/dislike, GET counts
+│   │   ├── reports/              # POST create report
+│   │   ├── views/                # POST increment view counter
 │   │   └── admin/                # Admin operations
 │   │       ├── users/[userId]/   # Ban/unban
 │   │       ├── projects/[id]/    # Delete project
 │   │       ├── posts/[id]/       # Delete post
-│   │       └── threads/[id]/     # Delete thread
+│   │       ├── threads/[id]/     # Delete thread
+│   │       └── reports/          # GET all + PATCH resolve
 │   └── layout.tsx                # Root — dark mode flash prevention script
 │
 ├── proxy.ts                      # Route protection (Next.js 16)
@@ -146,7 +162,10 @@ src/
 │   ├── ui/                       # Button, Input, Markdown, Pagination
 │   ├── layout/                   # Navbar (dark toggle, auth-aware), Footer
 │   ├── auth/                     # LoginForm, RegisterForm
-│   └── forum/                    # CommentForm
+│   ├── comments/                 # CommentSection (shared b/w blog/projects/forum)
+│   ├── likes/                    # LikeButton (optimistic UI, SVG icons)
+│   ├── reports/                  # ReportButton (modal with reason + description)
+│   └── views/                    # ViewTracker (client component, POST on mount)
 ├── lib/
 │   ├── auth.ts                   # Better Auth server config (Google + Email)
 │   ├── auth-client.ts            # Better Auth client (browser)
@@ -155,19 +174,21 @@ src/
 │   ├── admin.ts                  # requireAdmin() helper
 │   └── pagination.ts            # parsePagination, buildPaginationMeta, getSkipTake
 ├── prisma/
-│   └── schema.prisma             # 8 models: User, Session, Account, Verification, Profile, Project, Post, Thread, Comment
+│   └── schema.prisma             # 13 models (User, Session, Account, Verification, Profile, Project, Post, Thread, Comment, Like, Report)
 ├── prisma.config.ts              # Prisma v7 datasource config
 └── generated/prisma/             # Generated Prisma client
 ```
 
-### Schema (Prisma) — Core Entities
+### Schema (Prisma) — Core Entities (13 models)
 ```
 User        → id, name (unique), email (unique), image, role ("user"/"admin"), banned, banReason, banExpires
-Profile     → id, userId, bio, avatar, location, website, company, skills[], social (JSON: {banner}), cv (JSON)
-Project     → id, userId, title, description, content, media[], tags[], links (JSON), published
-Post        → id, userId, title, slug (unique), content, excerpt, coverImage, tags[], published
-Thread      → id, userId, title, content, tags[], pinned, createdAt
-Comment     → id, userId, threadId, content, createdAt
+Profile     → id, userId, bio, avatar, location, website, company, skills[], social (JSON: {banner, avatarSize, bannerHeight})
+Project     → id, userId, title, description, content, media[], tags[], links (JSON), published, views, likesCount, dislikesCount
+Post        → id, userId, title, slug (unique), content, excerpt, coverImage, tags[], published, views, likesCount, dislikesCount
+Thread      → id, userId, title, content, tags[], pinned, createdAt, views, likesCount, dislikesCount
+Comment     → id, content, threadId?, postId?, projectId?, userId (polymorphic — shared across entities)
+Like        → id, userId, entityType, entityId, type ("like"/"dislike")  @@unique([userId, entityType, entityId])
+Report      → id, userId, entityType, entityId, reason, description?, resolved (default false)
 ```
 
 ---
@@ -182,6 +203,10 @@ Comment     → id, userId, threadId, content, createdAt
 | Next.js 16 static generation — client components with browser hooks | Add `export const dynamic = "force-dynamic"` to layouts |
 | Smooth theme transition | Global `*` rule: `transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease` |
 | Facebook OAuth removed | Only Google + Email; AUTH_FACEBOOK env vars removed |
+| Comments polymorphic | Single Comment model with optional threadId/postId/projectId |
+| Likes unique constraint | `@@unique([userId, entityType, entityId])` prevents duplicate likes |
+| Report enriched inline | Admin reports page fetches entity title/author via Promise.all (no denormalization) |
+| ViewTracker client component | Returns null, calls fetch once on mount — no server-side interaction |
 
 ---
 
@@ -192,7 +217,8 @@ Comment     → id, userId, threadId, content, createdAt
 | Email verification flow | ❌ Pending | Better Auth supports; needs UI |
 | Email templates | ❌ Pending | Better Auth supports customization |
 | Google OAuth live credentials | ❌ Pending | Need to set AUTH_GOOGLE_ID + AUTH_GOOGLE_SECRET in Vercel |
-| Deployed site testing | ❌ Pending | Verify auth flow, dark mode, admin access on live site |
+| Deployed site testing | ❌ Pending | Verify M10 features: comments, likes, reports, views, admin reports, trending, profile editor |
+| Production db push | ❌ Pending | Run `npx prisma db push` against production DATABASE_URL |
 
 ---
 
