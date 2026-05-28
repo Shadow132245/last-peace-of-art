@@ -40,9 +40,5 @@ export const auth = betterAuth({
       clientId: process.env.AUTH_GOOGLE_ID ?? "",
       clientSecret: process.env.AUTH_GOOGLE_SECRET ?? "",
     },
-    facebook: {
-      clientId: process.env.AUTH_FACEBOOK_ID ?? "",
-      clientSecret: process.env.AUTH_FACEBOOK_SECRET ?? "",
-    },
   },
 });
