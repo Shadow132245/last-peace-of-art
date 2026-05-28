@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅**
+> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅**
 
 ---
 
@@ -46,26 +46,24 @@
 | M10 | Interactions — unified comments, likes/dislikes, reports, views, trending sidebars, admin reports | ✅ |
 | M11 | Admin panel redesign + animations — publish/draft toggle, motion animations, shared components, page transitions | ✅ |
 | M12 | Admin moderation — Accept/Reject workflow, optimistic UI, forum published filter, contact email, build fixes | ✅ |
+| M13 | Suspension + Appeals system — proxy check, suspend modal, admin appeals page, appeal form, suspension notice | ✅ |
 
 ---
 
 ## [SESSION_LOG]
 
-### Session 2026-05-29 (Evening — latest commit `0be878e`)
+### Session 2026-05-29 (Current — latest commit `7e75875`)
 
-1. **Production DB sync** — ran `npx prisma db push` against Neon DB (Like, Report, views, polymorphic Comment, Thread.published)
-2. **Published field added to Thread** — schema + DB push + PATCH API
-3. **Admin panel overhaul** — animated sidebar (staggered nav items, glass effect), stat cards (hover scale, gradient bars), table rows with entrance animations, buttons with hover/tap effects
-4. **Animation library** — `src/lib/animations.ts` (fadeIn, fadeInUp, staggerContainer, staggerItem, pageTransition)
-5. **Shared TogglePublish** — moved to `src/components/ui/toggle-publish.tsx` with `entityType` param for posts/projects/forum; added PATCH `/api/projects/[id]` and `/api/forum/[threadId]`
-6. **Admin Accept/Reject** — `AdminPublishToggle` with PATCH endpoints for admin posts/projects/threads:
-   - Draft posts → show "Accept" button (amber)
-   - After click → "Accepted" badge immediately (optimistic UI, no reload)
-   - Published posts → static "Accepted" badge (green) + Delete button always visible
-7. **Contact email updated** — `support@lastpeaceofart.com` → `fghfghffdgfhfgh@gmail.com` in Terms & Privacy
-8. **Forum public listing** — now filters by `published: true` (Draft threads hidden from public)
-9. **CSS fix** — removed broken `.group-hover\\:animate-float` rule
-10. **Build fixes** — `as any` role cast in admin layout, `ease` type as const in animations
+1. **Suspension check in proxy.ts** — redirects suspended users to `/suspended` (bypass for `/suspended` and `/appeal` pages)
+2. **`suspended` added to Better Auth additionalFields** — session now includes `suspended`, `suspensionReason`, `suspendedUntil`
+3. **Suspension notice page** — `(public)/suspended/page.tsx` shows reason, duration (permanent/temporary), link to appeal
+4. **Appeal form page** — `(public)/appeal/page.tsx` — client component with reason dropdown + description textarea; validates suspension status + no pending appeal limit
+5. **Admin appeals page** — `(admin)/admin/appeals/page.tsx` + `appeal-actions.tsx` — lists all appeals with user info, status badges, Approve/Reject buttons for pending
+6. **Admin users — suspend button with modal** — `suspend-button.tsx`: modal with reason input + duration selector (1d/3d/7d/14d/30d/permanent); Unsuspend button when already suspended
+7. **Users page updated** — shows `Suspended` badge + suspension reason in status column
+8. **Admin sidebar** — added "Appeals" nav item
+9. **`force-dynamic` added to all admin pages** — fixed prerender errors against Neon DB
+10. **All pushed to GitHub** — commit `7e75875`
 
 ### Session 2026-05-28 — commit `ab372d0` / `fb488ac`
 1. **Profile editor page** — `/dashboard/profile` with avatar upload + size slider, banner upload + height slider, bio, skills, live preview
@@ -126,6 +124,8 @@ src/
 │   │   ├── search/               # Full-text search
 │   │   ├── terms/                # Terms of Service
 │   │   ├── privacy/              # Privacy Policy
+│   │   ├── suspended/            # Suspension notice page
+│   │   ├── appeal/               # Appeal submission form
 │   │   └── user/[username]/      # Public profile — avatar, banner, bio, skills
 │   ├── (auth)/                   # Login / Register
 │   ├── (admin)/                  # Admin panel
@@ -133,11 +133,12 @@ src/
 │   │   └── admin/
 │   │       ├── page.tsx          # Overview stats
 │   │       ├── delete-button.tsx # Reusable delete client component
-│   │       ├── users/            # User list + ban/unban
+│   │       ├── users/            # User list + ban/unban + suspend modal
 │   │       ├── projects/         # All projects + delete
 │   │       ├── posts/            # All posts + delete
 │   │       ├── threads/          # All threads + delete
-│   │       └── reports/          # Reports list + inline resolve
+│   │       ├── reports/          # Reports list + inline resolve
+│   │       └── appeals/          # Appeals list + approve/reject
 │   ├── dashboard/                # Protected dashboard
 │   │   ├── projects/             # My projects CRUD
 │   │   ├── posts/                # My posts CRUD + publish/draft toggle
@@ -157,14 +158,16 @@ src/
 │   │   ├── reports/              # POST create report
 │   │   ├── views/                # POST increment view counter
 │   │   └── admin/                # Admin operations
-│   │       ├── users/[userId]/   # Ban/unban
+│   │       ├── users/[userId]/   # Ban/unban + suspend/unsuspend
 │   │       ├── projects/[id]/    # Delete project
 │   │       ├── posts/[id]/       # Delete post
 │   │       ├── threads/[id]/     # Delete thread
-│   │       └── reports/          # GET all + PATCH resolve
+│   │       ├── reports/          # GET all + PATCH resolve
+│   │       └── appeals/          # GET all + PATCH approve/reject by id
+│   ├── appeals/                  # POST submit appeal (suspended users only)
 │   └── layout.tsx                # Root — dark mode flash prevention script
 │
-├── proxy.ts                      # Route protection (Next.js 16)
+├── proxy.ts                      # Route protection + suspension redirect (Next.js 16)
 ├── components/
 │   ├── ui/                       # Button, Input, Markdown, Pagination
 │   ├── layout/                   # Navbar (dark toggle, auth-aware), Footer
@@ -181,21 +184,22 @@ src/
 │   ├── admin.ts                  # requireAdmin() helper
 │   └── pagination.ts            # parsePagination, buildPaginationMeta, getSkipTake
 ├── prisma/
-│   └── schema.prisma             # 13 models (User, Session, Account, Verification, Profile, Project, Post, Thread, Comment, Like, Report)
+│   └── schema.prisma             # 14 models (+ Appeal, suspended fields on User)
 ├── prisma.config.ts              # Prisma v7 datasource config
 └── generated/prisma/             # Generated Prisma client
 ```
 
-### Schema (Prisma) — Core Entities (13 models)
+### Schema (Prisma) — Core Entities (14 models)
 ```
-User        → id, name (unique), email (unique), image, role ("user"/"admin"), banned, banReason, banExpires
+User        → id, name (unique), email, role, banned, banReason, banExpires, suspended, suspendedAt, suspendedUntil, suspensionReason
 Profile     → id, userId, bio, avatar, location, website, company, skills[], social (JSON: {banner, avatarSize, bannerHeight})
 Project     → id, userId, title, description, content, media[], tags[], links (JSON), published, views, likesCount, dislikesCount
 Post        → id, userId, title, slug (unique), content, excerpt, coverImage, tags[], published, views, likesCount, dislikesCount
-Thread      → id, userId, title, content, tags[], pinned, createdAt, views, likesCount, dislikesCount
+Thread      → id, userId, title, content, tags[], pinned, published, views, likesCount, dislikesCount
 Comment     → id, content, threadId?, postId?, projectId?, userId (polymorphic — shared across entities)
 Like        → id, userId, entityType, entityId, type ("like"/"dislike")  @@unique([userId, entityType, entityId])
 Report      → id, userId, entityType, entityId, reason, description?, resolved (default false)
+Appeal      → id, userId, user, reason, description?, status ("pending"/"approved"/"rejected"), adminResponse?, reviewedAt?
 ```
 
 ---
@@ -214,6 +218,10 @@ Report      → id, userId, entityType, entityId, reason, description?, resolved
 | Likes unique constraint | `@@unique([userId, entityType, entityId])` prevents duplicate likes |
 | Report enriched inline | Admin reports page fetches entity title/author via Promise.all (no denormalization) |
 | ViewTracker client component | Returns null, calls fetch once on mount — no server-side interaction |
+| Suspension separate from Ban | `suspended`/`suspendedUntil`/`suspensionReason` distinct from `banned`/`banExpires` — temporary vs permanent |
+| Appeal one-pending limit | API rejects second appeal if one is already pending |
+| `suspended` in Better Auth session | Added to `additionalFields` in `auth.ts` so `(session.user as any).suspended` works client-side |
+| `force-dynamic` on admin pages | All admin server components need it to prevent prerender errors against Neon |
 
 ---
 
@@ -224,8 +232,7 @@ Report      → id, userId, entityType, entityId, reason, description?, resolved
 | Email verification flow | ❌ Pending | Better Auth supports; needs UI |
 | Email templates | ❌ Pending | Better Auth supports customization |
 | Google OAuth live credentials | ❌ Pending | Need to set AUTH_GOOGLE_ID + AUTH_GOOGLE_SECRET in Vercel |
-| Deployed site testing | ❌ Pending | Verify M10 features: comments, likes, reports, views, admin reports, trending, profile editor |
-| Production db push | ❌ Pending | Run `npx prisma db push` against production DATABASE_URL |
+| Deployed site testing | ❌ Pending | Verify M10 features: comments, likes, reports, views, admin reports, trending, profile editor + M13 suspension/appeals |
 
 ---
 
