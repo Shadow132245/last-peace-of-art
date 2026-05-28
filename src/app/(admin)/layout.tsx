@@ -23,7 +23,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     authClient.getSession().then((res) => {
-      if (!res.data || res.data.user.role !== "admin") {
+      if (!res.data || (res.data.user as any).role !== "admin") {
         router.push("/login");
         return;
       }
