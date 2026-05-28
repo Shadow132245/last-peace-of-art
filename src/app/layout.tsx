@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Last Peace of Art",
-  description: "Create, share, and connect. Your space for projects, blogs, CVs, and discussions.",
+  description: "Create, share, and connect. Your space for projects, blogs, profiles, and discussions.",
 };
 
 export default function RootLayout({

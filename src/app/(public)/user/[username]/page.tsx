@@ -28,19 +28,28 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
 
   if (!user) notFound();
 
-  const banner = user.profile?.social ? (user.profile.social as Record<string, string>)?.banner : null;
+  const social = user.profile?.social ? (user.profile.social as Record<string, unknown>) : {};
+  const banner = (social.banner as string) ?? null;
   const avatar = user.profile?.avatar ?? user.image;
+  const avatarSize = (social.avatarSize as number) ?? 80;
+  const bannerHeight = (social.bannerHeight as number) ?? 192;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
       {banner && (
-        <div className="mb-6 h-48 w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800">
+        <div
+          className="mb-6 w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800"
+          style={{ height: bannerHeight }}
+        >
           <img src={banner} alt="Banner" className="h-full w-full object-cover" />
         </div>
       )}
 
       <div className="mb-8 flex items-start gap-6">
-        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+        <div
+          className="shrink-0 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800"
+          style={{ width: avatarSize, height: avatarSize }}
+        >
           {avatar ? (
             <img src={avatar} alt={user.name} className="h-full w-full object-cover" />
           ) : (

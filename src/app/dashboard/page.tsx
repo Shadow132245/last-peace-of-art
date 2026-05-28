@@ -45,11 +45,11 @@ export default async function DashboardPage() {
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Write about any topic</p>
         </Link>
         <Link
-          href="/dashboard/cv"
+          href="/dashboard/profile"
           className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
         >
-          <h3 className="font-semibold">Edit CV</h3>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Update your public profile</p>
+          <h3 className="font-semibold">Edit Profile</h3>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Photo, banner, bio &amp; skills</p>
         </Link>
         <Link
           href="/dashboard/settings"

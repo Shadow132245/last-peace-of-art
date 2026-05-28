@@ -5,10 +5,10 @@ import { headers } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Last Peace of Art",
-  description: "Create, share, and connect. Your space for projects, blogs, CVs, and discussions.",
+  description: "Create, share, and connect. Your space for projects, blogs, profiles, and discussions.",
   openGraph: {
     title: "Last Peace of Art",
-    description: "Create, share, and connect. Your space for projects, blogs, CVs, and discussions.",
+    description: "Create, share, and connect. Your space for projects, blogs, profiles, and discussions.",
   },
 };
 
@@ -28,7 +28,7 @@ export default async function LandingPage() {
             </span>
           </h1>
           <p className="relative mx-auto mt-6 max-w-2xl text-lg text-zinc-500 dark:text-zinc-400" style={{ animation: "fadeInUp 0.6s ease 0.2s both" }}>
-            Showcase your projects, write about your passions, share your CV, or start a discussion.
+            Showcase your projects, write about your passions, share your profile, or start a discussion.
             The last peace of art is where your ideas find their home.
           </p>
           <div className="relative mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row" style={{ animation: "fadeInUp 0.6s ease 0.4s both" }}>
@@ -93,7 +93,7 @@ export default async function LandingPage() {
 const features = [
   { icon: "🚀", title: "Projects", desc: "Upload and showcase your work with rich media, tags, and links." },
   { icon: "✍️", title: "Blog", desc: "Write about any topic and share your knowledge with the world." },
-  { icon: "📄", title: "CV", desc: "Create a stunning public profile to present your skills and experience." },
+  { icon: "📄", title: "Profile", desc: "Create a stunning public profile to present your skills and experience." },
   { icon: "💬", title: "Forum", desc: "Start discussions, ask questions, and connect with the community." },
 ];
 

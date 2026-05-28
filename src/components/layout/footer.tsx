@@ -17,6 +17,12 @@ export function Footer() {
           <Link href="/forum" className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
             Forum
           </Link>
+          <Link href="/terms" className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+            Terms
+          </Link>
+          <Link href="/privacy" className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+            Privacy
+          </Link>
         </div>
       </div>
     </footer>
