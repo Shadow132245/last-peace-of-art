@@ -36,7 +36,7 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
       ) : (
         <div className="grid gap-6">
           {posts.map((post) => (
-            <Link key={post.id} href={`/blog/${post.slug}`} className="group rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600">
+            <Link key={post.id} href={`/blog/${post.slug}`} className="group rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:border-amber-200 hover:shadow-md dark:border-zinc-800 dark:bg-transparent dark:hover:border-zinc-600 dark:hover:shadow-none">
               <h2 className="text-xl font-semibold group-hover:text-zinc-600 dark:group-hover:text-zinc-300">{post.title}</h2>
               {post.excerpt && <p className="mt-2 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{post.excerpt}</p>}
               <div className="mt-4 flex items-center gap-4 text-xs text-zinc-400">

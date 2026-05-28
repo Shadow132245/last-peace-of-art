@@ -43,7 +43,7 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
             <Link
               key={thread.id}
               href={`/forum/${thread.id}`}
-              className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+              className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:border-amber-200 hover:shadow-md dark:border-zinc-800 dark:bg-transparent dark:hover:border-zinc-600 dark:hover:shadow-none"
             >
               <div className="flex items-start justify-between">
                 <div>

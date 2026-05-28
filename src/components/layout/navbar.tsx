@@ -1,23 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { AnimatePresence, motion } from "motion/react";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("theme");
+      if (stored) return stored === "dark";
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+    return false;
+  });
   const { data: session } = authClient.useSession();
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+  }, []);
 
   const toggleDark = () => {
     const next = !dark;
     setDark(next);
     document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-lg dark:border-zinc-800 dark:bg-zinc-950/80">
+    <nav className="sticky top-0 z-50 border-b border-zinc-200 bg-white/90 shadow-sm backdrop-blur-lg dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-none">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="text-xl font-bold tracking-tight">
           Last Peace
@@ -58,7 +70,7 @@ export function Navbar() {
               )}
               <Link
                 href="/dashboard"
-                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
+              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:shadow-none dark:hover:bg-zinc-100"
               >
                 Dashboard
               </Link>

@@ -49,7 +49,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           <h2 className="mb-4 text-xl font-semibold">Projects ({user.projects.length})</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {user.projects.map((project) => (
-              <div key={project.id} className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+              <div key={project.id} className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-transparent dark:shadow-none">
                 <h3 className="font-semibold">{project.title}</h3>
                 <p className="mt-1 text-sm text-zinc-500 line-clamp-2">{project.description}</p>
               </div>
