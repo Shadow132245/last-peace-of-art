@@ -1,26 +1,64 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "motion/react";
 
 export const dynamic = "force-dynamic";
 
 export default function BannedPage() {
   return (
-    <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center px-4 text-center">
-      <div className="mb-6 text-7xl">🚫</div>
-      <h1 className="mb-3 text-4xl font-bold">Account Banned</h1>
-      <div className="mb-8 w-full rounded-2xl border border-red-200/80 bg-red-50/50 p-6 dark:border-red-900/50 dark:bg-red-950/30">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center px-4 text-center"
+    >
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.1 }}
+        className="mb-6 text-7xl"
+      >
+        🚫
+      </motion.div>
+      <motion.h1
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+        className="mb-3 text-4xl font-bold"
+      >
+        Account Banned
+      </motion.h1>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.3 }}
+        className="mb-8 w-full rounded-2xl border border-red-200/80 bg-red-50/50 p-6 dark:border-red-900/50 dark:bg-red-950/30"
+      >
         <p className="text-zinc-700 dark:text-zinc-300">
           Your account has been permanently banned from Last Peace of Art. You are no longer allowed to access this platform.
         </p>
-      </div>
-      <p className="mb-6 text-sm text-zinc-500">
-        If you believe this was a mistake, please contact the administrator.
-      </p>
-      <Link
-        href="mailto:support@lastpeace.art"
-        className="rounded-xl bg-zinc-900 px-6 py-3 font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+      </motion.div>
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.3 }}
+        className="mb-6 text-sm text-zinc-500"
       >
-        Contact Support
-      </Link>
-    </div>
+        If you believe this was a mistake, please contact the administrator.
+      </motion.p>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.3 }}
+      >
+        <Link
+          href="mailto:support@lastpeace.art"
+          className="rounded-xl bg-zinc-900 px-6 py-3 font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+        >
+          Contact Support
+        </Link>
+      </motion.div>
+    </motion.div>
   );
 }

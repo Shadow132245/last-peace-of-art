@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { parsePagination, buildPaginationMeta, getSkipTake } from "@/lib/pagination";
 import { Pagination } from "@/components/ui/pagination";
+import { AnimatedList, AnimatedItem } from "@/components/ui/animated-list";
 
 export const metadata: Metadata = {
   title: "Posts",
@@ -42,20 +43,22 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
           {posts.length === 0 ? (
             <p className="text-zinc-500 dark:text-zinc-400">No posts yet.</p>
           ) : (
-            <div className="grid gap-6">
+            <AnimatedList className="grid gap-6">
               {posts.map((post) => (
-                <Link key={post.id} href={`/blog/${post.slug}`} className="group rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:border-amber-200 hover:shadow-md dark:border-zinc-800 dark:bg-transparent dark:hover:border-zinc-600 dark:hover:shadow-none">
-                  <h3 className="text-lg font-semibold group-hover:text-amber-600 dark:group-hover:text-amber-400">{post.title}</h3>
-                  {post.excerpt && <p className="mt-2 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{post.excerpt}</p>}
-                  <div className="mt-3 flex items-center gap-3 text-xs text-zinc-400">
-                    <Link href={`/user/${encodeURIComponent(post.user.name)}`} className="hover:text-zinc-900 dark:hover:text-zinc-100">{post.user.name}</Link>
-                    <span>{post.createdAt.toLocaleDateString()}</span>
-                    <span>{post.views} views</span>
-                    <span>{post.likesCount} likes</span>
-                  </div>
-                </Link>
+                <AnimatedItem key={post.id}>
+                  <Link href={`/blog/${post.slug}`} className="group block rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-200 hover:shadow-md dark:border-zinc-800 dark:bg-transparent dark:hover:border-zinc-600 dark:hover:shadow-none">
+                    <h3 className="text-lg font-semibold group-hover:text-amber-600 dark:group-hover:text-amber-400">{post.title}</h3>
+                    {post.excerpt && <p className="mt-2 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{post.excerpt}</p>}
+                    <div className="mt-3 flex items-center gap-3 text-xs text-zinc-400">
+                      <Link href={`/user/${encodeURIComponent(post.user.name)}`} className="hover:text-zinc-900 dark:hover:text-zinc-100">{post.user.name}</Link>
+                      <span>{post.createdAt.toLocaleDateString()}</span>
+                      <span>{post.views} views</span>
+                      <span>{post.likesCount} likes</span>
+                    </div>
+                  </Link>
+                </AnimatedItem>
               ))}
-            </div>
+            </AnimatedList>
           )}
 
           <Pagination basePath="/blog" {...meta} />

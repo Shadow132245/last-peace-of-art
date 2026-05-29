@@ -95,6 +95,7 @@ function AvatarDropdown({ session }: { session: any }) {
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("theme");
@@ -107,7 +108,10 @@ export function Navbar() {
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
-  }, []);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [dark]);
 
   const toggleDark = () => {
     const next = !dark;
@@ -117,7 +121,13 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-zinc-200 bg-white/90 shadow-sm backdrop-blur-lg dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-none">
+    <motion.nav
+      className={`sticky top-0 z-50 border-b backdrop-blur-lg transition-all duration-300 ${
+        scrolled
+          ? "border-zinc-200/80 bg-white/95 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-950/90"
+          : "border-transparent bg-white/80 dark:bg-zinc-950/60"
+      }`}
+    >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="text-xl font-bold tracking-tight">
           Last Peace
@@ -214,6 +224,6 @@ export function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </motion.nav>
   );
 }

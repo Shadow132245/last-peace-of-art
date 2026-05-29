@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/footer";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { PageTransition } from "@/components/ui/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,9 @@ export default async function PublicLayout({ children }: { children: React.React
   return (
     <>
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        <PageTransition>{children}</PageTransition>
+      </main>
       <Footer />
     </>
   );

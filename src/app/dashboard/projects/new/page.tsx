@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/ui/image-upload";
@@ -44,9 +45,22 @@ export default function NewProjectPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="mb-8 text-3xl font-bold">New Project</h1>
+      <motion.h1
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="mb-8 text-3xl font-bold"
+      >
+        New Project
+      </motion.h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <motion.form
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.35 }}
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-6"
+      >
         <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</label>
@@ -104,7 +118,7 @@ export default function NewProjectPage() {
           <Button type="submit" loading={loading}>Create Project</Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
         </div>
-      </form>
+      </motion.form>
     </div>
   );
 }

@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
+import { motion } from "motion/react";
+import { StaggerList, StaggerItem } from "@/components/ui/stagger-list";
 
 type SearchResult = {
   id: string;
@@ -139,10 +141,27 @@ export default function SearchPage() {
   const typeOrder = ["post", "project", "thread", "user"];
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="mb-8 text-3xl font-bold">Search</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="mx-auto max-w-3xl px-4 py-12"
+    >
+      <motion.h1
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+        className="mb-8 text-3xl font-bold"
+      >
+        Search
+      </motion.h1>
 
-      <div className="relative mb-8">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.3 }}
+        className="relative mb-8"
+      >
         <input
           type="search"
           value={q}
@@ -166,16 +185,26 @@ export default function SearchPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           )}
         </svg>
-      </div>
+      </motion.div>
 
       {searched && !loading && results.length === 0 && (
-        <div className="py-12 text-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="py-12 text-center"
+        >
           <p className="text-zinc-500 dark:text-zinc-400">No results for &ldquo;{q}&rdquo;</p>
-        </div>
+        </motion.div>
       )}
 
       {results.length > 0 && (
-        <div className="space-y-6">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
+          className="space-y-6"
+        >
           <p className="text-sm text-zinc-500">{results.length} result{results.length !== 1 ? "s" : ""}</p>
 
           {typeOrder.map((type) => {
@@ -183,20 +212,27 @@ export default function SearchPage() {
             if (!items || items.length === 0) return null;
             const meta = typeMeta[type] ?? typeMeta.post;
             return (
-              <section key={type}>
+              <motion.section
+                key={type}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.25 }}
+              >
                 <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
                   {meta.label}s ({items.length})
                 </h2>
-                <div className="space-y-2">
+                <StaggerList className="space-y-2">
                   {items.map((r) => (
-                    <ResultCard key={`${r.type}-${r.id}`} r={r} />
+                    <StaggerItem key={`${r.type}-${r.id}`}>
+                      <ResultCard r={r} />
+                    </StaggerItem>
                   ))}
-                </div>
-              </section>
+                </StaggerList>
+              </motion.section>
             );
           })}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

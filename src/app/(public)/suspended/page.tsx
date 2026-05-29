@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { FadeInView } from "@/components/ui/fade-in-view";
 
 export const dynamic = "force-dynamic";
 
@@ -44,24 +45,34 @@ export default async function SuspendedPage() {
 
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-lg flex-col items-center justify-center px-4 text-center">
-      <div className="mb-6 text-6xl">🔒</div>
-      <h1 className="mb-3 text-3xl font-bold">Account Suspended</h1>
-      <div className="mb-8 w-full rounded-2xl border border-red-200/80 bg-red-50/50 p-6 dark:border-red-900/50 dark:bg-red-950/30">
-        <p className="mb-3 text-sm font-medium text-red-700 dark:text-red-300">Reason for suspension:</p>
-        <p className="mb-4 text-zinc-700 dark:text-zinc-300">{user.suspensionReason || "No reason provided"}</p>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          {isPermanent ? "This suspension is permanent." : `Suspended until: ${untilDate}`}
+      <FadeInView>
+        <div className="mb-6 text-6xl">🔒</div>
+      </FadeInView>
+      <FadeInView delay={0.1}>
+        <h1 className="mb-3 text-3xl font-bold">Account Suspended</h1>
+      </FadeInView>
+      <FadeInView delay={0.2}>
+        <div className="mb-8 w-full rounded-2xl border border-red-200/80 bg-red-50/50 p-6 dark:border-red-900/50 dark:bg-red-950/30">
+          <p className="mb-3 text-sm font-medium text-red-700 dark:text-red-300">Reason for suspension:</p>
+          <p className="mb-4 text-zinc-700 dark:text-zinc-300">{user.suspensionReason || "No reason provided"}</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            {isPermanent ? "This suspension is permanent." : `Suspended until: ${untilDate}`}
+          </p>
+        </div>
+      </FadeInView>
+      <FadeInView delay={0.3}>
+        <p className="mb-6 text-zinc-500">
+          You can submit an appeal if you believe this was a mistake or would like to request reinstatement.
         </p>
-      </div>
-      <p className="mb-6 text-zinc-500">
-        You can submit an appeal if you believe this was a mistake or would like to request reinstatement.
-      </p>
-      <Link
-        href="/appeal"
-        className="rounded-xl bg-zinc-900 px-6 py-3 font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
-        Submit an Appeal
-      </Link>
+      </FadeInView>
+      <FadeInView delay={0.35}>
+        <Link
+          href="/appeal"
+          className="rounded-xl bg-zinc-900 px-6 py-3 font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+        >
+          Submit an Appeal
+        </Link>
+      </FadeInView>
     </div>
   );
 }

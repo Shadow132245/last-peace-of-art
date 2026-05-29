@@ -13,8 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Last Peace of Art",
+  title: { default: "Last Peace of Art", template: "%s — Last Peace of Art" },
   description: "Create, share, and connect. Your space for projects, blogs, profiles, and discussions.",
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png" }],
+    apple: [{ url: "/favicon.png", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({

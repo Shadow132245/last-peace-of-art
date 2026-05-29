@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { TogglePublish } from "@/components/ui/toggle-publish";
+import { FadeInView } from "@/components/ui/fade-in-view";
+import { StaggerList, StaggerItem } from "@/components/ui/stagger-list";
 
 export default async function ForumDashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -16,33 +18,37 @@ export default async function ForumDashboardPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">My Discussions</h1>
-        <Link
-          href="/dashboard/forum/new"
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
-        >
-          New Thread
-        </Link>
-      </div>
+      <FadeInView>
+        <div className="mb-8 flex items-center justify-between">
+          <h1 className="text-3xl font-bold">My Discussions</h1>
+          <Link
+            href="/dashboard/forum/new"
+            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
+          >
+            New Thread
+          </Link>
+        </div>
+      </FadeInView>
 
       {threads.length === 0 ? (
-        <p className="text-zinc-500 dark:text-zinc-400">No discussions yet.</p>
+        <FadeInView><p className="text-zinc-500 dark:text-zinc-400">No discussions yet.</p></FadeInView>
       ) : (
-        <div className="grid gap-4">
+        <StaggerList className="grid gap-4">
           {threads.map((thread) => (
-            <div key={thread.id} className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600">
-              <div className="flex items-center gap-3">
-                <Link href={`/forum/${thread.id}`} className="min-w-0 flex-1">
-                  <h3 className="font-semibold">{thread.title}</h3>
-                </Link>
-                <TogglePublish entityType="forum" entityId={thread.id} published={thread.published} />
+            <StaggerItem key={thread.id}>
+              <div className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600">
+                <div className="flex items-center gap-3">
+                  <Link href={`/forum/${thread.id}`} className="min-w-0 flex-1">
+                    <h3 className="font-semibold">{thread.title}</h3>
+                  </Link>
+                  <TogglePublish entityType="forum" entityId={thread.id} published={thread.published} />
+                </div>
+                <p className="mt-1 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{thread.content}</p>
+                <div className="mt-2 text-xs text-zinc-400">{thread.createdAt.toLocaleDateString()}</div>
               </div>
-              <p className="mt-1 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{thread.content}</p>
-              <div className="mt-2 text-xs text-zinc-400">{thread.createdAt.toLocaleDateString()}</div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerList>
       )}
     </div>
   );

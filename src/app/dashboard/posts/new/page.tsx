@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Markdown } from "@/components/ui/markdown";
@@ -44,9 +45,22 @@ export default function NewPostPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="mb-8 text-3xl font-bold">New Post</h1>
+      <motion.h1
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="mb-8 text-3xl font-bold"
+      >
+        New Post
+      </motion.h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <motion.form
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.35 }}
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-6"
+      >
         <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
         <Input label="Excerpt (optional)" value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
 
@@ -87,7 +101,7 @@ export default function NewPostPage() {
           <Button type="submit" loading={loading}>Publish Post</Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
         </div>
-      </form>
+      </motion.form>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `c72d66a` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅**
+> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅**
 
 ---
 
@@ -58,10 +58,30 @@
 | M21 | Live search rewrite — debounced input, grouped results (posts/projects/threads/users), rich cards with username/likes/dislikes/views/comment count | ✅ |
 | M22 | Ban system fix — banned users blocked from ALL pages via layout checks; suspended users blocked from dashboard/admin; upload persistence — data URI threshold raised to 2MB; upload error handling + revert in profile dashboard | ✅ |
 | M23 | Upload reliability — ALL images use data URI when Blob unavailable (no size limit); Blob failure degrades to data URI instead of crashing; navbar avatar syncs with profile avatar (User.image updated on save) | ✅ |
+| M24 | UI Animation overhaul — favicon update; PageTransition on auth layout; motion on login/register/banned/404; AnimatedList on forum; FadeInView on all content pages; StaggerList on dashboard lists; motion on all dashboard forms | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 14 — 2026-05-29
+
+1. **Favicon updated** — changed from SVG "LP" logo to new circular image; updated `layout.tsx` metadata to use `favicon.png` with proper `icon` and `apple` link tags
+2. **Auth layout animation** — `(auth)/layout.tsx` now wraps children in `<PageTransition>` for fade-in on login/register pages
+3. **Login + Register pages** — converted to client components with `motion.div` fade-in-up animation
+4. **Banned page redesign** — converted to client component with staggered spring/scale animations for emoji, heading, card, text, and button
+5. **404 page animation** — converted to client component with spring scale-in for "404" number, fade-in for text and button
+6. **Forum list page fix** — `AnimatedList`/`AnimatedItem` were imported but unused; now properly wraps thread cards with stagger fade-in animation
+7. **Content detail pages** — `blog/[slug]`, `projects/[id]`, `forum/[threadId]` all got `FadeInView` wrappers for title, metadata, tags, like/report buttons, content, media, and comments sections with staggered delays
+8. **User profile page** — banner, header, threads, projects, posts, comments sections each wrapped in `FadeInView` with staggered delays
+9. **Suspended page** — icon, heading, reason card, appeal text each wrapped in `FadeInView`
+10. **Terms + Privacy pages** — title, date, and content sections wrapped in `FadeInView`
+11. **Search page** — added `motion.div` page entry, `StaggerList`/`StaggerItem` for grouped results with staggered card animations
+12. **Dashboard home** — welcome section in `FadeInView`, stat cards and quick links wrapped in `StaggerList`/`FadeInView`
+13. **Dashboard list pages** — forum, projects, posts: headings in `FadeInView`, list items in `StaggerList`/`StaggerItem`
+14. **Dashboard form pages** — forum/new, projects/new, posts/new: `motion.h1` + `motion.form` with fade-in-up animation
+15. **Dashboard settings** — `motion.div` wrapper with staggered fade-in for heading, info card, sign out button
+16. **Dashboard profile** — `motion.div` wrapper with fade-in for heading and editor layout
 
 ### Session 13 — 2026-05-29 (commits `8a0375c` → `c72d66a`)
 

@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { parsePagination, buildPaginationMeta, getSkipTake } from "@/lib/pagination";
 import { Pagination } from "@/components/ui/pagination";
+import { AnimatedList, AnimatedItem } from "@/components/ui/animated-list";
 
 export const metadata: Metadata = {
   title: "Forum",
@@ -59,29 +60,30 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
           {threads.length === 0 ? (
             <p className="text-zinc-500 dark:text-zinc-400">No discussions yet. Start one!</p>
           ) : (
-            <div className="grid gap-4">
+            <AnimatedList className="grid gap-4">
               {threads.map((thread) => (
-                <Link
-                  key={thread.id}
-                  href={`/forum/${thread.id}`}
-                  className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:border-amber-200 hover:shadow-md dark:border-zinc-800 dark:bg-transparent dark:hover:border-zinc-600 dark:hover:shadow-none"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold">{thread.pinned && "📌 "}{thread.title}</h3>
-                      <p className="mt-1 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{thread.content}</p>
+                <AnimatedItem key={thread.id}>
+                  <Link
+                    href={`/forum/${thread.id}`}
+                    className="block rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:border-amber-200 hover:shadow-md dark:border-zinc-800 dark:bg-transparent dark:hover:border-zinc-600 dark:hover:shadow-none"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="font-semibold">{thread.pinned && "📌 "}{thread.title}</h3>
+                        <p className="mt-1 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{thread.content}</p>
+                      </div>
+                      <span className="shrink-0 text-sm text-zinc-400">{thread._count.comments}</span>
                     </div>
-                    <span className="shrink-0 text-sm text-zinc-400">{thread._count.comments}</span>
-                  </div>
-                  <div className="mt-3 flex items-center gap-3 text-xs text-zinc-400">
-                    <Link href={`/user/${encodeURIComponent(thread.user.name)}`} className="hover:text-zinc-900 dark:hover:text-zinc-100">{thread.user.name}</Link>
-                    <span>{thread.createdAt.toLocaleDateString()}</span>
-                    <span>{thread.views} views</span>
-                    <span>{thread.likesCount} likes</span>
-                  </div>
-                </Link>
+                    <div className="mt-3 flex items-center gap-3 text-xs text-zinc-400">
+                      <Link href={`/user/${encodeURIComponent(thread.user.name)}`} className="hover:text-zinc-900 dark:hover:text-zinc-100">{thread.user.name}</Link>
+                      <span>{thread.createdAt.toLocaleDateString()}</span>
+                      <span>{thread.views} views</span>
+                      <span>{thread.likesCount} likes</span>
+                    </div>
+                  </Link>
+                </AnimatedItem>
               ))}
-            </div>
+            </AnimatedList>
           )}
 
           <Pagination basePath="/forum" {...meta} />

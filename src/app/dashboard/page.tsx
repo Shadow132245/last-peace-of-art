@@ -3,6 +3,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { FadeInView } from "@/components/ui/fade-in-view";
+import { StaggerList, StaggerItem } from "@/components/ui/stagger-list";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -25,79 +27,83 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="mt-1 text-zinc-500 dark:text-zinc-400">
-          Welcome back, {session.user.name}
-        </p>
-      </div>
+      <FadeInView>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="mt-1 text-zinc-500 dark:text-zinc-400">
+            Welcome back, {session.user.name}
+          </p>
+        </div>
+      </FadeInView>
 
-      <div className="grid gap-6 sm:grid-cols-3">
-        <DashboardCard title="Projects" count={projectCount} href="/dashboard/projects" />
-        <DashboardCard title="Posts" count={postCount} href="/dashboard/posts" />
-        <DashboardCard title="Discussions" count={threadCount} href="/dashboard/forum" />
-        <DashboardCard title="Messages" count={messageCount} href="/dashboard/messages" />
-        <DashboardCard title="Friends" count={friendCount} href="/dashboard/friends" />
-      </div>
+      <StaggerList className="grid gap-6 sm:grid-cols-3">
+        <StaggerItem><DashboardCard title="Projects" count={projectCount} href="/dashboard/projects" /></StaggerItem>
+        <StaggerItem><DashboardCard title="Posts" count={postCount} href="/dashboard/posts" /></StaggerItem>
+        <StaggerItem><DashboardCard title="Discussions" count={threadCount} href="/dashboard/forum" /></StaggerItem>
+        <StaggerItem><DashboardCard title="Messages" count={messageCount} href="/dashboard/messages" /></StaggerItem>
+        <StaggerItem><DashboardCard title="Friends" count={friendCount} href="/dashboard/friends" /></StaggerItem>
+      </StaggerList>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        <Link
-          href="/dashboard/projects/new"
-          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
-        >
-          <h3 className="font-semibold">New Project</h3>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Upload and showcase your work</p>
-        </Link>
-        <Link
-          href="/dashboard/posts/new"
-          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
-        >
-          <h3 className="font-semibold">New Post</h3>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Write about any topic</p>
-        </Link>
-        <Link
-          href="/dashboard/profile"
-          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
-        >
-          <h3 className="font-semibold">Edit Profile</h3>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Photo, banner, bio &amp; skills</p>
-        </Link>
-        <Link
-          href="/dashboard/settings"
-          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
-        >
-          <h3 className="font-semibold">Settings</h3>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage your account</p>
-        </Link>
-        <Link
-          href="/dashboard/messages"
-          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
-        >
-          <h3 className="font-semibold">Messages</h3>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Chat with other members</p>
-        </Link>
-        <Link
-          href="/dashboard/friends"
-          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
-        >
-          <h3 className="font-semibold">Friends</h3>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage friends and requests</p>
-        </Link>
-        <Link
-          href="/tickets"
-          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
-        >
-          <h3 className="font-semibold">Support Tickets</h3>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Report bugs &amp; get help</p>
-        </Link>
-        <Link
-          href="/apply"
-          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
-        >
-          <h3 className="font-semibold">Apply for Staff</h3>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Join the moderation team</p>
-        </Link>
-      </div>
+      <FadeInView delay={0.2}>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          <Link
+            href="/dashboard/projects/new"
+            className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+          >
+            <h3 className="font-semibold">New Project</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Upload and showcase your work</p>
+          </Link>
+          <Link
+            href="/dashboard/posts/new"
+            className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+          >
+            <h3 className="font-semibold">New Post</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Write about any topic</p>
+          </Link>
+          <Link
+            href="/dashboard/profile"
+            className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+          >
+            <h3 className="font-semibold">Edit Profile</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Photo, banner, bio &amp; skills</p>
+          </Link>
+          <Link
+            href="/dashboard/settings"
+            className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+          >
+            <h3 className="font-semibold">Settings</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage your account</p>
+          </Link>
+          <Link
+            href="/dashboard/messages"
+            className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+          >
+            <h3 className="font-semibold">Messages</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Chat with other members</p>
+          </Link>
+          <Link
+            href="/dashboard/friends"
+            className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+          >
+            <h3 className="font-semibold">Friends</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage friends and requests</p>
+          </Link>
+          <Link
+            href="/tickets"
+            className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+          >
+            <h3 className="font-semibold">Support Tickets</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Report bugs &amp; get help</p>
+          </Link>
+          <Link
+            href="/apply"
+            className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+          >
+            <h3 className="font-semibold">Apply for Staff</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Join the moderation team</p>
+          </Link>
+        </div>
+      </FadeInView>
     </div>
   );
 }

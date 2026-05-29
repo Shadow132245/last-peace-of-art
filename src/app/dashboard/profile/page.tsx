@@ -2,6 +2,7 @@
 
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useCallback } from "react";
 
@@ -106,8 +107,20 @@ export default function ProfilePage() {
   const username = session?.user.name ?? "username";
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
-      <h1 className="mb-8 text-3xl font-bold">Edit Profile</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="mx-auto max-w-5xl px-4 py-12"
+    >
+      <motion.h1
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+        className="mb-8 text-3xl font-bold"
+      >
+        Edit Profile
+      </motion.h1>
 
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Editor */}
@@ -258,6 +271,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

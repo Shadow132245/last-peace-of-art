@@ -7,6 +7,7 @@ import { LikeButton } from "@/components/likes/like-button";
 import { ReportButton } from "@/components/reports/report-button";
 import { CommentSection } from "@/components/comments/comment-section";
 import { ViewTracker } from "@/components/views/view-tracker";
+import { FadeInView } from "@/components/ui/fade-in-view";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -30,44 +31,58 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     <article className="mx-auto max-w-3xl px-4 py-12">
       <ViewTracker entityType="post" entityId={post.id} />
 
-      <h1 className="text-4xl font-bold">{post.title}</h1>
-      <div className="mt-4 flex items-center gap-3 text-sm text-zinc-500">
-        <Link href={`/user/${encodeURIComponent(post.user.name)}`} className="flex items-center gap-2 hover:text-zinc-900 dark:hover:text-zinc-100">
-          {post.user.image ? (
-            <img src={post.user.image} alt="" className="h-6 w-6 rounded-full object-cover" />
-          ) : (
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs font-medium text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400">
-              {post.user.name[0]}
-            </span>
-          )}
-          <span className="font-medium">{post.user.name}</span>
-          {post.user.role === "founder" && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">FOUNDER</span>}
-          {post.user.role === "admin" && <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">ADMIN</span>}
-          {post.user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">BUG HUNTER</span>}
-        </Link>
-        <span>&middot;</span>
-        <span>{post.createdAt.toLocaleDateString()}</span>
-        <span>&middot;</span>
-        <span>{post.views} views</span>
-      </div>
-      {post.tags.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {post.tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-zinc-100 px-3 py-1 text-xs dark:bg-zinc-800">{tag}</span>
-          ))}
+      <FadeInView>
+        <h1 className="text-4xl font-bold">{post.title}</h1>
+      </FadeInView>
+
+      <FadeInView delay={0.1}>
+        <div className="mt-4 flex items-center gap-3 text-sm text-zinc-500">
+          <Link href={`/user/${encodeURIComponent(post.user.name)}`} className="flex items-center gap-2 hover:text-zinc-900 dark:hover:text-zinc-100">
+            {post.user.image ? (
+              <img src={post.user.image} alt="" className="h-6 w-6 rounded-full object-cover" />
+            ) : (
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs font-medium text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400">
+                {post.user.name[0]}
+              </span>
+            )}
+            <span className="font-medium">{post.user.name}</span>
+            {post.user.role === "founder" && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">FOUNDER</span>}
+            {post.user.role === "admin" && <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">ADMIN</span>}
+            {post.user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">BUG HUNTER</span>}
+          </Link>
+          <span>&middot;</span>
+          <span>{post.createdAt.toLocaleDateString()}</span>
+          <span>&middot;</span>
+          <span>{post.views} views</span>
         </div>
-      )}
+      </FadeInView>
 
-      <div className="mt-6 flex items-center justify-between">
-        <LikeButton entityType="post" entityId={post.id} />
-        <ReportButton entityType="post" entityId={post.id} />
-      </div>
+      <FadeInView delay={0.15}>
+        {post.tags.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <span key={tag} className="rounded-full bg-zinc-100 px-3 py-1 text-xs dark:bg-zinc-800">{tag}</span>
+            ))}
+          </div>
+        )}
+      </FadeInView>
 
-      <div className="mt-8">
-        <Markdown content={post.content} />
-      </div>
+      <FadeInView delay={0.2}>
+        <div className="mt-6 flex items-center justify-between">
+          <LikeButton entityType="post" entityId={post.id} />
+          <ReportButton entityType="post" entityId={post.id} />
+        </div>
+      </FadeInView>
 
-      <CommentSection entityType="post" entityId={post.id} />
+      <FadeInView delay={0.25}>
+        <div className="mt-8">
+          <Markdown content={post.content} />
+        </div>
+      </FadeInView>
+
+      <FadeInView delay={0.3}>
+        <CommentSection entityType="post" entityId={post.id} />
+      </FadeInView>
     </article>
   );
 }

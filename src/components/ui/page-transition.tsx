@@ -1,11 +1,14 @@
 "use client";
 
 import { motion } from "motion/react";
-import { pageTransition } from "@/lib/animations";
 
-export function PageTransition({ children, className }: { children: React.ReactNode; className?: string }) {
+export function PageTransition({ children }: { children: React.ReactNode }) {
   return (
-    <motion.div variants={pageTransition} initial="hidden" animate="visible" exit="exit" className={className}>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+    >
       {children}
     </motion.div>
   );
