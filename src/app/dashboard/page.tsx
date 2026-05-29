@@ -66,7 +66,7 @@ export default async function DashboardPage() {
             href="/dashboard/profile"
             className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
           >
-            <h3 className="font-semibold">{t("dashboard.editProfile")}</h3>
+            <h3 className="font-semibold">{t("dashboard.editProfileLabel")}</h3>
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t("dashboard.editProfileDesc")}</p>
           </Link>
           <Link
