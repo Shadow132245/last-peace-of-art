@@ -87,7 +87,7 @@
 3. **Prisma db push** — Ran `npx prisma generate && npx prisma db push` to ensure the `TwoFactor` model table exists in the database (fixes Better Auth `Failed to query fallback join for model user`).
 4. **SMTP credentials set in .env** — Gmail App Password configured for sending verification emails and 2FA OTPs.
 5. **Resend verification email** — Added email input + resend button in verify-email page; register form now passes email as query param so it's pre-filled.
-6. **2FA toggle in Settings** — Settings page now has enable/disable toggle with password confirmation + backup codes display + regenerate button.
+6. **2FA toggle in Settings** — Settings page now has enable/disable toggle with password confirmation + backup codes display.
 7. **auth.ts** — Added `BETTER_AUTH_URL` production URL (`https://lastpeace.vercel.app`).
 8. **All pushed to GitHub** — commit `1b47fbf`
 
@@ -95,7 +95,8 @@
 
 1. **Hero section translation fix** — `hero-section.tsx` had hardcoded English text ("Your space to create, share, connect" + subtitle). Replaced with `t("landing.heroTitle")`, `t("landing.heroTitleHighlight")`, `t("landing.heroSubtitle")`. Updated `en.json` and `ar.json` with new keys.
 2. **Smooth locale transition** — `I18nProvider` now wraps children with `AnimatePresence` + `motion.div` keyed by locale. When switching language, page fades + slides in direction of locale (RTL → LTR).
-3. **All pushed to GitHub** — commit `7d84f98`
+3. **Build fix** — Removed `authClient.twoFactor.getBackupCodes()` call (not available in Better Auth client API). Backup codes only shown when returned from `enable()` response.
+4. **All pushed to GitHub** — commits `bbf3004` + `3aa1415`
 
 ### Session 26 — 2026-05-29 (i18n Completion)
 
@@ -710,3 +711,43 @@ The user requested the following features be implemented all at once, and explai
 - After every change, push directly to GitHub — never keep changes only locally
 - Always read PROJECT_MAP.md first before starting any new task
 - Do NOT run `next build` locally (user said "متعملش بيلد للموقع")
+
+### Session 27-28 — Email Verification + 2FA + Smooth Locale Switch (2026-05-29)
+
+**User asked in Egyptian Arabic:**
+> "المفروض انا نظام التحقق بتاع الايميل والتوفكتور مش شغال ازاي اشغله اديني خطوات"
+> (Email verification and 2FA aren't working. Give me steps to set it up.)
+
+**Discovery:**
+- Code was fully set up (Better Auth's `emailVerification` plugin + `twoFactor` OTP plugin + `nodemailer` + login/register forms), but SMTP env vars (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`) were MISSING from `.env`
+- 3 runtime errors on Vercel: (1) `useI18n must be used within I18nProvider` — I18nProvider SSR guard returned children without context provider; (2) cascade `useRef` null error; (3) Better Auth `Failed to query fallback join for model user` — TwoFactor table didn't exist in DB
+- No "Resend verification email" button on verify-email page
+- No 2FA enable/disable toggle in Settings page
+
+**Fixes:**
+1. I18nProvider: removed `!mounted` SSR guard — always renders `I18nContext.Provider`
+2. `.env`: changed `sslmode=require` → `sslmode=verify-full`
+3. `npx prisma db push` — created TwoFactor table in Neon DB
+4. `.env`: added SMTP credentials (Gmail App Password from user: `fghfghffdgfhfgh@gmail.com`)
+5. User added SMTP env vars + `BETTER_AUTH_URL` in Vercel Dashboard (Production only, sensitive)
+
+**User chose Gmail App Password after rejecting SendGrid (الموقع ده بايظ) and Mailgun wasn't tried:**
+- Activated 2-Step Verification on Google account
+- Created App Password (`qmim ibrp lpwe fneo`) from `https://myaccount.google.com/apppasswords`
+
+**New features implemented:**
+1. **Resend verification email button** — verify-email page now has email input + "Resend verification email" button calling `authClient.sendVerificationEmail()`. Register form passes email as query param (`/verify-email?email=...`)
+2. **2FA toggle in Settings** — Settings page shows current 2FA status, enable/disable with password confirmation, backup codes displayed on first enable (returned from `authClient.twoFactor.enable()`). Removed `getBackupCodes()` call (not in Better Auth client API — build error fix)
+3. **Smooth locale switch** — I18nProvider wraps children in `AnimatePresence` + `motion.div` keyed by locale: fade + slide animation when switching language
+4. **Hero section translation fix** — hero-section.tsx had hardcoded English text ("Your space to create, share, connect" + subtitle). Replaced with `t("landing.heroTitle")`, `t("landing.heroTitleHighlight")`, `t("landing.heroSubtitle")`. Updated `en.json` and `ar.json` with new keys
+
+**Committs:**
+- `1b47fbf` — Fix I18nProvider SSR crash, SSL mode, prisma db push
+- `7d84f98` — Add resend verification email button + 2FA toggle in settings
+- `bbf3004` — Smooth locale switch animation + fix hero section translation
+- `3aa1415` — Fix: remove getBackupCodes (not in Better Auth API)
+
+**User preferences established:**
+- Prefers step-by-step instructions in Egyptian Arabic
+- Sensitive env vars go in Vercel Dashboard (Production only), never in committed files
+- Trusts Vercel build over local `next build` (local times out)
