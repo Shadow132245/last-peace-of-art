@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `9d0ea1b` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅**
+> Generated: 2026-05-29 | Last commit: `f8fa419` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅**
 
 ---
 
@@ -60,6 +60,11 @@
 ---
 
 ## [SESSION_LOG]
+
+### Session 11 — 2026-05-29 (commit `f8fa419`)
+
+1. **SafeImg / SafeBanner components** — client components that gracefully handle broken image URLs: `SafeImg` falls back to showing initials (or hides); `SafeBanner` hides entirely on error. Prevents broken image icons from showing in profile page when old upload URLs are stale
+2. **Profile page updated** — banner and avatar `<img>` tags replaced with `SafeBanner` and `SafeImg` for graceful degradation
 
 ### Session 10 — 2026-05-29 (commit `9d0ea1b`)
 
@@ -273,7 +278,8 @@ src/
 │   ├── likes/                    # LikeButton (optimistic UI, SVG icons)
 │   ├── reports/                  # ReportButton (modal with reason + description)
 │   ├── views/                    # ViewTracker (client component, POST on mount)
-│   └── friends/                  # FriendButton (add friend, sent state, loading)
+│   ├── friends/                  # FriendButton (add friend, sent state, loading)
+│   └── ui/safe-image.tsx         # SafeImg / SafeBanner — graceful fallback for broken image URLs
 ├── lib/
 │   ├── auth.ts                   # Better Auth server config (Google + Email)
 │   ├── auth-client.ts            # Better Auth client (browser)
@@ -368,6 +374,24 @@ Notification  → id, userId, type, title, message?, link?, read
 ---
 
 ## [CONVERSATION_LOG]
+
+### Session 11 — Safe Image Fallbacks (2026-05-29)
+
+**User reported:**
+> "برضو مشكلة اللوجو والبنر هي هي مع اني رابط بلوب بفيرسل وبالبروجكت"
+> (Logo and banner problem persists even though Blob is linked with Vercel and the project)
+
+**Root cause:**
+- Old upload URLs in the database (`/uploads/uuid.jpg`) still point to deleted local files
+- Vercel Blob only applies to **new** uploads — existing URLs need to be refreshed by re-uploading
+- The user needs to re-upload their avatar and banner from Dashboard → Profile for the new Blob URLs to be saved
+
+**Fix applied:**
+- Created `SafeImg` and `SafeBanner` client components in `src/components/ui/safe-image.tsx`
+- `SafeImg`: shows initials as fallback when image fails to load (instead of broken image icon)
+- `SafeBanner`: hides entirely when image fails to load
+- Updated profile page (`user/[username]/page.tsx`) to use these components instead of raw `<img>` tags
+- This prevents visual glitches from stale upload URLs while users re-upload their assets
 
 ### Session 10 — Live Search Rewrite (2026-05-29)
 
