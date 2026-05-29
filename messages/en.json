@@ -64,7 +64,14 @@
     "regenerate": "Regenerate codes",
     "loading": "Loading...",
     "error": "Something went wrong",
-    "passwordOptional": "Leave blank if you signed in with Google"
+    "passwordOptional": "Leave blank if you signed in with Google",
+    "setupTitle": "Set up authenticator app",
+    "scanQR": "Scan this QR code with your authenticator app",
+    "manualSetup": "Or enter this key manually:",
+    "enterCode": "Enter the 6-digit code from the app",
+    "verify": "Verify",
+    "verifying": "Verifying...",
+    "invalidCode": "Invalid code. Try again."
   },
   "footer": {
     "description": "Create, share, and connect. Your space for projects, posts, profiles, and discussions.",

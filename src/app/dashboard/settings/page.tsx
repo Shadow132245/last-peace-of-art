@@ -17,6 +17,9 @@ export default function SettingsPage() {
   const [twoFactorLoading, setTwoFactorLoading] = useState(false);
   const [twoFactorError, setTwoFactorError] = useState("");
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
+  const [totpUri, setTotpUri] = useState<string | null>(null);
+  const [totpCode, setTotpCode] = useState("");
+  const [verifying, setVerifying] = useState(false);
 
   const twoFactorEnabled = (session?.user as any)?.twoFactorEnabled ?? false;
 
@@ -33,11 +36,27 @@ export default function SettingsPage() {
       setTwoFactorError(error.message ?? error.statusText);
     } else {
       const codes = (data?.backupCodes ?? []) as string[];
+      const uri = (data as any)?.totpURI ?? null;
       setBackupCodes(codes);
+      setTotpUri(uri);
       setTwoFactorPassword("");
-      refetchSession();
     }
     setTwoFactorLoading(false);
+  };
+
+  const handleVerifyTotp = async () => {
+    if (!totpCode || totpCode.length < 6) return;
+    setVerifying(true);
+    setTwoFactorError("");
+    const { error } = await (authClient.twoFactor as any).verifyTotp({ code: totpCode });
+    if (error) {
+      setTwoFactorError(error.message ?? t("twoFactor.invalidCode"));
+    } else {
+      setTotpUri(null);
+      setTotpCode("");
+      refetchSession();
+    }
+    setVerifying(false);
   };
 
   const handleDisable2FA = async () => {
@@ -49,9 +68,15 @@ export default function SettingsPage() {
     } else {
       setTwoFactorPassword("");
       setBackupCodes(null);
+      setTotpUri(null);
       refetchSession();
     }
     setTwoFactorLoading(false);
+  };
+
+  const secretFromUri = (uri: string) => {
+    const m = uri.match(/secret=([^&]+)/);
+    return m ? m[1] : "";
   };
 
   return (
@@ -94,49 +119,81 @@ export default function SettingsPage() {
           {twoFactorEnabled ? t("twoFactor.enabled") : t("twoFactor.disabled")}
         </p>
 
-        <div className="mt-4 flex flex-col gap-3">
-          <Input
-            label={t("twoFactor.confirmPassword")}
-            type="password"
-            placeholder={t("twoFactor.password")}
-            value={twoFactorPassword}
-            onChange={(e) => { setTwoFactorPassword(e.target.value); setTwoFactorError(""); }}
-          />
-          <p className="-mt-2 text-xs text-zinc-400">{t("twoFactor.passwordOptional")}</p>
+        {totpUri ? (
+          <div className="mt-6 space-y-5">
+            <div>
+              <h4 className="mb-2 text-sm font-semibold">{t("twoFactor.setupTitle")}</h4>
+              <p className="mb-4 text-xs text-zinc-500">{t("twoFactor.scanQR")}</p>
+              <div className="flex justify-center">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(totpUri)}`}
+                  alt="QR Code"
+                  className="rounded-xl border border-zinc-200 dark:border-zinc-700"
+                />
+              </div>
+              <p className="mt-4 text-xs text-zinc-400">{t("twoFactor.manualSetup")}</p>
+              <code className="mt-1 block break-all rounded-lg bg-zinc-100 px-3 py-2 text-xs dark:bg-zinc-800">
+                {secretFromUri(totpUri)}
+              </code>
+            </div>
 
-          {twoFactorError && <p className="text-sm text-red-500">{twoFactorError}</p>}
+            {backupCodes && backupCodes.length > 0 && (
+              <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                <h4 className="mb-2 text-sm font-semibold">{t("twoFactor.backupCodes")}</h4>
+                <p className="mb-3 text-xs text-zinc-500">{t("twoFactor.saveCodes")}</p>
+                <div className="grid grid-cols-2 gap-1 font-mono text-sm">
+                  {backupCodes.map((code, i) => (
+                    <code key={i} className="rounded bg-zinc-200/50 px-2 py-1 dark:bg-zinc-800">{code}</code>
+                  ))}
+                </div>
+              </div>
+            )}
 
-          {twoFactorEnabled ? (
-            <Button
-              variant="danger"
-              onClick={handleDisable2FA}
-              loading={twoFactorLoading}
-              className="w-full sm:w-auto"
-            >
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-2">
+                <input
+                  value={totpCode}
+                  onChange={(e) => { setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6)); setTwoFactorError(""); }}
+                  placeholder={t("twoFactor.enterCode")}
+                  maxLength={6}
+                  className="w-36 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-center text-lg font-mono tracking-widest transition-colors focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                />
+                <Button onClick={handleVerifyTotp} loading={verifying} disabled={totpCode.length < 6}>
+                  {t("twoFactor.verify")}
+                </Button>
+              </div>
+              {twoFactorError && <p className="text-sm text-red-500">{twoFactorError}</p>}
+            </div>
+          </div>
+        ) : twoFactorEnabled ? (
+          <div className="mt-4 flex flex-col gap-3">
+            <Input
+              label={t("twoFactor.confirmPassword")}
+              type="password"
+              placeholder={t("twoFactor.password")}
+              value={twoFactorPassword}
+              onChange={(e) => { setTwoFactorPassword(e.target.value); setTwoFactorError(""); }}
+            />
+            <p className="-mt-2 text-xs text-zinc-400">{t("twoFactor.passwordOptional")}</p>
+            {twoFactorError && <p className="text-sm text-red-500">{twoFactorError}</p>}
+            <Button variant="danger" onClick={handleDisable2FA} loading={twoFactorLoading} className="w-full sm:w-auto">
               {t("twoFactor.disable")}
             </Button>
-          ) : (
-            <Button
-              onClick={handleEnable2FA}
-              loading={twoFactorLoading}
-              className="w-full sm:w-auto"
-            >
+          </div>
+        ) : (
+          <div className="mt-4 flex flex-col gap-3">
+            <Input
+              label={t("twoFactor.confirmPassword")}
+              type="password"
+              placeholder={t("twoFactor.password")}
+              value={twoFactorPassword}
+              onChange={(e) => { setTwoFactorPassword(e.target.value); setTwoFactorError(""); }}
+            />
+            <p className="-mt-2 text-xs text-zinc-400">{t("twoFactor.passwordOptional")}</p>
+            {twoFactorError && <p className="text-sm text-red-500">{twoFactorError}</p>}
+            <Button onClick={handleEnable2FA} loading={twoFactorLoading} className="w-full sm:w-auto">
               {t("twoFactor.enable")}
             </Button>
-          )}
-        </div>
-
-        {backupCodes && backupCodes.length > 0 && (
-          <div className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <h4 className="mb-2 text-sm font-semibold">{t("twoFactor.backupCodes")}</h4>
-            <p className="mb-3 text-xs text-zinc-500">{t("twoFactor.saveCodes")}</p>
-            <div className="grid grid-cols-2 gap-1 font-mono text-sm">
-              {backupCodes.map((code, i) => (
-                <code key={i} className="rounded bg-zinc-200/50 px-2 py-1 dark:bg-zinc-800">
-                  {code}
-                </code>
-              ))}
-            </div>
           </div>
         )}
       </motion.div>
