@@ -23,6 +23,17 @@ async function uploadLocally(filename: string, buffer: Buffer): Promise<string> 
   return `/uploads/${filename}`;
 }
 
+function isSmallImage(file: File): boolean {
+  const isImage = file.type.startsWith("image/");
+  const small = file.size <= 500 * 1024;
+  return isImage && small;
+}
+
+function toDataUri(file: File, buffer: Buffer): string {
+  const base64 = buffer.toString("base64");
+  return `data:${file.type};base64,${base64}`;
+}
+
 export async function POST(request: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -50,11 +61,19 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(bytes);
 
     const hasBlobToken = !!process.env.BLOB_READ_WRITE_TOKEN;
-    const url = hasBlobToken
-      ? (await uploadToBlob(filename, buffer)) ?? (await uploadLocally(filename, buffer))
-      : await uploadLocally(filename, buffer);
 
-    logger.info({ filename, size: file.size, storage: hasBlobToken ? "blob" : "local" }, "File uploaded");
+    let url: string;
+    if (hasBlobToken) {
+      url = (await uploadToBlob(filename, buffer)) ?? (await uploadLocally(filename, buffer));
+      logger.info({ filename, size: file.size, storage: "blob" }, "File uploaded");
+    } else if (isSmallImage(file)) {
+      url = toDataUri(file, buffer);
+      logger.info({ filename, size: file.size, storage: "data-uri" }, "File uploaded as data URI");
+    } else {
+      url = await uploadLocally(filename, buffer);
+      logger.info({ filename, size: file.size, storage: "local" }, "File uploaded");
+    }
+
     return NextResponse.json({ url });
   } catch (error) {
     logger.error({ error }, "Upload failed");
