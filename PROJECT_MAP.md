@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅**
+> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅**
 
 ---
 
@@ -63,10 +63,23 @@
 | M26 | i18n — full Arabic/English bilingual support for all pages, components, and admin panel | ✅ |
 | M27 | Bug fixes — I18nProvider SSR guard removed (was breaking useI18n), DATABASE_URL SSL mode fixed, prisma db push for TwoFactor | ✅ |
 | M28 | Smooth locale switch animation + hero section translation fix (was hardcoded English) | ✅ |
+| M29 | Notification bell RTL fix, dashboard redesign, messages polling | ✅ |
+| M30 | 2FA OAuth support + proper TOTP flow (QR code + verify step) | ✅ |
+| M31 | Client-side QR generation with qrcode library | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 29 — 2026-05-30
+
+1. **Notification bell RTL positioning** — Changed `right-0` → `end-0` and `-right-1` → `-end-1` so the bell dropdown doesn't go off-screen in Arabic (RTL) mode
+2. **Real-time chat polling** — Added 3-second polling for messages when a conversation is selected, and 10-second polling for the conversation list. Changed `text-left` → `text-start` for RTL alignment. Messages and conversation list now update automatically
+3. **Duplicate editProfile key in i18n JSON** — `"editProfile"` was duplicated as both string (line 150) and object (line 199). JSON parsers took the last value (object), so `t("dashboard.editProfile")` returned an object instead of a string — breaking all dashboard cards. Renamed the string to `"editProfileLabel"` in `en.json` and `ar.json`. Updated dashboard to use `t("dashboard.editProfileLabel")`
+4. **Dashboard redesign** — `max-w-5xl` → `max-w-6xl`. Stats grid: `lg:grid-cols-5`. Stats numbers: `text-4xl`. Added `bg-white`/`dark:bg-zinc-900` and hover shadow. Removed duplicate Messages/Friends from quick actions. Removed `FadeInView`/`StaggerList` wrappers. Dedicated `ActionCard` component
+5. **allowPasswordless for OAuth 2FA** — Added `allowPasswordless: true` to twoFactor plugin config in `auth.ts`. Password input is now optional. Added `passwordOptional` i18n key
+6. **Proper TOTP 2FA flow** — After `enable()`, UI now shows: QR code → secret key → backup codes → 6-digit code input → verify button calling `verifyTotp()`. 2FA only activates after successful TOTP verification. New i18n keys: `setupTitle`, `scanQR`, `manualSetup`, `enterCode`, `verify`, `verifying`, `invalidCode`
+7. **Client-side QR generation** — Created `TotpQr` component at `src/components/ui/totp-qr.tsx` using `qrcode` npm package (Canvas-based). Replaced external `api.qrserver.com` API
 
 ### Session 25 — 2026-05-29
 
@@ -468,6 +481,11 @@ Notification  → id, userId, type, title, message?, link?, read
 | i18n — Privacy/Terms legal content | Legal text body kept in English (not translated); only page title/h1 and "Last updated" are translated |
 | i18n — I18nProvider SSR guard removed | Provider always renders `I18nContext.Provider` wrapper even before hydration (`!mounted`). On SSR the locale defaults to `"en"`, then `useEffect` updates it client-side. Previously the `!mounted` guard returned children without context, causing `useI18n()` to throw during server rendering |
 | Do NOT run `next build` locally | Build takes ~8 minutes and times out in CLI; trust that `Compiled successfully` means no errors |
+| 2FA — TOTP requires verification step | `twoFactor.enable()` returns `totpURI` + `backupCodes` but does NOT activate 2FA. User must scan QR code with authenticator app, enter 6-digit code, and call `verifyTotp()` for 2FA to become active |
+| 2FA — OAuth users (Google) | `allowPasswordless: true` in twoFactor plugin config allows Google sign-in users to enable/disable 2FA without a password. Password field is optional in UI |
+| QR code generation | `TotpQr` component at `src/components/ui/totp-qr.tsx` uses the `qrcode` npm package to render QR codes to Canvas — no external API dependency |
+| Dashboard grid — 5 stats cards | `lg:grid-cols-5` so all 5 cards (projects/posts/discussions/messages/friends) fit on one row on large screens |
+| Quick actions — no duplicates | Messages and Friends quick action links removed since they're already in the stats grid |
 
 ---
 
@@ -485,6 +503,7 @@ Notification  → id, userId, type, title, message?, link?, read
 | Ban permanent only | ❌ Pending | Ban currently sets expiry to 2099-12-31; no temporary ban option (suspend covers temp) |
 | Landing page metadata i18n | ❌ Skipped | Metadata (`title`/`description`) stays static English; sub-components already use `useI18n()` |
 | Login/Register page wrappers | ❌ Skipped | Page.tsx files are thin wrappers; the actual forms already use `useI18n()` |
+| WebSocket for real-time chat | ❌ Skipped | Currently uses REST polling (3s messages, 10s conversations). Adequate for now |
 
 ---
 
