@@ -17,7 +17,6 @@ export default function SettingsPage() {
   const [twoFactorLoading, setTwoFactorLoading] = useState(false);
   const [twoFactorError, setTwoFactorError] = useState("");
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
-  const [regenerating, setRegenerating] = useState(false);
 
   const twoFactorEnabled = (session?.user as any)?.twoFactorEnabled ?? false;
 
@@ -55,15 +54,6 @@ export default function SettingsPage() {
       refetchSession();
     }
     setTwoFactorLoading(false);
-  };
-
-  const handleRegenerateCodes = async () => {
-    setRegenerating(true);
-    const { data, error } = await authClient.twoFactor.getBackupCodes();
-    if (!error) {
-      setBackupCodes((data?.backupCodes ?? []) as string[]);
-    }
-    setRegenerating(false);
   };
 
   return (
@@ -148,15 +138,6 @@ export default function SettingsPage() {
                 </code>
               ))}
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-3"
-              onClick={handleRegenerateCodes}
-              loading={regenerating}
-            >
-              {t("twoFactor.regenerate")}
-            </Button>
           </div>
         )}
       </motion.div>
