@@ -73,8 +73,9 @@
     "copyright": "All rights reserved."
   },
   "landing": {
-    "heroTitle": "Your Creative Space Awaits",
-    "heroSubtitle": "Create, share, and connect through projects, posts, and discussions.",
+    "heroTitle": "Your space to",
+    "heroTitleHighlight": "create, share, connect",
+    "heroSubtitle": "Showcase your projects, write about your passions, share your profile, or start a discussion. The last peace of art is where your ideas find their home.",
     "getStarted": "Get Started",
     "featuresTitle": "Everything you need",
     "featuresSubtitle": "A complete platform for creators and developers",

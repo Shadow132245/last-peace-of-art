@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅**
+> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅**
 
 ---
 
@@ -62,6 +62,7 @@
 | M25 | Auth enhancements — Remember Me, Email Verification, 2FA/OTP via email; nodemailer integration; TwoFactor model | ✅ |
 | M26 | i18n — full Arabic/English bilingual support for all pages, components, and admin panel | ✅ |
 | M27 | Bug fixes — I18nProvider SSR guard removed (was breaking useI18n), DATABASE_URL SSL mode fixed, prisma db push for TwoFactor | ✅ |
+| M28 | Smooth locale switch animation + hero section translation fix (was hardcoded English) | ✅ |
 
 ---
 
@@ -89,6 +90,12 @@
 6. **2FA toggle in Settings** — Settings page now has enable/disable toggle with password confirmation + backup codes display + regenerate button.
 7. **auth.ts** — Added `BETTER_AUTH_URL` production URL (`https://lastpeace.vercel.app`).
 8. **All pushed to GitHub** — commit `1b47fbf`
+
+### Session 28 — 2026-05-29 (Smooth Locale Switch + Hero Translation Fix)
+
+1. **Hero section translation fix** — `hero-section.tsx` had hardcoded English text ("Your space to create, share, connect" + subtitle). Replaced with `t("landing.heroTitle")`, `t("landing.heroTitleHighlight")`, `t("landing.heroSubtitle")`. Updated `en.json` and `ar.json` with new keys.
+2. **Smooth locale transition** — `I18nProvider` now wraps children with `AnimatePresence` + `motion.div` keyed by locale. When switching language, page fades + slides in direction of locale (RTL → LTR).
+3. **All pushed to GitHub** — commit `7d84f98`
 
 ### Session 26 — 2026-05-29 (i18n Completion)
 

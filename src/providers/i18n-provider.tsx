@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { type Locale, defaultLocale, getLocaleFromCookie, setLocaleCookie, lookup } from "@/lib/i18n";
 import en from "../../messages/en.json";
 import ar from "../../messages/ar.json";
@@ -38,7 +39,19 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   return (
     <I18nContext.Provider value={{ locale, messages, setLocale, t }}>
-      <div dir={locale === "ar" ? "rtl" : "ltr"}>{children}</div>
+      <div dir={locale === "ar" ? "rtl" : "ltr"}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={locale}
+            initial={{ opacity: 0, x: locale === "ar" ? 20 : -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: locale === "ar" ? -20 : 20 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </I18nContext.Provider>
   );
 }

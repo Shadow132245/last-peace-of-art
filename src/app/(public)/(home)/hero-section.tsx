@@ -22,9 +22,9 @@ export function HeroSection({ loggedIn }: { loggedIn: boolean }) {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="relative text-4xl font-bold tracking-tight sm:text-6xl"
         >
-          Your space to{" "}
+          {t("landing.heroTitle")}{" "}
           <span className="bg-gradient-to-r from-amber-700 via-zinc-800 to-zinc-900 bg-clip-text text-transparent dark:from-zinc-300 dark:to-white">
-            create, share, connect
+            {t("landing.heroTitleHighlight")}
           </span>
         </motion.h1>
         <motion.p
@@ -33,8 +33,7 @@ export function HeroSection({ loggedIn }: { loggedIn: boolean }) {
           transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
           className="relative mx-auto mt-6 max-w-2xl text-lg text-zinc-500 dark:text-zinc-400"
         >
-          Showcase your projects, write about your passions, share your profile, or start a discussion.
-          The last peace of art is where your ideas find their home.
+          {t("landing.heroSubtitle")}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
