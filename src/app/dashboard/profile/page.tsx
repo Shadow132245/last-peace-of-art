@@ -7,7 +7,7 @@ import { useEffect, useState, useCallback } from "react";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { data: session } = authClient.useSession();
+  const { data: session, refetch: refetchSession } = authClient.useSession();
 
   const [avatar, setAvatar] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
@@ -96,7 +96,10 @@ export default function ProfilePage() {
       }),
     });
 
-    if (res.ok) setSaved(true);
+    if (res.ok) {
+      setSaved(true);
+      refetchSession();
+    }
     setSaving(false);
   };
 

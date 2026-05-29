@@ -54,6 +54,13 @@ export async function PUT(request: Request) {
       },
     });
 
+    if (avatar !== undefined) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { image: avatar },
+      });
+    }
+
     logger.info({ userId: session.user.id }, "Profile updated");
     return NextResponse.json({ profile });
   } catch (error) {
