@@ -56,14 +56,25 @@ export default function ProfilePage() {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("/api/upload", { method: "POST", body: formData });
-    const data = await res.json();
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      let data: { url?: string; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
 
-    if (res.ok) {
-      if (type === "avatar") setAvatar(data.url);
-      else setBanner(data.url);
-    } else {
-      setUploadError(data.error || "Upload failed");
+      if (res.ok && data.url) {
+        if (type === "avatar") setAvatar(data.url);
+        else setBanner(data.url);
+      } else {
+        setUploadError(data.error || "Upload failed — try a smaller image or set up Vercel Blob");
+        if (type === "avatar") setAvatar(avatarPrev);
+        else setBanner(bannerPrev);
+      }
+    } catch {
+      setUploadError("Network error — could not reach upload server");
       if (type === "avatar") setAvatar(avatarPrev);
       else setBanner(bannerPrev);
     }

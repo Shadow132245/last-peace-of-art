@@ -16,19 +16,6 @@ async function uploadToBlob(filename: string, buffer: Buffer): Promise<string | 
   }
 }
 
-async function uploadLocally(filename: string, buffer: Buffer): Promise<string> {
-  const uploadDir = join(process.cwd(), "public", "uploads");
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(join(uploadDir, filename), buffer);
-  return `/uploads/${filename}`;
-}
-
-function isSmallImage(file: File): boolean {
-  const isImage = file.type.startsWith("image/");
-  const small = file.size <= 2 * 1024 * 1024;
-  return isImage && small;
-}
-
 function toDataUri(file: File, buffer: Buffer): string {
   const base64 = buffer.toString("base64");
   return `data:${file.type};base64,${base64}`;
@@ -61,22 +48,34 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(bytes);
 
     const hasBlobToken = !!process.env.BLOB_READ_WRITE_TOKEN;
+    const isImage = file.type.startsWith("image/");
 
     let url: string;
     if (hasBlobToken) {
-      url = (await uploadToBlob(filename, buffer)) ?? (await uploadLocally(filename, buffer));
-      logger.info({ filename, size: file.size, storage: "blob" }, "File uploaded");
-    } else if (isSmallImage(file)) {
+      const blobUrl = await uploadToBlob(filename, buffer);
+      if (blobUrl) {
+        url = blobUrl;
+        logger.info({ filename, size: file.size, storage: "blob" }, "File uploaded to Vercel Blob");
+      } else {
+        url = toDataUri(file, buffer);
+        logger.info({ filename, size: file.size, storage: "data-uri-fallback" }, "Blob failed, using data URI");
+      }
+    } else if (isImage) {
       url = toDataUri(file, buffer);
       logger.info({ filename, size: file.size, storage: "data-uri" }, "File uploaded as data URI");
     } else {
-      url = await uploadLocally(filename, buffer);
-      logger.info({ filename, size: file.size, storage: "local" }, "File uploaded");
+      logger.warn({ filename, size: file.size }, "No Blob token set — non-image files will not persist on Vercel");
+      const uploadDir = join(process.cwd(), "public", "uploads");
+      await mkdir(uploadDir, { recursive: true });
+      await writeFile(join(uploadDir, filename), buffer);
+      url = `/uploads/${filename}`;
+      logger.info({ filename, size: file.size, storage: "local" }, "File uploaded locally");
     }
 
     return NextResponse.json({ url });
   } catch (error) {
-    logger.error({ error }, "Upload failed");
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Upload failed";
+    logger.error({ error, message }, "Upload failed");
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
