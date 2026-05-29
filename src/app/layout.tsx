@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { I18nProvider } from "@/providers/i18n-provider";
+import { Analytics } from "@vercel/analytics/react";
 import { cookies } from "next/headers";
 import "./globals.css";
 
@@ -50,6 +51,7 @@ export default async function RootLayout({
       </head>
       <body className="flex min-h-full flex-col bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
         <I18nProvider>{children}</I18nProvider>
+        <Analytics />
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅**
+> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅**
 
 ---
 
@@ -66,6 +66,8 @@
 | M29 | Notification bell RTL fix, dashboard redesign, messages polling | ✅ |
 | M30 | 2FA OAuth support + proper TOTP flow (QR code + verify step) | ✅ |
 | M31 | Client-side QR generation with qrcode library | ✅ |
+| M32 | Seed script with sample user + starter content (projects, posts, threads) | ✅ |
+| M33 | Vercel Analytics integration (Speed Insights + Web Analytics) | ✅ |
 
 ---
 
@@ -80,6 +82,19 @@
 5. **allowPasswordless for OAuth 2FA** — Added `allowPasswordless: true` to twoFactor plugin config in `auth.ts`. Password input is now optional. Added `passwordOptional` i18n key
 6. **Proper TOTP 2FA flow** — After `enable()`, UI now shows: QR code → secret key → backup codes → 6-digit code input → verify button calling `verifyTotp()`. 2FA only activates after successful TOTP verification. New i18n keys: `setupTitle`, `scanQR`, `manualSetup`, `enterCode`, `verify`, `verifying`, `invalidCode`
 7. **Client-side QR generation** — Created `TotpQr` component at `src/components/ui/totp-qr.tsx` using `qrcode` npm package (Canvas-based). Replaced external `api.qrserver.com` API
+
+### Session 31 — 2026-05-30
+
+1. **Vercel Analytics integrated** — Installed `@vercel/analytics` package, added `<Analytics />` component to root `layout.tsx`. Auto-tracks page views, geolocation, and performance on Vercel via Speed Insights + Web Analytics
+2. **PROJECT_MAP.md updated** — Session 31 entry, M33 milestone, critical context for Analytics
+
+### Session 30 — 2026-05-30
+
+1. **Seed script created** — `prisma/seed.ts` with sample content: user "Omar" with avatar (DiceBear), profile, 2 projects (Discord Mod Bot + SWAT 4 Guide), 4 blog posts (Discord dashboard, Vercel uploads behind-the-scenes, TypeScript architecture AR, Audio engineering AR), 5 forum threads (eFootball, VST plugins, Discord bots, Vercel uploads, PC builds)
+2. **Prisma config updated** — Added `seed: "npx tsx prisma/seed.ts"` to `prisma.config.ts` migrations config
+3. **Seed file syntax fix** — Original file had encoding issues with template literals; rewrote with plain strings
+4. **Avatar URLs added** — User and profile now have DiceBear avatar SVG URLs
+5. **Seed pushed to GitHub** — commit `17d76ad`
 
 ### Session 25 — 2026-05-29
 
@@ -486,6 +501,7 @@ Notification  → id, userId, type, title, message?, link?, read
 | QR code generation | `TotpQr` component at `src/components/ui/totp-qr.tsx` uses the `qrcode` npm package to render QR codes to Canvas — no external API dependency |
 | Dashboard grid — 5 stats cards | `lg:grid-cols-5` so all 5 cards (projects/posts/discussions/messages/friends) fit on one row on large screens |
 | Quick actions — no duplicates | Messages and Friends quick action links removed since they're already in the stats grid |
+| Vercel Analytics | `<Analytics />` component from `@vercel/analytics/react` added to root layout — tracks page views, geolocation, and performance automatically on Vercel |
 
 ---
 
@@ -500,6 +516,7 @@ Notification  → id, userId, type, title, message?, link?, read
 | Vercel Blob store setup | ⚠️ Recommended | Small images (<500KB) now stored as data URIs in DB and persist without Blob; Blob still recommended for large files and zips |
 | Migrate existing uploads | ❌ Pending | Files already in `public/uploads/` need manual re-upload; after re-upload, they'll persist via data URI (any size) or Blob |
 | Upload progress indicator | ❌ Pending | No progress bar during upload — user sees "Uploading..." text only |
+| Vercel Analytics (Speed Insights + Web Analytics) | ✅ Done | `@vercel/analytics` installed + `<Analytics />` added to root `layout.tsx` — auto-tracks page views on Vercel |
 | Ban permanent only | ❌ Pending | Ban currently sets expiry to 2099-12-31; no temporary ban option (suspend covers temp) |
 | Landing page metadata i18n | ❌ Skipped | Metadata (`title`/`description`) stays static English; sub-components already use `useI18n()` |
 | Login/Register page wrappers | ❌ Skipped | Page.tsx files are thin wrappers; the actual forms already use `useI18n()` |
