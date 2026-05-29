@@ -6,7 +6,8 @@ import { headers } from "next/headers";
 
 async function requireAdmin() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || (session.user as any).role !== "admin") {
+  const role = (session?.user as any)?.role;
+  if (!session || (role !== "admin" && role !== "founder")) {
     throw new Error("Forbidden");
   }
   return session;
@@ -14,7 +15,7 @@ async function requireAdmin() {
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
-    await requireAdmin();
+    const session = await requireAdmin();
     const { userId } = await params;
     const body = await request.json();
 
