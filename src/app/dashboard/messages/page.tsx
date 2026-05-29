@@ -35,7 +35,6 @@ export default function MessagesPage() {
 
   const selectUser = useCallback(async (user: User) => {
     setSelectedUser(user);
-    selectedUserIdRef.current = user.id;
     const res = await fetch(`/api/messages/${user.id}`);
     if (res.ok) setMessages(await res.json());
   }, []);
