@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `NEXT` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅**
+> Generated: 2026-05-29 | Last commit: `d237642` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅**
 
 ---
 
@@ -58,7 +58,7 @@
 
 ## [SESSION_LOG]
 
-### Session 5 — 2026-05-29 (commit `NEXT`)
+### Session 5 — 2026-05-29 (commit `d237642`)
 
 1. **Vercel Blob integration** — installed `@vercel/blob` package, rewrote upload API to use `BLOB_READ_WRITE_TOKEN` env var for persistent cloud storage
 2. **Upload API updated** — `POST /api/upload` now uploads to Vercel Blob when `BLOB_READ_WRITE_TOKEN` is set, with automatic fallback to local `public/uploads/` for development
