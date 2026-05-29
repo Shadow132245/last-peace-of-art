@@ -20,7 +20,8 @@ async function findUser(username: string) {
 
 export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
   const { username } = await params;
-  const user = await findUser(username);
+  const decoded = decodeURIComponent(username);
+  const user = await findUser(decoded);
 
   if (!user) return { title: "User Not Found" };
 
@@ -32,8 +33,9 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
 
 export default async function UserProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
+  const decoded = decodeURIComponent(username);
 
-  const found = await findUser(username);
+  const found = await findUser(decoded);
 
   if (!found) notFound();
 
