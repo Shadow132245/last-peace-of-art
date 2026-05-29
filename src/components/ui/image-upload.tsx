@@ -8,11 +8,13 @@ type InsertMode = "markdown" | "url" | "media";
 export function ImageUpload({
   onInsert,
   mode = "markdown",
-  label = "Add Image",
+  label = "Add File",
+  accept = "image/*,.zip",
 }: {
   onInsert: (url: string) => void;
   mode?: InsertMode;
   label?: string;
+  accept?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -32,8 +34,11 @@ export function ImageUpload({
 
     if (res.ok) {
       const { url } = await res.json();
-      if (mode === "markdown") {
+      const isZip = file.type === "application/zip" || file.type === "application/x-zip-compressed" || file.name.endsWith(".zip");
+      if (mode === "markdown" && !isZip) {
         onInsert(`![${file.name}](${url})`);
+      } else if (mode === "markdown" && isZip) {
+        onInsert(`[${file.name}](${url})`);
       } else {
         onInsert(url);
       }
@@ -45,7 +50,7 @@ export function ImageUpload({
 
   return (
     <>
-      <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
+      <input ref={inputRef} type="file" accept={accept} onChange={handleFile} className="hidden" />
       <motion.button
         type="button"
         onClick={() => inputRef.current?.click()}

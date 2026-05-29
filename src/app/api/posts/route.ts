@@ -30,6 +30,8 @@ export async function POST(request: Request) {
     }
 
     const slug = slugify(title);
+    const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } });
+    const autoPublish = user?.role === "bug_hunter";
 
     const post = await prisma.post.create({
       data: {
@@ -39,6 +41,7 @@ export async function POST(request: Request) {
         content,
         excerpt: excerpt ?? null,
         tags: tags ?? [],
+        published: autoPublish,
         userId: session.user.id,
       },
     });

@@ -21,6 +21,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Title and description are required" }, { status: 400 });
     }
 
+    const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } });
+    const autoPublish = user?.role === "bug_hunter";
+
     const project = await prisma.project.create({
       data: {
         id: crypto.randomUUID(),
@@ -29,6 +32,7 @@ export async function POST(request: Request) {
         content: content ?? null,
         tags: tags ?? [],
         media: media ?? [],
+        published: autoPublish,
         userId: session.user.id,
       },
     });

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { AddFriendButton } from "@/components/friends/friend-button";
 
 export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
   const { username } = await params;
@@ -39,6 +42,9 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
   });
 
   if (!user) notFound();
+
+  const currentSession = await auth.api.getSession({ headers: await headers() });
+  const isOwnProfile = currentSession?.user.id === user.id;
 
   const social = user.profile?.social ? (user.profile.social as Record<string, unknown>) : {};
   const banner = (social.banner as string) ?? null;
@@ -85,6 +91,17 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
               {user.profile.skills.map((skill) => (
                 <span key={skill} className="rounded-full bg-zinc-100 px-3 py-1 text-sm dark:bg-zinc-800">{skill}</span>
               ))}
+            </div>
+          )}
+          {currentSession && !isOwnProfile && (
+            <div className="mt-4 flex gap-3">
+              <Link
+                href={`/dashboard/messages?userId=${user.id}`}
+                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+              >
+                Send Message
+              </Link>
+              <AddFriendButton userId={user.id} />
             </div>
           )}
         </div>

@@ -20,8 +20,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "File too large (max 5MB)" }, { status: 400 });
+    const isZip = file.type === "application/zip" || file.type === "application/x-zip-compressed" || file.name.endsWith(".zip");
+    const maxSize = isZip ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      return NextResponse.json({ error: `File too large (max ${isZip ? "50MB" : "5MB"})` }, { status: 400 });
     }
 
     const ext = file.name.split(".").pop() ?? "bin";

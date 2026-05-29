@@ -8,10 +8,19 @@ export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login");
 
-  const [projectCount, postCount, threadCount] = await Promise.all([
+  const [projectCount, postCount, threadCount, messageCount, friendCount] = await Promise.all([
     prisma.project.count({ where: { userId: session.user.id } }),
     prisma.post.count({ where: { userId: session.user.id } }),
     prisma.thread.count({ where: { userId: session.user.id } }),
+    prisma.message.count({ where: { receiverId: session.user.id, read: false } }),
+    prisma.friendRequest.count({
+      where: {
+        OR: [
+          { senderId: session.user.id, status: "accepted" },
+          { receiverId: session.user.id, status: "accepted" },
+        ],
+      },
+    }),
   ]);
 
   return (
@@ -27,6 +36,8 @@ export default async function DashboardPage() {
         <DashboardCard title="Projects" count={projectCount} href="/dashboard/projects" />
         <DashboardCard title="Posts" count={postCount} href="/dashboard/posts" />
         <DashboardCard title="Discussions" count={threadCount} href="/dashboard/forum" />
+        <DashboardCard title="Messages" count={messageCount} href="/dashboard/messages" />
+        <DashboardCard title="Friends" count={friendCount} href="/dashboard/friends" />
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -57,6 +68,34 @@ export default async function DashboardPage() {
         >
           <h3 className="font-semibold">Settings</h3>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage your account</p>
+        </Link>
+        <Link
+          href="/dashboard/messages"
+          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+        >
+          <h3 className="font-semibold">Messages</h3>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Chat with other members</p>
+        </Link>
+        <Link
+          href="/dashboard/friends"
+          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+        >
+          <h3 className="font-semibold">Friends</h3>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage friends and requests</p>
+        </Link>
+        <Link
+          href="/tickets"
+          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+        >
+          <h3 className="font-semibold">Support Tickets</h3>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Report bugs &amp; get help</p>
+        </Link>
+        <Link
+          href="/apply"
+          className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+        >
+          <h3 className="font-semibold">Apply for Staff</h3>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Join the moderation team</p>
         </Link>
       </div>
     </div>

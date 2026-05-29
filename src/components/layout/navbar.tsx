@@ -65,6 +65,12 @@ export function Navbar() {
           {session ? (
             <div className="flex items-center gap-3">
               <NotificationBell />
+              <Link href="/dashboard/messages" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+                Messages
+              </Link>
+              <Link href="/dashboard/friends" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+                Friends
+              </Link>
               {["admin", "founder"].includes((session.user as any).role) && (
                 <Link href="/admin" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
                   Admin
@@ -116,7 +122,11 @@ export function Navbar() {
               <Link href="/forum" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Forum</Link>
               <Link href="/search" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Search</Link>
               {session ? (
-                <Link href="/dashboard" className="text-sm font-medium text-zinc-900 dark:text-zinc-100" onClick={() => setOpen(false)}>Dashboard</Link>
+                <>
+                  <Link href="/dashboard/messages" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Messages</Link>
+                  <Link href="/dashboard/friends" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Friends</Link>
+                  <Link href="/dashboard" className="text-sm font-medium text-zinc-900 dark:text-zinc-100" onClick={() => setOpen(false)}>Dashboard</Link>
+                </>
               ) : (
                 <Link href="/login" className="text-sm font-medium text-zinc-900 dark:text-zinc-100" onClick={() => setOpen(false)}>Sign In</Link>
               )}

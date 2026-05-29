@@ -21,12 +21,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Title and content are required" }, { status: 400 });
     }
 
+    const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } });
+    const autoPublish = user?.role === "bug_hunter";
+
     const thread = await prisma.thread.create({
       data: {
         id: crypto.randomUUID(),
         title,
         content,
         tags: tags ?? [],
+        published: autoPublish,
         userId: session.user.id,
       },
     });
