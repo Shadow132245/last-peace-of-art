@@ -37,7 +37,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
 
   if (!found) notFound();
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findUniqueOrThrow({
     where: { id: found.id },
     include: {
       profile: true,
