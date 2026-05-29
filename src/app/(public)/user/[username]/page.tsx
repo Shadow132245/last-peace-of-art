@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { AddFriendButton } from "@/components/friends/friend-button";
+import { SafeImg, SafeBanner } from "@/components/ui/safe-image";
 
 export const dynamic = "force-dynamic";
 
@@ -75,7 +76,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           className="mb-6 w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800"
           style={{ height: bannerHeight }}
         >
-          <img src={banner} alt="Banner" className="h-full w-full object-cover" />
+          <SafeBanner src={banner} alt="Banner" className="h-full w-full object-cover" />
         </div>
       )}
 
@@ -85,7 +86,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           style={{ width: avatarSize, height: avatarSize }}
         >
           {avatar ? (
-            <img src={avatar} alt={user.name} className="h-full w-full object-cover" />
+            <SafeImg src={avatar} alt={user.name} className="h-full w-full object-cover" fallback={user.name[0].toUpperCase()} />
           ) : (
             <div className="flex h-full items-center justify-center text-2xl text-zinc-400">
               {user.name[0].toUpperCase()}
