@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `e7419b4` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅**
+> Generated: 2026-05-29 | Last commit: `c72d66a` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅**
 
 ---
 
@@ -57,10 +57,19 @@
 | M20 | User avatar dropdown in navbar — click avatar to view profile, posts, threads, projects, dashboard, settings, sign out | ✅ |
 | M21 | Live search rewrite — debounced input, grouped results (posts/projects/threads/users), rich cards with username/likes/dislikes/views/comment count | ✅ |
 | M22 | Ban system fix — banned users blocked from ALL pages via layout checks; suspended users blocked from dashboard/admin; upload persistence — data URI threshold raised to 2MB; upload error handling + revert in profile dashboard | ✅ |
+| M23 | Upload reliability — ALL images use data URI when Blob unavailable (no size limit); Blob failure degrades to data URI instead of crashing; navbar avatar syncs with profile avatar (User.image updated on save) | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 13 — 2026-05-29 (commits `8a0375c` → `c72d66a`)
+
+1. **Upload API: removed image size limit for data URI** — `isSmallImage()` function deleted; ALL images (any size) convert to base64 data URI when Blob is unavailable. This fixes upload failure on Vercel where writing to `public/uploads/` fails due to read-only filesystem
+2. **Blob failure graceful degradation** — if `uploadToBlob()` returns null, now falls back to data URI instead of crashing on local filesystem
+3. **Non-image file warning** — without Blob token, non-image files (zip) log a warning that they won't persist, still try to save locally as best-effort
+4. **Better error message in catch block** — upload API now includes actual error message in the response instead of generic "Upload failed"
+5. **Client-side network error handling** — fetch wrapped in try/catch; if JSON parse fails, graceful fallback to empty object; error message suggests smaller image or Vercel Blob setup
 
 ### Session 12 — 2026-05-29 (commit `e7419b4`)
 
@@ -253,7 +262,7 @@ src/
 │   │   ├── posts/                # User posts CRUD + publish toggle (bug_hunter auto-publish)
 │   │   ├── profile/              # GET/PUT profile (avatar, bio, skills, social)
 │   │   ├── forum/                # Threads + comments (bug_hunter auto-publish)
-│   │   ├── upload/               # File upload (images 5MB, zip 50MB) — Blob → data URI → local (dev)
+│   │   ├── upload/               # File upload (images 5MB, zip 50MB) — Blob → data URI (any size) → local (non-image only)
 │   │   ├── search/               # Full-text search — posts/projects/threads/users with likes/dislikes/views
 │   │   ├── comments/             # Unified POST/GET/DELETE comments
 │   │   ├── likes/                # POST toggle like/dislike, GET counts
@@ -352,10 +361,13 @@ Notification  → id, userId, type, title, message?, link?, read
 | Friend request flow | Request → notification → accept/reject → notification back to sender |
 | Messages notification | Sending a message creates a notification for the receiver with link to `/dashboard/messages` |
 | Conversations deduped | Messages API groups by user, returns latest message per conversation |
-| Persistent file storage | 3-tier: Vercel Blob (cloud) → data URI in DB (small images <500KB) → local `public/uploads/` (dev) |
+| Persistent file storage | 3-tier: Vercel Blob (cloud) → data URI in DB (all images, any size) → local `public/uploads/` (non-image only, dev) |
 | Vercel filesystem ephemeral | Files written to `public/uploads/` are lost on next deploy — Blob + data URI solve this |
-| Data URI threshold | Small images (<2MB) stored as base64 data URIs in the database when no `BLOB_READ_WRITE_TOKEN` — raised from 500KB to 2MB to cover most profile images |
+| Data URI for ALL images | No size limit — any image (any size) converts to base64 data URI when Blob unavailable, persists in DB forever |
+| Vercel filesystem READ-ONLY | Writing to `public/uploads/` on Vercel serverless fails (EROFS) — removed image size limit to always use data URI |
 | Blob env var | `BLOB_READ_WRITE_TOKEN` in Vercel Dashboard → env vars enables Vercel Blob for all files including large ones and zips |
+| Blob failure degradation | If `uploadToBlob()` returns null, gracefully falls back to data URI instead of crashing |
+| Navbar avatar sync | `PUT /api/profile` now updates `User.image` when `profile.avatar` changes; `refetchSession()` called after save so navbar updates immediately |
 | decodeURIComponent for usernames | Profile URLs use `decodeURIComponent(params.username)` to handle spaces and special characters in names |
 | Ban system — 3 layout checks | `(public)/layout.tsx`, `dashboard/layout.tsx`, `(admin)/layout.tsx` all check `user.banned` and redirect to `/banned` — no middleware needed |
 | Suspended blocked from dashboard/admin | `dashboard/layout.tsx` and `(admin)/layout.tsx` redirect suspended users to `/suspended` |
@@ -376,7 +388,8 @@ Notification  → id, userId, type, title, message?, link?, read
 | Read receipts for messages | ❌ Pending | Mark messages as read when opened |
 | WebSocket for real-time chat | ❌ Pending | Currently uses REST + manual refresh |
 | Vercel Blob store setup | ⚠️ Recommended | Small images (<500KB) now stored as data URIs in DB and persist without Blob; Blob still recommended for large files and zips |
-| Migrate existing uploads | ❌ Pending | Files already in `public/uploads/` need manual re-upload; after re-upload, they'll persist via data URI (<2MB) or Blob |
+| Migrate existing uploads | ❌ Pending | Files already in `public/uploads/` need manual re-upload; after re-upload, they'll persist via data URI (any size) or Blob |
+| Upload progress indicator | ❌ Pending | No progress bar during upload — user sees "Uploading..." text only |
 | Ban permanent only | ❌ Pending | Ban currently sets expiry to 2099-12-31; no temporary ban option (suspend covers temp) |
 
 ---
@@ -392,6 +405,33 @@ Notification  → id, userId, type, title, message?, link?, read
 ---
 
 ## [CONVERSATION_LOG]
+
+### Session 13 — Upload Reliability + Navbar Avatar Sync (2026-05-29)
+
+**User reported in Egyptian Arabic:**
+> "اما باجي اعمل ابلود لصورة في البروفايل يقولي ابلود فيلد" + "المفروض بعد اما اغير لوجو بروفايلي ميتغيرش في البروفايل بس يتغير في الصورة بتاعت بروفايلي الي في الناف بار"
+> (When I upload a profile image it says "Upload failed" + After changing my profile logo, it doesn't change on the profile page but only changes in the navbar avatar)
+
+**Issue 1: Upload failed on Vercel**
+- Images >2MB fell through to local filesystem (`uploadLocally`) which calls `writeFile` on `public/uploads/`
+- Vercel serverless functions have a **read-only filesystem** — writing to `public/uploads/` throws EROFS error
+- The only writable directory is `/tmp`, which is also ephemeral
+
+**Fix applied:**
+1. **Removed `isSmallImage()` size limit entirely** — ALL images (any size) use `toDataUri()` when Blob is unavailable. This guarantees profile images always persist as base64 in the database
+2. **Blob failure graceful fallback** — if `uploadToBlob()` returns null (instead of crashing to local), now falls back to `toDataUri()` gracefully
+3. **Better error response** — catch block now includes `error.message` in the JSON response so the client sees the actual error
+4. **Client-side network safety** — wrapped fetch in try/catch; JSON parse with fallback; descriptive error messages
+
+**Issue 2: Navbar avatar didn't update with profile avatar**
+- Navbar `AvatarDropdown` used `user.image` from the session (Better Auth User model field)
+- Profile dashboard saves the uploaded avatar to `Profile.avatar` only
+- These are two different fields — changing one had no effect on the other
+
+**Fix applied:**
+1. **`PUT /api/profile` now syncs `User.image`** — when `avatar` field is present in the request body, `prisma.user.update()` sets `image: avatar` on the User model
+2. **Client session refresh** — `refetchSession()` called after successful save, so the navbar avatar updates immediately without requiring a full page refresh
+3. **Remove flow works too** — when avatar is removed (`avatar: null`), `User.image` is set to null and navbar shows initials
 
 ### Session 12 — Ban System Fix + Upload Persistence Fix (2026-05-29)
 
