@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅**
+> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅**
 
 ---
 
@@ -60,6 +60,7 @@
 | M23 | Upload reliability — ALL images use data URI when Blob unavailable (no size limit); Blob failure degrades to data URI instead of crashing; navbar avatar syncs with profile avatar (User.image updated on save) | ✅ |
 | M24 | UI Animation overhaul — favicon update; PageTransition on auth layout; motion on login/register/banned/404; AnimatedList on forum; FadeInView on all content pages; StaggerList on dashboard lists; motion on all dashboard forms | ✅ |
 | M25 | Auth enhancements — Remember Me, Email Verification, 2FA/OTP via email; nodemailer integration; TwoFactor model | ✅ |
+| M26 | i18n — full Arabic/English bilingual support for all pages, components, and admin panel | ✅ |
 
 ---
 
@@ -76,6 +77,21 @@
 7. **Prisma schema updated** — added `TwoFactor` model (id, secret, backupCodes, userId @unique, verified) with `@@map("two_factor")`; added `twoFactorEnabled` boolean to User model; added `twoFactor` relation on User
 8. **.env.example updated** — added SMTP env vars
 9. **Prisma generate** — client successfully generated with new TwoFactor model
+
+### Session 26 — 2026-05-29 (i18n Completion)
+
+1. **i18n infrastructure** — `src/lib/i18n.ts` (lookup, locale cookie), `src/lib/server-i18n.ts` (getServerT for server components), `src/providers/i18n-provider.tsx` (useI18n hook, RTL dir), `src/components/ui/locale-switcher.tsx` (toggle button), `messages/en.json` and `messages/ar.json` (full translation files)
+2. **Root layout** — changed `lang` attribute from hardcoded `"en"` to dynamic based on locale cookie
+3. **Navbar fully translated** — all nav links, mobile menu, AvatarDropdown labels, Sign In/Out, aria-labels via `useI18n()`
+4. **Auth forms translated** — LoginForm, RegisterForm, verify-email page all use `useI18n()`
+5. **Public pages translated** — blog, projects, forum (list + detail + pagination), search, user profile, suspended, appeal, banned, 404, privacy, terms
+6. **Shared components translated** — comment-section, report-button (form + reasons + states), friend-button, pagination (label props)
+7. **Landing page translated** — HeroSection, FeaturesSection (all 4 feature cards), CtaSection
+8. **Dashboard pages translated** — home, settings, friends (tabs + search + actions), messages (chat + conversations), profile (avatar/banner/bio/skills + live preview), posts/projects/forum lists + creation forms
+9. **Apply & Tickets pages translated** — staff application form (6 questions + labels + states), bug report/vulnerability form (categories + labels + states)
+10. **Admin panel fully translated** — overview cards, users/posts/projects/threads/reports/appeals/applications/tickets table headers + status badges + empty states + action labels
+11. **Syntax fixes** — navbar.tsx (missing `>` on button), appeal/page.tsx (extra braces), dashboard/layout.tsx (duplicate content block removed)
+12. **All pushed to GitHub** — commit `c41b7d9`
 
 ### Session 14 — 2026-05-29
 
@@ -349,7 +365,14 @@ src/
 │   ├── db.ts                     # PrismaClient singleton (PrismaPg adapter)
 │   ├── logger.ts                 # pino logger
 │   ├── admin.ts                  # requireAdmin() helper
-│   └── pagination.ts            # parsePagination, buildPaginationMeta, getSkipTake
+│   ├── pagination.ts            # parsePagination, buildPaginationMeta, getSkipTake
+│   ├── i18n.ts                  # Locale helpers: lookup(), getLocaleFromCookie(), setLocaleCookie()
+│   └── server-i18n.ts           # getServerT() for server component translations
+├── providers/
+│   └── i18n-provider.tsx         # I18nProvider (client context), useI18n hook, RTL dir
+├── messages/
+│   ├── en.json                   # English translations
+│   └── ar.json                   # Arabic translations
 ├── prisma/
 │   └── schema.prisma             # 14 models (+ Appeal, suspended fields on User)
 ├── prisma.config.ts              # Prisma v7 datasource config
@@ -417,6 +440,13 @@ Notification  → id, userId, type, title, message?, link?, read
 | Banned page outside (public) group | `/banned` page at `src/app/banned/page.tsx` uses root layout only (no navbar/footer) to avoid redirect loop |
 | proxy.ts deleted | Old `proxy.ts` was never imported — dead code. All ban/suspend logic now lives in layout files directly |
 | Upload error revert in profile dashboard | Previous avatar/banner values saved on load; on upload failure, state reverts and error message shown |
+| i18n — two translation mechanisms | Server components: `getServerT()` reads locale cookie + loads JSON. Client components: `useI18n()` from `I18nProvider` context |
+| i18n — key lookup | `lookup(obj, "a.b.c")` tokenizes by dot and traverses nested objects; returns key itself if not found |
+| i18n — RTL support | `I18nProvider` sets `dir="rtl"` on a wrapper div when locale is `"ar"`; root layout sets `lang` attribute dynamically |
+| i18n — placeholder replacement | Messages use `{count}`, `{name}`, `{key}` placeholders; usage: `.replace("{key}", value)` |
+| i18n — locale persistence | Cookie `locale` (path=/, max-age=1yr) — set by `LocaleSwitcher` on the client, read by `getServerT()` on the server |
+| i18n — Privacy/Terms legal content | Legal text body kept in English (not translated); only page title/h1 and "Last updated" are translated |
+| Do NOT run `next build` locally | Build takes ~8 minutes and times out in CLI; trust that `Compiled successfully` means no errors |
 
 ---
 
@@ -432,6 +462,8 @@ Notification  → id, userId, type, title, message?, link?, read
 | Migrate existing uploads | ❌ Pending | Files already in `public/uploads/` need manual re-upload; after re-upload, they'll persist via data URI (any size) or Blob |
 | Upload progress indicator | ❌ Pending | No progress bar during upload — user sees "Uploading..." text only |
 | Ban permanent only | ❌ Pending | Ban currently sets expiry to 2099-12-31; no temporary ban option (suspend covers temp) |
+| Landing page metadata i18n | ❌ Skipped | Metadata (`title`/`description`) stays static English; sub-components already use `useI18n()` |
+| Login/Register page wrappers | ❌ Skipped | Page.tsx files are thin wrappers; the actual forms already use `useI18n()` |
 
 ---
 
@@ -442,6 +474,7 @@ Notification  → id, userId, type, title, message?, link?, read
 - **Database:** Neon PostgreSQL (serverless)
 - **Build command:** `npx prisma generate && next build`
 - **Admin user:** Email `fghfghffdgfhfgh@gmail.com` — role set via SQL
+- **Do NOT run `next build` locally** — takes ~8 minutes and times out in CLI. Trust that `Compiled successfully` = no errors. Let Vercel handle builds.
 
 ---
 

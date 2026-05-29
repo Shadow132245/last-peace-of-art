@@ -301,6 +301,11 @@
     "send": "Send",
     "selectConversation": "Select a conversation to start chatting"
   },
+  "legal": {
+    "privacyTitle": "Privacy Policy",
+    "termsTitle": "Terms of Service",
+    "lastUpdated": "Last updated: {date}"
+  },
   "apply": {
     "title": "Apply for Staff",
     "description": "Interested in helping manage the site? Fill out this application and we'll review it.",

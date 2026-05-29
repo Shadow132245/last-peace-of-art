@@ -1,19 +1,21 @@
 import type { Metadata } from "next";
 import { FadeInView } from "@/components/ui/fade-in-view";
+import { getServerT } from "@/lib/server-i18n";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "Privacy Policy for Last Peace of Art.",
 };
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const { t } = await getServerT();
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
       <FadeInView>
-        <h1 className="text-4xl font-bold">Privacy Policy</h1>
+        <h1 className="text-4xl font-bold">{t("legal.privacyTitle")}</h1>
       </FadeInView>
       <FadeInView delay={0.1}>
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Last updated: May 28, 2026</p>
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{t("legal.lastUpdated").replace("{date}", "May 28, 2026")}</p>
       </FadeInView>
 
       <FadeInView delay={0.15}>

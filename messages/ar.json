@@ -301,6 +301,11 @@
     "send": "إرسال",
     "selectConversation": "اختر محادثة لبدء الدردشة"
   },
+  "legal": {
+    "privacyTitle": "سياسة الخصوصية",
+    "termsTitle": "شروط الخدمة",
+    "lastUpdated": "آخر تحديث: {date}"
+  },
   "apply": {
     "title": "التقدم للإدارة",
     "description": "مهتم بالمساعدة في إدارة الموقع؟ املأ هذا الطلب وسنراجعه.",
