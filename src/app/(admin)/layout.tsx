@@ -14,6 +14,8 @@ const navItems = [
   { href: "/admin/threads", label: "Threads", icon: "💬" },
   { href: "/admin/reports", label: "Reports", icon: "🚩" },
   { href: "/admin/appeals", label: "Appeals", icon: "📨" },
+  { href: "/admin/tickets", label: "Tickets", icon: "🎫" },
+  { href: "/admin/applications", label: "Applications", icon: "📋" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -24,7 +26,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     authClient.getSession().then((res) => {
-      if (!res.data || (res.data.user as any).role !== "admin") {
+      const role = (res.data.user as any).role;
+      if (!res.data || (role !== "admin" && role !== "founder")) {
         router.push("/login");
         return;
       }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 
@@ -23,6 +24,17 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       profile: true,
       projects: { where: { published: true }, orderBy: { createdAt: "desc" } },
       posts: { where: { published: true }, orderBy: { createdAt: "desc" } },
+      threads: {
+        where: { published: true },
+        include: { _count: { select: { comments: true } } },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      },
+      comments: {
+        include: { thread: { select: { title: true, id: true } } },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      },
     },
   });
 
@@ -59,7 +71,12 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           )}
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{user.name}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold">{user.name}</h1>
+            {user.role === "founder" && <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">FOUNDER</span>}
+            {user.role === "admin" && <span className="rounded bg-purple-100 px-2 py-0.5 text-xs font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">ADMIN</span>}
+            {user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">BUG HUNTER</span>}
+          </div>
           {user.profile?.bio && (
             <p className="mt-2 text-zinc-500 dark:text-zinc-400">{user.profile.bio}</p>
           )}
@@ -72,6 +89,33 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           )}
         </div>
       </div>
+
+      {user.threads.length > 0 && (
+        <section className="mb-8">
+          <h2 className="mb-4 text-xl font-semibold">Threads ({user.threads.length})</h2>
+          <div className="grid gap-3">
+            {user.threads.map((thread) => (
+              <Link
+                key={thread.id}
+                href={`/forum/${thread.id}`}
+                className="rounded-xl border border-zinc-200 p-4 transition-colors hover:border-amber-200 dark:border-zinc-800 dark:hover:border-zinc-600"
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold">{thread.pinned && "📌 "}{thread.title}</h3>
+                  <span className="text-xs text-zinc-400">{thread._count.comments} comments</span>
+                </div>
+                {thread.tags.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {thread.tags.map((tag) => (
+                      <span key={tag} className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] dark:bg-zinc-800">{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {user.projects.length > 0 && (
         <section className="mb-8">
@@ -88,7 +132,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       )}
 
       {user.posts.length > 0 && (
-        <section>
+        <section className="mb-8">
           <h2 className="mb-4 text-xl font-semibold">Posts ({user.posts.length})</h2>
           <div className="grid gap-4">
             {user.posts.map((post) => (
@@ -101,7 +145,26 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
         </section>
       )}
 
-      {!user.projects.length && !user.posts.length && (
+      {user.comments.length > 0 && (
+        <section className="mb-8">
+          <h2 className="mb-4 text-xl font-semibold">Recent Comments</h2>
+          <div className="grid gap-3">
+            {user.comments.map((comment) => (
+              <div key={comment.id} className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+                <p className="text-sm text-zinc-700 dark:text-zinc-300">{comment.content}</p>
+                {comment.thread && (
+                  <Link href={`/forum/${comment.thread.id}`} className="mt-1 inline-block text-xs text-amber-600 hover:underline dark:text-amber-400">
+                    on {comment.thread.title}
+                  </Link>
+                )}
+                <p className="mt-1 text-xs text-zinc-400">{new Date(comment.createdAt).toLocaleDateString()}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!user.threads.length && !user.projects.length && !user.posts.length && !user.comments.length && (
         <p className="text-zinc-400">This user hasn&apos;t published anything yet.</p>
       )}
     </div>

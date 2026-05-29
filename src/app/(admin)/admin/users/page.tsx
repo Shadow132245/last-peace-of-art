@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
+import Link from "next/link";
 import { BanButton } from "./ban-button";
 import { SuspendButton } from "./suspend-button";
+import { RoleButton } from "./role-button";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +32,7 @@ export default async function AdminUsersPage() {
               <AdminCell className="font-medium">{user.name}</AdminCell>
               <AdminCell className="text-zinc-500">{user.email}</AdminCell>
               <AdminCell>
-                <AdminBadge variant={user.role === "admin" ? "purple" : "zinc"}>{user.role}</AdminBadge>
+                <RoleButton userId={user.id} currentRole={user.role} />
               </AdminCell>
               <AdminCell>
                 {user.banned ? (

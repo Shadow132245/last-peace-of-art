@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { Markdown } from "@/components/ui/markdown";
@@ -18,7 +19,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ threadI
   const { threadId } = await params;
   const thread = await prisma.thread.findUnique({
     where: { id: threadId },
-    include: { user: { select: { name: true, image: true } } },
+    include: { user: { select: { name: true, image: true, role: true } } },
   });
 
   if (!thread) notFound();
@@ -29,10 +30,23 @@ export default async function ThreadPage({ params }: { params: Promise<{ threadI
 
       <div className="mb-8">
         <h1 className="text-3xl font-bold">{thread.title}</h1>
-        <div className="mt-2 flex items-center gap-4 text-sm text-zinc-500">
-          <span>{thread.user.name}</span>
+        <div className="mt-2 flex items-center gap-3 text-sm text-zinc-500">
+          <Link href={`/user/${thread.user.name}`} className="flex items-center gap-2 hover:text-zinc-900 dark:hover:text-zinc-100">
+            {thread.user.image ? (
+              <img src={thread.user.image} alt="" className="h-6 w-6 rounded-full object-cover" />
+            ) : (
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs font-medium text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400">
+                {thread.user.name[0]}
+              </span>
+            )}
+            <span className="font-medium">{thread.user.name}</span>
+            {thread.user.role === "founder" && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">FOUNDER</span>}
+            {thread.user.role === "admin" && <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">ADMIN</span>}
+            {thread.user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">BUG HUNTER</span>}
+          </Link>
           <span>&middot;</span>
           <span>{thread.createdAt.toLocaleDateString()}</span>
+          <span>&middot;</span>
           <span>{thread.views} views</span>
         </div>
         {thread.tags.length > 0 && (

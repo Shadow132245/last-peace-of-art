@@ -34,6 +34,22 @@ export async function POST(request: Request) {
       },
     });
 
+    const admins = await prisma.user.findMany({
+      where: { OR: [{ role: "admin" }, { role: "founder" }] },
+      select: { id: true },
+    });
+
+    await prisma.notification.createMany({
+      data: admins.map((admin) => ({
+        id: crypto.randomUUID(),
+        userId: admin.id,
+        type: "update",
+        title: "New report submitted",
+        message: `${session.user.name} reported a ${entityType} for: ${reason}`,
+        link: "/admin/reports",
+      })),
+    });
+
     logger.info({ reportId: report.id, entityType, entityId }, "Report submitted");
     return NextResponse.json(report, { status: 201 });
   } catch (error) {

@@ -33,6 +33,13 @@ model User {
   likes       Like[]
   reports     Report[]
   appeals     Appeal[]
+  tickets     Ticket[]
+  applications Application[]
+  sentMessages   Message[]       @relation("SentMessages")
+  receivedMessages Message[]     @relation("ReceivedMessages")
+  sentRequests   FriendRequest[] @relation("SentRequests")
+  receivedRequests FriendRequest[] @relation("ReceivedRequests")
+  notifications Notification[]
   profile     Profile?
 
   @@unique([email])
@@ -243,4 +250,82 @@ model Report {
   @@index([entityType, entityId])
   @@index([resolved])
   @@map("report")
+}
+
+model Ticket {
+  id          String   @id
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  category    String   @default("bug")
+  status      String   @default("open")
+  adminResponse String?
+  createdAt   DateTime @default(now())
+  resolvedAt  DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@map("ticket")
+}
+
+model Application {
+  id          String   @id
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers     Json
+  status      String   @default("pending")
+  adminResponse String?
+  createdAt   DateTime @default(now())
+  reviewedAt  DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@map("application")
+}
+
+model Message {
+  id         String   @id
+  content    String
+  senderId   String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([senderId, receiverId])
+  @@map("message")
+}
+
+model FriendRequest {
+  id          String   @id
+  senderId    String
+  sender      User     @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId  String
+  receiver    User     @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+
+  @@unique([senderId, receiverId])
+  @@index([receiverId, status])
+  @@map("friend_request")
+}
+
+model Notification {
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  message   String?
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
+  @@map("notification")
 }

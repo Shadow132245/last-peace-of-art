@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { AnimatePresence, motion } from "motion/react";
+import { NotificationBell } from "@/components/ui/notification-bell";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -63,7 +64,8 @@ export function Navbar() {
 
           {session ? (
             <div className="flex items-center gap-3">
-              {(session.user as any).role === "admin" && (
+              <NotificationBell />
+              {["admin", "founder"].includes((session.user as any).role) && (
                 <Link href="/admin" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
                   Admin
                 </Link>

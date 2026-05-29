@@ -18,6 +18,19 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
     const { userId } = await params;
     const body = await request.json();
 
+    if ("role" in body) {
+      const { role } = body;
+      if (!["user", "bug_hunter", "admin", "founder"].includes(role)) {
+        return NextResponse.json({ error: "Invalid role" }, { status: 400 });
+      }
+      const user = await prisma.user.update({
+        where: { id: userId },
+        data: { role },
+      });
+      logger.info({ userId, role }, `User role changed to ${role}`);
+      return NextResponse.json({ user });
+    }
+
     if ("banned" in body) {
       const { banned } = body;
       const user = await prisma.user.update({

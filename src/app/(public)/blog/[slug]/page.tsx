@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { Markdown } from "@/components/ui/markdown";
@@ -20,7 +21,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const { slug } = await params;
   const post = await prisma.post.findUnique({
     where: { slug },
-    include: { user: { select: { name: true } } },
+    include: { user: { select: { name: true, image: true, role: true } } },
   });
 
   if (!post || !post.published) notFound();
@@ -30,9 +31,23 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <ViewTracker entityType="post" entityId={post.id} />
 
       <h1 className="text-4xl font-bold">{post.title}</h1>
-      <div className="mt-4 flex items-center gap-4 text-sm text-zinc-500">
-        <span>{post.user.name}</span>
+      <div className="mt-4 flex items-center gap-3 text-sm text-zinc-500">
+        <Link href={`/user/${post.user.name}`} className="flex items-center gap-2 hover:text-zinc-900 dark:hover:text-zinc-100">
+          {post.user.image ? (
+            <img src={post.user.image} alt="" className="h-6 w-6 rounded-full object-cover" />
+          ) : (
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs font-medium text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400">
+              {post.user.name[0]}
+            </span>
+          )}
+          <span className="font-medium">{post.user.name}</span>
+          {post.user.role === "founder" && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">FOUNDER</span>}
+          {post.user.role === "admin" && <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">ADMIN</span>}
+          {post.user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">BUG HUNTER</span>}
+        </Link>
+        <span>&middot;</span>
         <span>{post.createdAt.toLocaleDateString()}</span>
+        <span>&middot;</span>
         <span>{post.views} views</span>
       </div>
       {post.tags.length > 0 && (
