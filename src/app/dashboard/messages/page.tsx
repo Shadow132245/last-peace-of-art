@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { motion } from "motion/react";
@@ -22,6 +22,24 @@ export default function MessagesPage() {
   const [loading, setLoading] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const fetchMessages = useCallback(async (user: User) => {
+    const res = await fetch(`/api/messages/${user.id}`);
+    if (res.ok) {
+      const data = await res.json();
+      setMessages((prev) => {
+        if (prev.length === data.length && prev[prev.length - 1]?.id === data[data.length - 1]?.id) return prev;
+        return data;
+      });
+    }
+  }, []);
+
+  const selectUser = useCallback(async (user: User) => {
+    setSelectedUser(user);
+    selectedUserIdRef.current = user.id;
+    const res = await fetch(`/api/messages/${user.id}`);
+    if (res.ok) setMessages(await res.json());
+  }, []);
+
   useEffect(() => {
     if (!session) { router.push("/login"); return; }
     const userId = searchParams.get("userId");
@@ -40,11 +58,21 @@ export default function MessagesPage() {
     });
   }, [session]);
 
-  const selectUser = async (user: User) => {
-    setSelectedUser(user);
-    const res = await fetch(`/api/messages/${user.id}`);
-    if (res.ok) setMessages(await res.json());
-  };
+  useEffect(() => {
+    if (!selectedUser) return;
+    const interval = setInterval(() => {
+      fetchMessages(selectedUser);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [selectedUser, fetchMessages]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const res = await fetch("/api/messages");
+      if (res.ok) setConversations(await res.json());
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
@@ -61,6 +89,7 @@ export default function MessagesPage() {
       const msg = await res.json();
       setMessages((prev) => [...prev, msg]);
       setNewMessage("");
+      fetch("/api/messages").then((r) => r.json()).then(setConversations);
     }
     setSending(false);
   };
@@ -84,7 +113,7 @@ export default function MessagesPage() {
                 <button
                   key={conv.id}
                   onClick={() => selectUser(conv)}
-                  className={`flex w-full items-center gap-3 p-3 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 ${selectedUser?.id === conv.id ? "bg-zinc-50 dark:bg-zinc-800" : ""}`}
+                  className={`flex w-full items-center gap-3 p-3 text-start transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 ${selectedUser?.id === conv.id ? "bg-zinc-50 dark:bg-zinc-800" : ""}`}
                 >
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium dark:bg-zinc-700">
                     {conv.image ? <img src={conv.image} alt="" className="h-full w-full rounded-full object-cover" /> : conv.name[0]}
