@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `d237642` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅**
+> Generated: 2026-05-29 | Last commit: `50bc746` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅**
 
 ---
 
@@ -53,10 +53,18 @@
 | M16 | File uploads (zip), Bug Hunter auto-approval, Applications system (form + admin + accept/reject) | ✅ |
 | M17 | Messaging/chat UI, Friend requests system, Profile interact buttons (message/add friend) | ✅ |
 | M18 | Persistent file storage — Vercel Blob integration for uploads (avatars, banners, images, zip) so files survive Vercel redeployments | ✅ |
+| M19 | Profile 404 fix, RoleButton redesign with founder option, case-insensitive username lookup | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 6 — 2026-05-29 (commit `50bc746`)
+
+1. **Profile page 404 fix** — added `force-dynamic`, created `findUser()` that tries exact name match then case-insensitive fallback to prevent 404 on username casing/encoding differences
+2. **RoleButton redesign** — replaced native `<select>` with a custom animated dropdown matching site theme (motion animations, dark mode, hover states)
+3. **Founder option added** — `founder` role now appears in the dropdown with amber color and dot indicator; checkmark shown on selected item
+4. **Click-outside-to-close** — dropdown closes when clicking elsewhere on the page
 
 ### Session 5 — 2026-05-29 (commit `d237642`)
 
@@ -335,6 +343,25 @@ Notification  → id, userId, type, title, message?, link?, read
 ---
 
 ## [CONVERSATION_LOG]
+
+### Session 6 — Profile 404 + RoleButton Fixes (2026-05-29)
+
+**User reported three issues in Egyptian Arabic:**
+> 1. "لما بدوس علي صورة حسابي في البوست بيظهرلي 404 page not found" — clicking username/avatar in posts leads to 404 page
+> 2. "في صفحة الادمن في قسم يوزرز انا معايا رول يوزر مش فاوندر" — admin users page shows founder's role as "user"
+> 3. "وخيار الفاوندر اصلا مش موجود" — founder option not in dropdown
+> 4. "وتصميم الاختيارات وحش جدا ومش متناسق مع الموقع" — role select styling is ugly
+
+**Fixes applied:**
+- Profile page: `force-dynamic`, `findUser()` function with exact → case-insensitive fallback so username matching works regardless of casing
+- RoleButton: complete rewrite from native `<select>` to custom animated dropdown with:
+  - Colored dot per role (amber=founder, purple=admin, emerald=bug_hunter, grey=user)
+  - Checkmark on currently selected role
+  - Motion animations (scale on click, fade in/out dropdown)
+  - Click-outside-to-close
+  - Dark mode support
+  - "founder" option added to the list
+- Server-side guard unchanged: only founder email (`fghfghffdgfhfgh@gmail.com`) can change roles
 
 ### Session 5 — Persistent Storage Fix (2026-05-29)
 
