@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `NEXT` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅**
+> Generated: 2026-05-29 | Last commit: `c8381fc` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅**
 
 ---
 
@@ -60,7 +60,7 @@
 
 ## [SESSION_LOG]
 
-### Session 7 — 2026-05-29 (commit `NEXT`)
+### Session 7 — 2026-05-29 (commit `c8381fc`)
 
 1. **User avatar dropdown in navbar** — added clickable avatar (with fallback initials) in desktop navbar that opens a dropdown menu with links to: View Profile, Dashboard, My Posts, My Threads, My Projects, Messages, Friends, Settings, Admin (if role allows), Sign Out
 2. **Mobile nav updated** — added View Profile, Messages, Friends links in mobile menu for authenticated users
@@ -350,6 +350,20 @@ Notification  → id, userId, type, title, message?, link?, read
 ---
 
 ## [CONVERSATION_LOG]
+
+### Session 7 — Navbar Avatar Dropdown + Mobile Menu (2026-05-29)
+
+**User request in Egyptian Arabic:**
+> "عايزك تضيف في الناف بار فوق صورة الحساب بتاع المستخدم الي يقدر منها يروح علي بروفايله ويشوفه ويشوف بوستاته او ثريداته او بروجكتاته"
+> (Add a user avatar in the navbar that lets them go to their profile, see their posts, threads, and projects)
+
+**Changes made:**
+- New `AvatarDropdown` component in navbar: shows user's avatar image (or initial fallback) as a clickable button
+- Dropdown menu contains: name + email header, View Profile, Dashboard, My Posts, My Threads, My Projects, Messages, Friends, Settings, Admin (if applicable), Sign Out
+- Animated with motion (fade + scale), click-outside-to-close
+- Replaced the old "Dashboard" button and separate "Messages"/"Friends"/"Admin" links in desktop nav with the single avatar dropdown + NotificationBell only
+- Mobile menu: replaced the simple "Dashboard" link with full set of links: View Profile, Dashboard, My Posts, My Threads, My Projects, Messages, Friends, Settings, Admin, Sign Out
+- Added missing `useRef` import and click-outside handling
 
 ### Session 6 — Profile 404 + RoleButton Fixes (2026-05-29)
 
