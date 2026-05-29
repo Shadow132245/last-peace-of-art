@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `c8381fc` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅**
+> Generated: 2026-05-29 | Last commit: `807b61b` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅**
 
 ---
 
@@ -52,13 +52,18 @@
 | M15 | Notifications system + Ticket system + Admin tickets panel + Role badges + Profile links | ✅ |
 | M16 | File uploads (zip), Bug Hunter auto-approval, Applications system (form + admin + accept/reject) | ✅ |
 | M17 | Messaging/chat UI, Friend requests system, Profile interact buttons (message/add friend) | ✅ |
-| M18 | Persistent file storage — Vercel Blob integration for uploads (avatars, banners, images, zip) so files survive Vercel redeployments | ✅ |
+| M18 | Persistent file storage — Vercel Blob + data URI fallback: uploads use Vercel Blob (if token set) or base64 data URI in DB (small images <500KB) to survive redeployments; local filesystem as last resort | ✅ |
 | M19 | Profile 404 fix, RoleButton redesign with founder option, case-insensitive username lookup | ✅ |
 | M20 | User avatar dropdown in navbar — click avatar to view profile, posts, threads, projects, dashboard, settings, sign out | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 8 — 2026-05-29 (commits `c59e440` → `807b61b`)
+
+1. **Profile 404 fix v2** — added `decodeURIComponent()` for username params to handle spaces and special characters in profile URLs (e.g. `Hassan%20Magdy`)
+2. **Data URI fallback for small images** — upload API now stores small images (<500KB) as base64 data URIs when no `BLOB_READ_WRITE_TOKEN` is set, ensuring avatars, banners, and profile images persist in the database even without external cloud storage
 
 ### Session 7 — 2026-05-29 (commit `c8381fc`)
 
@@ -318,9 +323,11 @@ Notification  → id, userId, type, title, message?, link?, read
 | Friend request flow | Request → notification → accept/reject → notification back to sender |
 | Messages notification | Sending a message creates a notification for the receiver with link to `/dashboard/messages` |
 | Conversations deduped | Messages API groups by user, returns latest message per conversation |
-| Persistent file storage | Upload API uses `@vercel/blob` when `BLOB_READ_WRITE_TOKEN` is set; falls back to local `public/uploads/` for dev |
-| Vercel filesystem ephemeral | Files written to `public/uploads/` during runtime are lost on next deploy — Vercel Blob solves this |
-| Blob env var | `BLOB_READ_WRITE_TOKEN` must be set in Vercel Dashboard → Environment Variables for production persistence |
+| Persistent file storage | 3-tier: Vercel Blob (cloud) → data URI in DB (small images <500KB) → local `public/uploads/` (dev) |
+| Vercel filesystem ephemeral | Files written to `public/uploads/` are lost on next deploy — Blob + data URI solve this |
+| Data URI threshold | Small images (<500KB) stored as base64 data URIs in the database when no `BLOB_READ_WRITE_TOKEN` |
+| Blob env var | `BLOB_READ_WRITE_TOKEN` in Vercel Dashboard → env vars enables Vercel Blob for all files including large ones and zips |
+| decodeURIComponent for usernames | Profile URLs use `decodeURIComponent(params.username)` to handle spaces and special characters in names |
 
 ---
 
@@ -334,8 +341,8 @@ Notification  → id, userId, type, title, message?, link?, read
 | Deployed site testing | ❌ Pending | Verify all features end-to-end |
 | Read receipts for messages | ❌ Pending | Mark messages as read when opened |
 | WebSocket for real-time chat | ❌ Pending | Currently uses REST + manual refresh |
-| Vercel Blob store setup | ❌ Pending | Need to create Blob Store in Vercel Dashboard and add `BLOB_READ_WRITE_TOKEN` to env vars |
-| Migrate existing uploads | ❌ Pending | Files already in `public/uploads/` need manual re-upload or migration script |
+| Vercel Blob store setup | ⚠️ Recommended | Small images (<500KB) now stored as data URIs in DB and persist without Blob; Blob still recommended for large files and zips |
+| Migrate existing uploads | ❌ Pending | Files already in `public/uploads/` need manual re-upload; after re-upload, they'll persist via data URI or Blob |
 
 ---
 
@@ -350,6 +357,31 @@ Notification  → id, userId, type, title, message?, link?, read
 ---
 
 ## [CONVERSATION_LOG]
+
+### Session 8 — Profile 404 Fix v2 + Data URI Fallback (2026-05-29)
+
+**User reported:**
+> "برضو لما بدوس فيو بروفايل بيظهر بيج نوت فاوند 404" — View Profile still shows 404 with space in name
+> "المفروض ان انا كنت حاطط لوجو وبنر دلوقتي لما بشوف البروفايل لقيت مفيش لا لوجو ولا البنر" — Uploaded logo and banner disappeared from profile after deploy; dimension settings still saved
+
+**Problem 1: Space in URL**
+- Username "Hassan Magdy" → `encodeURIComponent` → `Hassan%20Magdy`
+- Next.js doesn't always auto-decode params → `params.username` stays `Hassan%20Magdy`
+- `findUnique({ where: { name: "Hassan%20Magdy" } })` fails → page shows 404
+
+**Fix:** Added `decodeURIComponent(username)` before querying database. Idempotent: if already decoded, does nothing.
+
+**Problem 2: Uploaded images lost on deploy**
+- Old uploads stored in `public/uploads/` — wiped by Vercel on redeploy
+- Database still has URLs pointing to deleted files
+- Dimension settings (avatarSize, bannerHeight) persisted separately in `social` JSON
+
+**Fix:** Upload API now has 3-tier storage:
+1. `BLOB_READ_WRITE_TOKEN` set → Vercel Blob (persistent cloud storage)
+2. No token + image < 500KB → base64 data URI stored directly in database
+3. No token + large file → local filesystem (fallback)
+
+This ensures profile avatars and banners persist even without external storage setup.
 
 ### Session 7 — Navbar Avatar Dropdown + Mobile Menu (2026-05-29)
 
