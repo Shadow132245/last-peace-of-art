@@ -6,8 +6,10 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { useI18n } from "@/providers/i18n-provider";
 
 export default function NewProjectPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -36,7 +38,7 @@ export default function NewProjectPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error ?? "Failed to create project");
+      setError(data.error ?? t("dashboard.createProject.error"));
     } else {
       router.push("/dashboard/projects");
     }
@@ -51,7 +53,7 @@ export default function NewProjectPage() {
         transition={{ duration: 0.3 }}
         className="mb-8 text-3xl font-bold"
       >
-        New Project
+        {t("dashboard.createProject.title")}
       </motion.h1>
 
       <motion.form
@@ -61,9 +63,9 @@ export default function NewProjectPage() {
         onSubmit={handleSubmit}
         className="flex flex-col gap-6"
       >
-        <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <Input label={t("dashboard.createProject.titleLabel")} value={title} onChange={(e) => setTitle(e.target.value)} required />
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</label>
+          <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{t("dashboard.createProject.descriptionLabel")}</label>
           <textarea
             className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 transition-colors focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
             rows={4}
@@ -75,7 +77,7 @@ export default function NewProjectPage() {
 
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Content (Markdown, optional)</label>
+            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{t("dashboard.createProject.contentLabel")}</label>
             <ImageUpload mode="url" onInsert={(url) => setContent((c) => c + "\n![](" + url + ")")} />
           </div>
           <textarea
@@ -83,14 +85,14 @@ export default function NewProjectPage() {
             rows={8}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Optional markdown content..."
+            placeholder={t("dashboard.createProject.contentPlaceholder")}
           />
         </div>
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Media Gallery</label>
-            <ImageUpload mode="url" onInsert={(url) => setMedia((m) => [...m, url])} label="Add Image" />
+            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{t("dashboard.createProject.mediaGalleryLabel")}</label>
+            <ImageUpload mode="url" onInsert={(url) => setMedia((m) => [...m, url])} label={t("dashboard.createProject.addImage")} />
           </div>
           {media.length > 0 && (
             <div className="flex flex-wrap gap-2">
@@ -110,13 +112,13 @@ export default function NewProjectPage() {
           )}
         </div>
 
-        <Input label="Tags (comma-separated)" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="react, typescript, design" />
+        <Input label={t("dashboard.createProject.tagsLabel")} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("dashboard.createProject.tagsPlaceholder")} />
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <div className="flex gap-4">
-          <Button type="submit" loading={loading}>Create Project</Button>
-          <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
+          <Button type="submit" loading={loading}>{t("dashboard.createProject.submit")}</Button>
+          <Button type="button" variant="outline" onClick={() => router.back()}>{t("dashboard.createProject.cancel")}</Button>
         </div>
       </motion.form>
     </div>

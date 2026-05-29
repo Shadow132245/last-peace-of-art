@@ -4,13 +4,18 @@ import Link from "next/link";
 import { parsePagination, buildPaginationMeta, getSkipTake } from "@/lib/pagination";
 import { Pagination } from "@/components/ui/pagination";
 import { AnimatedList, AnimatedItem } from "@/components/ui/animated-list";
+import { getServerT } from "@/lib/server-i18n";
 
-export const metadata: Metadata = {
-  title: "Posts",
-  description: "Read community posts and articles.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getServerT();
+  return {
+    title: t("blog.title"),
+    description: "Read community posts and articles.",
+  };
+}
 
 export default async function BlogPage(props: { searchParams?: Promise<{ page?: string }> }) {
+  const { t } = await getServerT();
   const searchParams = await props.searchParams;
   const params = parsePagination(new URLSearchParams(searchParams ?? {}));
   const { skip, take } = getSkipTake(params);
@@ -38,10 +43,10 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
     <div className="mx-auto max-w-6xl px-4 py-12">
       <div className="flex gap-10">
         <div className="min-w-0 flex-1">
-          <h1 className="mb-8 text-3xl font-bold">Posts</h1>
+          <h1 className="mb-8 text-3xl font-bold">{t("blog.title")}</h1>
 
           {posts.length === 0 ? (
-            <p className="text-zinc-500 dark:text-zinc-400">No posts yet.</p>
+            <p className="text-zinc-500 dark:text-zinc-400">{t("blog.empty")}</p>
           ) : (
             <AnimatedList className="grid gap-6">
               {posts.map((post) => (
@@ -61,12 +66,12 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
             </AnimatedList>
           )}
 
-          <Pagination basePath="/blog" {...meta} />
+          <Pagination basePath="/blog" previousLabel={t("pagination.previous")} nextLabel={t("pagination.next")} {...meta} />
         </div>
 
         <aside className="hidden w-64 shrink-0 lg:block">
           <div className="sticky top-24 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">Popular Posts</h3>
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">{t("blog.sidebarTitle")}</h3>
             <div className="space-y-4">
               {trending.map((post, i) => (
                 <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
@@ -79,7 +84,7 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
                   </div>
                 </Link>
               ))}
-              {trending.length === 0 && <p className="text-sm text-zinc-400">No posts yet.</p>}
+              {trending.length === 0 && <p className="text-sm text-zinc-400">{t("blog.empty")}</p>}
             </div>
           </div>
         </aside>

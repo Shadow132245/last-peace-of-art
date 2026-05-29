@@ -5,8 +5,10 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { FadeInView } from "@/components/ui/fade-in-view";
 import { StaggerList, StaggerItem } from "@/components/ui/stagger-list";
+import { getServerT } from "@/lib/server-i18n";
 
 export default async function DashboardPage() {
+  const { t } = await getServerT();
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login");
 
@@ -29,19 +31,19 @@ export default async function DashboardPage() {
     <div className="mx-auto max-w-5xl px-4 py-12">
       <FadeInView>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-3xl font-bold">{t("dashboard.title")}</h1>
           <p className="mt-1 text-zinc-500 dark:text-zinc-400">
-            Welcome back, {session.user.name}
+            {t("dashboard.welcomeBack").replace("{name}", session.user.name)}
           </p>
         </div>
       </FadeInView>
 
       <StaggerList className="grid gap-6 sm:grid-cols-3">
-        <StaggerItem><DashboardCard title="Projects" count={projectCount} href="/dashboard/projects" /></StaggerItem>
-        <StaggerItem><DashboardCard title="Posts" count={postCount} href="/dashboard/posts" /></StaggerItem>
-        <StaggerItem><DashboardCard title="Discussions" count={threadCount} href="/dashboard/forum" /></StaggerItem>
-        <StaggerItem><DashboardCard title="Messages" count={messageCount} href="/dashboard/messages" /></StaggerItem>
-        <StaggerItem><DashboardCard title="Friends" count={friendCount} href="/dashboard/friends" /></StaggerItem>
+        <StaggerItem><DashboardCard title={t("dashboard.projects")} count={projectCount} href="/dashboard/projects" /></StaggerItem>
+        <StaggerItem><DashboardCard title={t("dashboard.posts")} count={postCount} href="/dashboard/posts" /></StaggerItem>
+        <StaggerItem><DashboardCard title={t("dashboard.discussions")} count={threadCount} href="/dashboard/forum" /></StaggerItem>
+        <StaggerItem><DashboardCard title={t("dashboard.messages")} count={messageCount} href="/dashboard/messages" /></StaggerItem>
+        <StaggerItem><DashboardCard title={t("dashboard.friends")} count={friendCount} href="/dashboard/friends" /></StaggerItem>
       </StaggerList>
 
       <FadeInView delay={0.2}>
@@ -50,57 +52,57 @@ export default async function DashboardPage() {
             href="/dashboard/projects/new"
             className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
           >
-            <h3 className="font-semibold">New Project</h3>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Upload and showcase your work</p>
+            <h3 className="font-semibold">{t("dashboard.newProject")}</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t("dashboard.newProjectDesc")}</p>
           </Link>
           <Link
             href="/dashboard/posts/new"
             className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
           >
-            <h3 className="font-semibold">New Post</h3>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Write about any topic</p>
+            <h3 className="font-semibold">{t("dashboard.newPost")}</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t("dashboard.newPostDesc")}</p>
           </Link>
           <Link
             href="/dashboard/profile"
             className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
           >
-            <h3 className="font-semibold">Edit Profile</h3>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Photo, banner, bio &amp; skills</p>
+            <h3 className="font-semibold">{t("dashboard.editProfile")}</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t("dashboard.editProfileDesc")}</p>
           </Link>
           <Link
             href="/dashboard/settings"
             className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
           >
-            <h3 className="font-semibold">Settings</h3>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage your account</p>
+            <h3 className="font-semibold">{t("dashboard.settings")}</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t("dashboard.settingsDesc")}</p>
           </Link>
           <Link
             href="/dashboard/messages"
             className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
           >
-            <h3 className="font-semibold">Messages</h3>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Chat with other members</p>
+            <h3 className="font-semibold">{t("dashboard.messages")}</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t("dashboard.messagesDesc")}</p>
           </Link>
           <Link
             href="/dashboard/friends"
             className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
           >
-            <h3 className="font-semibold">Friends</h3>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage friends and requests</p>
+            <h3 className="font-semibold">{t("dashboard.friends")}</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t("dashboard.friendsDesc")}</p>
           </Link>
           <Link
             href="/tickets"
             className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
           >
-            <h3 className="font-semibold">Support Tickets</h3>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Report bugs &amp; get help</p>
+            <h3 className="font-semibold">{t("dashboard.supportTickets")}</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t("dashboard.supportTicketsDesc")}</p>
           </Link>
           <Link
             href="/apply"
             className="rounded-xl border border-zinc-200 p-6 transition-all hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
           >
-            <h3 className="font-semibold">Apply for Staff</h3>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Join the moderation team</p>
+            <h3 className="font-semibold">{t("dashboard.applyForStaff")}</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t("dashboard.applyForStaffDesc")}</p>
           </Link>
         </div>
       </FadeInView>

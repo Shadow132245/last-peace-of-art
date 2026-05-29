@@ -8,6 +8,7 @@ import { ReportButton } from "@/components/reports/report-button";
 import { CommentSection } from "@/components/comments/comment-section";
 import { ViewTracker } from "@/components/views/view-tracker";
 import { FadeInView } from "@/components/ui/fade-in-view";
+import { getServerT } from "@/lib/server-i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -17,6 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { t } = await getServerT();
   const { id } = await params;
   const project = await prisma.project.findUnique({
     where: { id },
@@ -44,14 +46,14 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               </span>
             )}
             <span className="font-medium">{project.user.name}</span>
-            {project.user.role === "founder" && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">FOUNDER</span>}
-            {project.user.role === "admin" && <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">ADMIN</span>}
-            {project.user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">BUG HUNTER</span>}
+            {project.user.role === "founder" && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">{t("roles.founder")}</span>}
+            {project.user.role === "admin" && <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">{t("roles.admin")}</span>}
+            {project.user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">{t("roles.bugHunter")}</span>}
           </Link>
           <span>&middot;</span>
           <span>{project.createdAt.toLocaleDateString()}</span>
           <span>&middot;</span>
-          <span>{project.views} views</span>
+          <span>{project.views} {t("projects.views")}</span>
         </div>
       </FadeInView>
 

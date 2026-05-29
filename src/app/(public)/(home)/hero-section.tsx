@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
+import { useI18n } from "@/providers/i18n-provider";
 
 export function HeroSection({ loggedIn }: { loggedIn: boolean }) {
+  const { t } = useI18n();
+
   return (
     <section className="relative overflow-hidden px-4 pb-20 pt-20 sm:pb-32 sm:pt-32">
       <div className="absolute inset-0 bg-gradient-to-b from-amber-50/40 to-transparent dark:from-transparent dark:to-transparent" />
@@ -44,7 +47,7 @@ export function HeroSection({ loggedIn }: { loggedIn: boolean }) {
               href="/dashboard"
               className="rounded-lg bg-zinc-900 px-8 py-3 text-sm font-medium text-white shadow-lg shadow-zinc-900/20 transition-all hover:scale-105 hover:bg-zinc-800 active:scale-95 dark:bg-white dark:text-zinc-900 dark:shadow-none dark:hover:bg-zinc-100"
             >
-              Go to Dashboard
+              {t("nav.dashboard")}
             </Link>
           ) : (
             <>
@@ -52,13 +55,13 @@ export function HeroSection({ loggedIn }: { loggedIn: boolean }) {
                 href="/register"
                 className="rounded-lg bg-zinc-900 px-8 py-3 text-sm font-medium text-white shadow-lg shadow-zinc-900/20 transition-all hover:scale-105 hover:bg-zinc-800 active:scale-95 dark:bg-white dark:text-zinc-900 dark:shadow-none dark:hover:bg-zinc-100"
               >
-                Get Started Free
+                {t("landing.getStarted")}
               </Link>
               <Link
                 href="/projects"
                 className="rounded-lg border border-zinc-300 bg-white/50 px-8 py-3 text-sm font-medium text-zinc-700 shadow-sm backdrop-blur transition-all hover:scale-105 hover:bg-white active:scale-95 dark:border-zinc-600 dark:bg-transparent dark:text-zinc-300 dark:shadow-none dark:hover:bg-zinc-800/30"
               >
-                Browse Projects
+                {t("nav.projects")}
               </Link>
             </>
           )}

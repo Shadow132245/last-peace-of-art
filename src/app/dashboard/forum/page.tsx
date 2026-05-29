@@ -6,8 +6,10 @@ import Link from "next/link";
 import { TogglePublish } from "@/components/ui/toggle-publish";
 import { FadeInView } from "@/components/ui/fade-in-view";
 import { StaggerList, StaggerItem } from "@/components/ui/stagger-list";
+import { getServerT } from "@/lib/server-i18n";
 
 export default async function ForumDashboardPage() {
+  const { t } = await getServerT();
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login");
 
@@ -20,18 +22,18 @@ export default async function ForumDashboardPage() {
     <div className="mx-auto max-w-4xl px-4 py-12">
       <FadeInView>
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold">My Discussions</h1>
+          <h1 className="text-3xl font-bold">{t("dashboard.myDiscussions")}</h1>
           <Link
             href="/dashboard/forum/new"
             className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
           >
-            New Thread
+            {t("dashboard.newThreadBtn")}
           </Link>
         </div>
       </FadeInView>
 
       {threads.length === 0 ? (
-        <FadeInView><p className="text-zinc-500 dark:text-zinc-400">No discussions yet.</p></FadeInView>
+        <FadeInView><p className="text-zinc-500 dark:text-zinc-400">{t("dashboard.noDiscussions")}</p></FadeInView>
       ) : (
         <StaggerList className="grid gap-4">
           {threads.map((thread) => (

@@ -4,11 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { motion } from "motion/react";
+import { useI18n } from "@/providers/i18n-provider";
 
 type User = { id: string; name: string; image: string | null };
 type Message = { id: string; content: string; createdAt: string; sender: User };
 
 export default function MessagesPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = authClient.useSession();
@@ -65,13 +67,13 @@ export default function MessagesPage() {
       <div className="flex w-full gap-4">
         <div className="w-72 shrink-0 rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
           <div className="border-b border-zinc-200 p-4 dark:border-zinc-800">
-            <h2 className="font-semibold">Messages</h2>
+            <h2 className="font-semibold">{t("messages.title")}</h2>
           </div>
           <div className="overflow-y-auto" style={{ height: "calc(100% - 57px)" }}>
             {loading ? (
-              <p className="p-4 text-sm text-zinc-400">Loading...</p>
+              <p className="p-4 text-sm text-zinc-400">{t("messages.loading")}</p>
             ) : conversations.length === 0 ? (
-              <p className="p-4 text-sm text-zinc-400">No conversations yet</p>
+              <p className="p-4 text-sm text-zinc-400">{t("messages.noConversations")}</p>
             ) : (
               conversations.map((conv) => (
                 <button
@@ -128,7 +130,7 @@ export default function MessagesPage() {
                 <input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type a message..."
+                  placeholder={t("messages.typePlaceholder")}
                   className="flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm transition-colors focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
                 />
                 <button
@@ -139,14 +141,14 @@ export default function MessagesPage() {
                   {sending ? (
                     <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent dark:border-zinc-900" />
                   ) : (
-                    "Send"
+                    t("messages.send")
                   )}
                 </button>
               </form>
             </>
           ) : (
             <div className="flex flex-1 items-center justify-center">
-              <p className="text-sm text-zinc-400">Select a conversation to start chatting</p>
+              <p className="text-sm text-zinc-400">{t("messages.selectConversation")}</p>
             </div>
           )}
         </div>

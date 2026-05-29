@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import Link from "next/link";
+import { useI18n } from "@/providers/i18n-provider";
 
 export function AddFriendButton({ userId }: { userId: string }) {
+  const { t } = useI18n();
   const { data: session } = authClient.useSession();
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -35,9 +36,9 @@ export function AddFriendButton({ userId }: { userId: string }) {
       {loading ? (
         <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-zinc-400 border-t-transparent" />
       ) : sent ? (
-        "Request Sent"
+        t("friends.requestSent")
       ) : (
-        "Add Friend"
+        t("friends.addFriend")
       )}
     </button>
   );

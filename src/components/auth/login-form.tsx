@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useI18n } from "@/providers/i18n-provider";
 
 export function LoginForm() {
+  const { t } = useI18n();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -57,15 +59,15 @@ export function LoginForm() {
     return (
       <div className="w-full max-w-sm mx-auto">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold">Two-factor authentication</h1>
+          <h1 className="text-2xl font-bold">{t("auth.twoFactorTitle")}</h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Enter the code sent to your email
+            {t("auth.twoFactorDesc")}
           </p>
         </div>
 
         <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
           <Input
-            label="Verification code"
+            label={t("auth.verificationCode")}
             type="text"
             placeholder="000000"
             value={otpCode}
@@ -78,18 +80,18 @@ export function LoginForm() {
           )}
 
           <Button type="submit" loading={otpLoading} className="w-full">
-            Verify
+            {t("auth.verify")}
           </Button>
         </form>
 
         <p className="mt-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
-          Didn&apos;t receive the code?{" "}
+          {t("auth.resendCode")}{" "}
           <button
             type="button"
             onClick={() => authClient.twoFactor.sendOtp()}
             className="font-medium text-zinc-900 underline dark:text-zinc-100"
           >
-            Resend
+            {t("auth.verificationCode")}
           </button>
         </p>
       </div>
@@ -99,9 +101,9 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-sm mx-auto">
       <div className="mb-8 text-center">
-        <h1 className="text-2xl font-bold">Welcome back</h1>
+        <h1 className="text-2xl font-bold">{t("auth.welcomeBack")}</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Sign in to your account
+          {t("auth.signInToAccount")}
         </p>
       </div>
 
@@ -113,7 +115,7 @@ export function LoginForm() {
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
           </svg>
-          Continue with Google
+          {t("auth.continueWithGoogle")}
         </Button>
       </div>
 
@@ -123,14 +125,14 @@ export function LoginForm() {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-white px-2 text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
-            Or continue with email
+            {t("auth.orWith")}
           </span>
         </div>
       </div>
 
       <form onSubmit={handleEmailLogin} className="flex flex-col gap-4">
         <Input
-          label="Email"
+          label={t("auth.email")}
           type="email"
           placeholder="you@example.com"
           value={email}
@@ -138,7 +140,7 @@ export function LoginForm() {
           required
         />
         <Input
-          label="Password"
+          label={t("auth.password")}
           type="password"
           placeholder="Enter your password"
           value={password}
@@ -153,7 +155,7 @@ export function LoginForm() {
             onChange={(e) => setRememberMe(e.target.checked)}
             className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 dark:border-zinc-600 dark:text-zinc-100 dark:focus:ring-zinc-100"
           />
-          Remember me
+          {t("auth.rememberMe")}
         </label>
 
         {error && (
@@ -161,14 +163,14 @@ export function LoginForm() {
         )}
 
         <Button type="submit" loading={loading} className="w-full">
-          Sign In
+          {t("auth.signIn")}
         </Button>
       </form>
 
       <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
-        Don&apos;t have an account?{" "}
+        {t("auth.dontHaveAccount")}{" "}
         <a href="/register" className="font-medium text-zinc-900 underline dark:text-zinc-100">
-          Sign up
+          {t("auth.signUp")}
         </a>
       </p>
     </div>

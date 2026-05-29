@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { useI18n } from "@/providers/i18n-provider";
 
 type Friend = { id: string; name: string; image: string | null; since: string };
 type Request = { id: string; sender: { id: string; name: string; image: string | null }; createdAt: string };
 
 export default function FriendsPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -79,18 +81,18 @@ export default function FriendsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="mb-6 text-3xl font-bold">Friends</h1>
+      <h1 className="mb-6 text-3xl font-bold">{t("friends.title")}</h1>
 
       <div className="mb-6 flex gap-2">
-        {(["friends", "requests", "add"] as const).map((t) => (
+        {(["friends", "requests", "add"] as const).map((tabKey) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={tabKey}
+            onClick={() => setTab(tabKey)}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-              tab === t ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
+              tab === tabKey ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
             }`}
           >
-            {t === "friends" ? `Friends (${friends.length})` : t === "requests" ? `Requests (${requests.length})` : "Add Friend"}
+            {tabKey === "friends" ? t("friends.friendsTab").replace("{count}", String(friends.length)) : tabKey === "requests" ? t("friends.requestsTab").replace("{count}", String(requests.length)) : t("friends.addFriend")}
           </button>
         ))}
       </div>
@@ -98,9 +100,9 @@ export default function FriendsPage() {
       {tab === "friends" && (
         <div className="grid gap-3">
           {loading ? (
-            <p className="text-sm text-zinc-400">Loading...</p>
+            <p className="text-sm text-zinc-400">{t("friends.loading")}</p>
           ) : friends.length === 0 ? (
-            <p className="text-sm text-zinc-400">No friends yet</p>
+            <p className="text-sm text-zinc-400">{t("friends.noFriends")}</p>
           ) : (
             friends.map((friend) => (
               <motion.div
@@ -115,7 +117,7 @@ export default function FriendsPage() {
                   </div>
                   <div>
                     <p className="font-medium">{friend.name}</p>
-                    <p className="text-xs text-zinc-400">Friends since {new Date(friend.since).toLocaleDateString()}</p>
+                    <p className="text-xs text-zinc-400">{t("friends.friendsSince").replace("{date}", new Date(friend.since).toLocaleDateString())}</p>
                   </div>
                 </Link>
                 <div className="flex gap-2">
@@ -123,13 +125,13 @@ export default function FriendsPage() {
                     href={`/dashboard/messages?userId=${friend.id}`}
                     className="rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                   >
-                    Message
+                    {t("friends.message")}
                   </Link>
                   <button
                     onClick={() => handleUnfriend(friend.id)}
                     className="rounded-lg bg-red-100 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-200 dark:bg-red-900/50 dark:text-red-300 dark:hover:bg-red-800/50"
                   >
-                    Unfriend
+                    {t("friends.unfriend")}
                   </button>
                 </div>
               </motion.div>
@@ -141,9 +143,9 @@ export default function FriendsPage() {
       {tab === "requests" && (
         <div className="grid gap-3">
           {loading ? (
-            <p className="text-sm text-zinc-400">Loading...</p>
+            <p className="text-sm text-zinc-400">{t("friends.loading")}</p>
           ) : requests.length === 0 ? (
-            <p className="text-sm text-zinc-400">No pending requests</p>
+            <p className="text-sm text-zinc-400">{t("friends.noRequests")}</p>
           ) : (
             requests.map((req) => (
               <motion.div
@@ -158,7 +160,7 @@ export default function FriendsPage() {
                   </div>
                   <div>
                     <p className="font-medium">{req.sender.name}</p>
-                    <p className="text-xs text-zinc-400">Sent {new Date(req.createdAt).toLocaleDateString()}</p>
+                    <p className="text-xs text-zinc-400">{t("friends.sent").replace("{date}", new Date(req.createdAt).toLocaleDateString())}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -166,13 +168,13 @@ export default function FriendsPage() {
                     onClick={() => handleRequest(req.id, "accepted")}
                     className="rounded-lg bg-emerald-100 px-3 py-1.5 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-300 dark:hover:bg-emerald-800/50"
                   >
-                    Accept
+                    {t("friends.accept")}
                   </button>
                   <button
                     onClick={() => handleRequest(req.id, "rejected")}
                     className="rounded-lg bg-red-100 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-200 dark:bg-red-900/50 dark:text-red-300 dark:hover:bg-red-800/50"
                   >
-                    Decline
+                    {t("friends.decline")}
                   </button>
                 </div>
               </motion.div>
@@ -186,14 +188,14 @@ export default function FriendsPage() {
           <input
             value={search}
             onChange={(e) => searchUsers(e.target.value)}
-            placeholder="Search users by name..."
+            placeholder={t("friends.searchPlaceholder")}
             className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm transition-colors focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
           />
           <div className="mt-4 grid gap-3">
             {searching ? (
-              <p className="text-sm text-zinc-400">Searching...</p>
+              <p className="text-sm text-zinc-400">{t("friends.searching")}</p>
             ) : searchResults.length === 0 && search.length >= 2 ? (
-              <p className="text-sm text-zinc-400">No users found</p>
+              <p className="text-sm text-zinc-400">{t("friends.noUsers")}</p>
             ) : (
               searchResults.map((user: any) => (
                 <motion.div
@@ -212,7 +214,7 @@ export default function FriendsPage() {
                     onClick={() => sendRequest(user.id)}
                     className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
                   >
-                    Add Friend
+                    {t("friends.add")}
                   </button>
                 </motion.div>
               ))

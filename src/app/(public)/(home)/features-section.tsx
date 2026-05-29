@@ -2,15 +2,20 @@
 
 import { motion } from "motion/react";
 import { FadeInView } from "@/components/ui/fade-in-view";
+import { useI18n } from "@/providers/i18n-provider";
 
-const features = [
-  { icon: "🚀", title: "Projects", desc: "Upload and showcase your work with rich media, tags, and links." },
-  { icon: "✍️", title: "Posts", desc: "Write about any topic and share your knowledge with the world." },
-  { icon: "📄", title: "Profile", desc: "Create a stunning public profile to present your skills and experience." },
-  { icon: "💬", title: "Forum", desc: "Start discussions, ask questions, and connect with the community." },
-];
+const icons = ["🚀", "✍️", "📄", "💬"];
 
 export function FeaturesSection() {
+  const { t } = useI18n();
+
+  const features = [
+    { icon: icons[0], title: t("nav.projects"), desc: t("landing.projectsFeature") },
+    { icon: icons[1], title: t("nav.posts"), desc: t("landing.postsFeature") },
+    { icon: icons[2], title: t("landing.profileFeature"), desc: t("landing.profileDesc") },
+    { icon: icons[3], title: t("nav.forum"), desc: t("landing.forumFeature") },
+  ];
+
   return (
     <FadeInView>
       <section className="border-t border-zinc-200 bg-white px-4 py-20 dark:border-zinc-800 dark:bg-transparent">
@@ -22,7 +27,7 @@ export function FeaturesSection() {
             transition={{ duration: 0.4 }}
             className="text-center text-2xl font-bold sm:text-3xl"
           >
-            What you can do
+            {t("landing.featuresTitle")}
           </motion.h2>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((f, i) => (

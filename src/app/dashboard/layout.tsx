@@ -27,18 +27,3 @@ export default async function DashboardLayout({ children }: { children: React.Re
     </>
   );
 }
-    if (user.suspended) {
-      redirect("/suspended");
-    }
-  }
-
-  return (
-    <>
-      <Navbar />
-      <main className="flex-1">
-        <PageTransition>{children}</PageTransition>
-      </main>
-      <Footer />
-    </>
-  );
-}

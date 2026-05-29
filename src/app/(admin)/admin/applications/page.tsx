@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/db";
 import { ApplicationActions } from "./application-actions";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
+import { getServerT } from "@/lib/server-i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminApplicationsPage() {
+  const { t } = await getServerT();
   const applications = await prisma.application.findMany({
     include: { user: { select: { name: true, email: true, image: true } } },
     orderBy: [{ status: "asc" }, { createdAt: "desc" }],
@@ -12,16 +14,16 @@ export default async function AdminApplicationsPage() {
 
   return (
     <div>
-      <AdminPageHeader title="Applications" />
+      <AdminPageHeader title={t("admin.applications")} />
       <AdminTable>
         <AdminTableHead>
           <tr>
-            <th className="px-4 py-3 font-medium">User</th>
-            <th className="px-4 py-3 font-medium">Email</th>
-            <th className="px-4 py-3 font-medium">Answers</th>
-            <th className="px-4 py-3 font-medium">Status</th>
-            <th className="px-4 py-3 font-medium">Date</th>
-            <th className="px-4 py-3 font-medium">Actions</th>
+            <th className="px-4 py-3 font-medium">{t("admin.user")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.email")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.answers")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.status")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.date")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.actions")}</th>
           </tr>
         </AdminTableHead>
         <AdminTableBody>
@@ -31,7 +33,7 @@ export default async function AdminApplicationsPage() {
               <AdminCell className="text-zinc-500">{app.user.email}</AdminCell>
               <AdminCell className="max-w-[300px]">
                 <details className="cursor-pointer">
-                  <summary className="text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">View answers</summary>
+                  <summary className="text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">{t("admin.viewAnswers")}</summary>
                   <div className="mt-2 space-y-2">
                     {(app.answers as Array<{ question: string; answer: string }>).map((a, j) => (
                       <div key={j}>
@@ -43,7 +45,7 @@ export default async function AdminApplicationsPage() {
                 </details>
                 {app.adminResponse && (
                   <div className="mt-2 rounded bg-zinc-50 px-2 py-1 text-xs text-zinc-500 dark:bg-zinc-800/50">
-                    Response: {app.adminResponse}
+                    {t("admin.responsePrefix")} {app.adminResponse}
                   </div>
                 )}
               </AdminCell>
@@ -60,7 +62,7 @@ export default async function AdminApplicationsPage() {
           ))}
         </AdminTableBody>
       </AdminTable>
-      {applications.length === 0 && <AdminEmpty message="No applications yet." />}
+      {applications.length === 0 && <AdminEmpty message={t("admin.noApplications")} />}
     </div>
   );
 }

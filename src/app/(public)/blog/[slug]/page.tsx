@@ -8,6 +8,7 @@ import { ReportButton } from "@/components/reports/report-button";
 import { CommentSection } from "@/components/comments/comment-section";
 import { ViewTracker } from "@/components/views/view-tracker";
 import { FadeInView } from "@/components/ui/fade-in-view";
+import { getServerT } from "@/lib/server-i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -26,6 +27,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   });
 
   if (!post || !post.published) notFound();
+  const { t } = await getServerT();
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-12">
@@ -46,14 +48,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               </span>
             )}
             <span className="font-medium">{post.user.name}</span>
-            {post.user.role === "founder" && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">FOUNDER</span>}
-            {post.user.role === "admin" && <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">ADMIN</span>}
-            {post.user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">BUG HUNTER</span>}
+            {post.user.role === "founder" && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">{t("roles.founder")}</span>}
+            {post.user.role === "admin" && <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">{t("roles.admin")}</span>}
+            {post.user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">{t("roles.bugHunter")}</span>}
           </Link>
           <span>&middot;</span>
           <span>{post.createdAt.toLocaleDateString()}</span>
           <span>&middot;</span>
-          <span>{post.views} views</span>
+          <span>{post.views} {t("blog.views")}</span>
         </div>
       </FadeInView>
 

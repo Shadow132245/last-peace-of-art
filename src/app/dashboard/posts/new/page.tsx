@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Markdown } from "@/components/ui/markdown";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { useI18n } from "@/providers/i18n-provider";
 
 export default function NewPostPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -36,7 +38,7 @@ export default function NewPostPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error ?? "Failed to create post");
+      setError(data.error ?? t("dashboard.createPost.error"));
     } else {
       router.push("/dashboard/posts");
     }
@@ -51,7 +53,7 @@ export default function NewPostPage() {
         transition={{ duration: 0.3 }}
         className="mb-8 text-3xl font-bold"
       >
-        New Post
+        {t("dashboard.createPost.title")}
       </motion.h1>
 
       <motion.form
@@ -61,12 +63,12 @@ export default function NewPostPage() {
         onSubmit={handleSubmit}
         className="flex flex-col gap-6"
       >
-        <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-        <Input label="Excerpt (optional)" value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
+        <Input label={t("dashboard.createProject.titleLabel")} value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <Input label={t("dashboard.createPost.excerptLabel")} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
 
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Content (Markdown)</label>
+            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{t("dashboard.createPost.contentLabel")}</label>
             <div className="flex items-center gap-2">
               <ImageUpload mode="markdown" onInsert={(url) => setContent((c) => c + "\n" + url)} />
               <button
@@ -74,13 +76,13 @@ export default function NewPostPage() {
                 onClick={() => setPreview(!preview)}
                 className="text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
               >
-                {preview ? "Edit" : "Preview"}
+                {preview ? t("dashboard.createPost.edit") : t("dashboard.createPost.preview")}
               </button>
             </div>
           </div>
           {preview ? (
             <div className="min-h-[300px] rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-              {content ? <Markdown content={content} /> : <p className="text-zinc-400">Nothing to preview</p>}
+              {content ? <Markdown content={content} /> : <p className="text-zinc-400">{t("dashboard.createPost.nothingToPreview")}</p>}
             </div>
           ) : (
             <textarea
@@ -93,13 +95,13 @@ export default function NewPostPage() {
           )}
         </div>
 
-        <Input label="Tags (comma-separated)" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="react, tutorial, web" />
+        <Input label={t("dashboard.createProject.tagsLabel")} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("dashboard.createPost.tagsPlaceholder")} />
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <div className="flex gap-4">
-          <Button type="submit" loading={loading}>Publish Post</Button>
-          <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
+          <Button type="submit" loading={loading}>{t("dashboard.createPost.submit")}</Button>
+          <Button type="button" variant="outline" onClick={() => router.back()}>{t("dashboard.createProject.cancel")}</Button>
         </div>
       </motion.form>
     </div>

@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
+import { useI18n } from "@/providers/i18n-provider";
 
 export const dynamic = "force-dynamic";
 
 export default function BannedPage() {
+  const { t } = useI18n();
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -27,7 +29,7 @@ export default function BannedPage() {
         transition={{ delay: 0.2, duration: 0.3 }}
         className="mb-3 text-4xl font-bold"
       >
-        Account Banned
+        {t("banned.title")}
       </motion.h1>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -36,7 +38,7 @@ export default function BannedPage() {
         className="mb-8 w-full rounded-2xl border border-red-200/80 bg-red-50/50 p-6 dark:border-red-900/50 dark:bg-red-950/30"
       >
         <p className="text-zinc-700 dark:text-zinc-300">
-          Your account has been permanently banned from Last Peace of Art. You are no longer allowed to access this platform.
+          {t("banned.description")}
         </p>
       </motion.div>
       <motion.p
@@ -45,7 +47,7 @@ export default function BannedPage() {
         transition={{ delay: 0.4, duration: 0.3 }}
         className="mb-6 text-sm text-zinc-500"
       >
-        If you believe this was a mistake, please contact the administrator.
+        {t("banned.contactText")}
       </motion.p>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -56,7 +58,7 @@ export default function BannedPage() {
           href="mailto:support@lastpeace.art"
           className="rounded-xl bg-zinc-900 px-6 py-3 font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
         >
-          Contact Support
+          {t("banned.contactButton")}
         </Link>
       </motion.div>
     </motion.div>

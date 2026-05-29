@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { TicketActions } from "./ticket-actions";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
+import { getServerT } from "@/lib/server-i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,7 @@ const statusColors: Record<string, "green" | "red" | "amber" | "purple" | "zinc"
 };
 
 export default async function AdminTicketsPage() {
+  const { t } = await getServerT();
   const tickets = await prisma.ticket.findMany({
     include: { user: { select: { name: true, email: true, image: true } } },
     orderBy: [{ status: "asc" }, { createdAt: "desc" }],
@@ -25,16 +27,16 @@ export default async function AdminTicketsPage() {
 
   return (
     <div>
-      <AdminPageHeader title="Tickets" />
+      <AdminPageHeader title={t("admin.tickets")} />
       <AdminTable>
         <AdminTableHead>
           <tr>
-            <th className="px-4 py-3 font-medium">User</th>
-            <th className="px-4 py-3 font-medium">Title</th>
-            <th className="px-4 py-3 font-medium">Category</th>
-            <th className="px-4 py-3 font-medium">Status</th>
-            <th className="px-4 py-3 font-medium">Date</th>
-            <th className="px-4 py-3 font-medium">Actions</th>
+            <th className="px-4 py-3 font-medium">{t("admin.user")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.title")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.category")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.status")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.date")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.actions")}</th>
           </tr>
         </AdminTableHead>
         <AdminTableBody>
@@ -46,7 +48,7 @@ export default async function AdminTicketsPage() {
                 <div className="mt-0.5 truncate text-xs text-zinc-400">{ticket.description}</div>
                 {ticket.adminResponse && (
                   <div className="mt-1 rounded bg-zinc-50 px-2 py-1 text-xs text-zinc-500 dark:bg-zinc-800/50">
-                    Response: {ticket.adminResponse}
+                    {t("admin.responsePrefix")} {ticket.adminResponse}
                   </div>
                 )}
               </AdminCell>
@@ -64,7 +66,7 @@ export default async function AdminTicketsPage() {
           ))}
         </AdminTableBody>
       </AdminTable>
-      {tickets.length === 0 && <AdminEmpty message="No tickets yet." />}
+      {tickets.length === 0 && <AdminEmpty message={t("admin.noTickets")} />}
     </div>
   );
 }

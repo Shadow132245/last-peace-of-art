@@ -3,10 +3,12 @@ import { DeleteButton } from "../delete-button";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminEmpty } from "@/components/ui/admin-page";
 import { AdminPublishToggle } from "@/components/ui/admin-publish-toggle";
 import Link from "next/link";
+import { getServerT } from "@/lib/server-i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminThreadsPage() {
+  const { t } = await getServerT();
   const threads = await prisma.thread.findMany({
     include: { user: { select: { name: true } }, _count: { select: { comments: true } } },
     orderBy: { createdAt: "desc" },
@@ -14,17 +16,17 @@ export default async function AdminThreadsPage() {
 
   return (
     <div>
-      <AdminPageHeader title="Threads" />
+      <AdminPageHeader title={t("admin.threads")} />
       <AdminTable>
         <AdminTableHead>
           <tr>
-            <th className="px-4 py-3 font-medium">Title</th>
-            <th className="px-4 py-3 font-medium">Author</th>
-            <th className="px-4 py-3 font-medium">Status</th>
-            <th className="px-4 py-3 font-medium">Comments</th>
-            <th className="px-4 py-3 font-medium">Pinned</th>
-            <th className="px-4 py-3 font-medium">Created</th>
-            <th className="px-4 py-3 font-medium">Actions</th>
+            <th className="px-4 py-3 font-medium">{t("admin.title")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.author")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.status")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.comments")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.pinned")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.created")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.actions")}</th>
           </tr>
         </AdminTableHead>
         <AdminTableBody>
@@ -36,7 +38,7 @@ export default async function AdminThreadsPage() {
               <AdminCell className="text-zinc-500">{thread.user.name}</AdminCell>
               <AdminCell>
                 {thread.published ? (
-                  <span className="inline-block rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">Accepted</span>
+                  <span className="inline-block rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">{t("admin.accepted")}</span>
                 ) : (
                   <AdminPublishToggle entityType="threads" entityId={thread.id} published={thread.published} />
                 )}
@@ -51,7 +53,7 @@ export default async function AdminThreadsPage() {
           ))}
         </AdminTableBody>
       </AdminTable>
-      {threads.length === 0 && <AdminEmpty message="No threads yet." />}
+      {threads.length === 0 && <AdminEmpty message={t("admin.noThreads")} />}
     </div>
   );
 }

@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/db";
 import { ResolveButton } from "./resolve-button";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
+import { getServerT } from "@/lib/server-i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminReportsPage() {
+  const { t } = await getServerT();
   const reports = await prisma.report.findMany({
     include: { user: { select: { name: true, email: true } } },
     orderBy: [{ resolved: "asc" }, { createdAt: "desc" }],
@@ -32,17 +34,17 @@ export default async function AdminReportsPage() {
 
   return (
     <div>
-      <AdminPageHeader title="Reports" />
+      <AdminPageHeader title={t("admin.reports")} />
       <AdminTable>
         <AdminTableHead>
           <tr>
-            <th className="px-4 py-3 font-medium">Type</th>
-            <th className="px-4 py-3 font-medium">Content</th>
-            <th className="px-4 py-3 font-medium">Reported by</th>
-            <th className="px-4 py-3 font-medium">Reason</th>
-            <th className="px-4 py-3 font-medium">Status</th>
-            <th className="px-4 py-3 font-medium">Date</th>
-            <th className="px-4 py-3 font-medium">Actions</th>
+            <th className="px-4 py-3 font-medium">{t("admin.type")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.content")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.reportedBy")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.reason")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.status")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.date")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.actions")}</th>
           </tr>
         </AdminTableHead>
         <AdminTableBody>
@@ -53,14 +55,14 @@ export default async function AdminReportsPage() {
               </AdminCell>
               <AdminCell className="max-w-[200px] truncate font-medium">
                 {report.entity?.title ?? report.entity?.content ?? "—"}
-                <span className="ml-1 text-xs text-zinc-400">by {report.entity?.authorName ?? "?"}</span>
+                <span className="ml-1 text-xs text-zinc-400">{t("admin.by")} {report.entity?.authorName ?? "?"}</span>
               </AdminCell>
               <AdminCell className="text-zinc-500">{report.user.name}</AdminCell>
               <AdminCell>
                 <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs text-red-700 dark:bg-red-900 dark:text-red-300">{report.reason}</span>
               </AdminCell>
               <AdminCell>
-                <AdminBadge variant={report.resolved ? "green" : "amber"}>{report.resolved ? "Resolved" : "Open"}</AdminBadge>
+                <AdminBadge variant={report.resolved ? "green" : "amber"}>{report.resolved ? t("admin.resolved") : t("admin.open")}</AdminBadge>
               </AdminCell>
               <AdminCell className="text-zinc-500">{report.createdAt.toLocaleDateString()}</AdminCell>
               <AdminCell>
@@ -70,7 +72,7 @@ export default async function AdminReportsPage() {
           ))}
         </AdminTableBody>
       </AdminTable>
-      {enriched.length === 0 && <AdminEmpty message="No reports yet." />}
+      {enriched.length === 0 && <AdminEmpty message={t("admin.noReports")} />}
     </div>
   );
 }

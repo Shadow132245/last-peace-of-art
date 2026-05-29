@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useCallback } from "react";
+import { useI18n } from "@/providers/i18n-provider";
 
 export default function ProfilePage() {
+  const { t } = useI18n();
   const router = useRouter();
   const { data: session, refetch: refetchSession } = authClient.useSession();
 
@@ -70,12 +72,12 @@ export default function ProfilePage() {
         if (type === "avatar") setAvatar(data.url);
         else setBanner(data.url);
       } else {
-        setUploadError(data.error || "Upload failed — try a smaller image or set up Vercel Blob");
+        setUploadError(data.error || t("dashboard.editProfile.uploadFailed"));
         if (type === "avatar") setAvatar(avatarPrev);
         else setBanner(bannerPrev);
       }
     } catch {
-      setUploadError("Network error — could not reach upload server");
+      setUploadError(t("dashboard.editProfile.networkError"));
       if (type === "avatar") setAvatar(avatarPrev);
       else setBanner(bannerPrev);
     }
@@ -104,7 +106,7 @@ export default function ProfilePage() {
     setSaving(false);
   };
 
-  const username = session?.user.name ?? "username";
+  const username = session?.user.name ?? t("dashboard.editProfile.username");
 
   return (
     <motion.div
@@ -119,7 +121,7 @@ export default function ProfilePage() {
         transition={{ delay: 0.1, duration: 0.3 }}
         className="mb-8 text-3xl font-bold"
       >
-        Edit Profile
+        {t("dashboard.editProfile.title")}
       </motion.h1>
 
       <div className="grid gap-8 lg:grid-cols-2">
@@ -127,7 +129,7 @@ export default function ProfilePage() {
         <div className="space-y-6">
           {/* Avatar */}
           <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
-            <h3 className="mb-4 font-semibold">Profile Photo</h3>
+            <h3 className="mb-4 font-semibold">{t("dashboard.editProfile.profilePhoto")}</h3>
             <div className="flex items-center gap-4">
               <div
                 className="overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800"
@@ -143,16 +145,16 @@ export default function ProfilePage() {
               </div>
               <div className="flex flex-col gap-2">
                 <label className="cursor-pointer rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800">
-                  {uploading === "avatar" ? "Uploading..." : "Upload"}
+                  {uploading === "avatar" ? t("dashboard.editProfile.uploading") : t("dashboard.editProfile.upload")}
                   <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, "avatar")} />
                 </label>
                 {avatar && (
-                  <button onClick={() => setAvatar(null)} className="text-sm text-red-500 hover:underline">Remove</button>
+                  <button onClick={() => setAvatar(null)} className="text-sm text-red-500 hover:underline">{t("dashboard.editProfile.remove")}</button>
                 )}
               </div>
             </div>
             <div className="mt-4">
-              <label className="text-xs font-medium text-zinc-500">Size: {avatarSize}px</label>
+              <label className="text-xs font-medium text-zinc-500">{t("dashboard.editProfile.size").replace("{size}", String(avatarSize))}</label>
               <input
                 type="range"
                 min={40}
@@ -166,7 +168,7 @@ export default function ProfilePage() {
 
           {/* Banner */}
           <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
-            <h3 className="mb-4 font-semibold">Cover Banner</h3>
+            <h3 className="mb-4 font-semibold">{t("dashboard.editProfile.coverBanner")}</h3>
             {banner && (
               <div
                 className="mb-4 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800"
@@ -177,15 +179,15 @@ export default function ProfilePage() {
             )}
             <div className="flex items-center gap-2">
               <label className="cursor-pointer rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800">
-                {uploading === "banner" ? "Uploading..." : "Upload"}
+                {uploading === "banner" ? t("dashboard.editProfile.uploading") : t("dashboard.editProfile.upload")}
                 <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, "banner")} />
               </label>
               {banner && (
-                <button onClick={() => setBanner(null)} className="text-sm text-red-500 hover:underline">Remove</button>
+                <button onClick={() => setBanner(null)} className="text-sm text-red-500 hover:underline">{t("dashboard.editProfile.remove")}</button>
               )}
             </div>
             <div className="mt-4">
-              <label className="text-xs font-medium text-zinc-500">Height: {bannerHeight}px</label>
+              <label className="text-xs font-medium text-zinc-500">{t("dashboard.editProfile.height").replace("{height}", String(bannerHeight))}</label>
               <input
                 type="range"
                 min={100}
@@ -199,39 +201,39 @@ export default function ProfilePage() {
 
           {/* Bio */}
           <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
-            <h3 className="mb-4 font-semibold">Bio</h3>
+            <h3 className="mb-4 font-semibold">{t("dashboard.editProfile.bio")}</h3>
             <textarea
               className="min-h-[100px] w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 transition-colors focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
               rows={4}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              placeholder="Tell us about yourself..."
+              placeholder={t("dashboard.editProfile.bioPlaceholder")}
             />
           </div>
 
           {/* Skills */}
           <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
-            <h3 className="mb-4 font-semibold">Skills</h3>
+            <h3 className="mb-4 font-semibold">{t("dashboard.editProfile.skills")}</h3>
             <input
               className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 transition-colors focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
               value={skills}
               onChange={(e) => setSkills(e.target.value)}
-              placeholder="TypeScript, React, Design..."
+              placeholder={t("dashboard.editProfile.skillsPlaceholder")}
             />
           </div>
 
           {uploadError && <p className="text-sm text-red-500">{uploadError}</p>}
-          {saved && <p className="text-sm text-green-500">Profile saved!</p>}
+          {saved && <p className="text-sm text-green-500">{t("dashboard.editProfile.saved")}</p>}
 
           <div className="flex gap-4">
-            <Button onClick={handleSave} loading={saving}>Save Profile</Button>
-            <Button variant="outline" onClick={() => router.push("/dashboard")}>Back</Button>
+            <Button onClick={handleSave} loading={saving}>{t("dashboard.editProfile.save")}</Button>
+            <Button variant="outline" onClick={() => router.push("/dashboard")}>{t("dashboard.editProfile.back")}</Button>
           </div>
         </div>
 
         {/* Live Preview */}
         <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800 lg:sticky lg:top-24 lg:self-start">
-          <h3 className="mb-4 font-semibold">Live Preview</h3>
+          <h3 className="mb-4 font-semibold">{t("dashboard.editProfile.livePreview")}</h3>
           <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
             {banner && (
               <div
@@ -256,7 +258,7 @@ export default function ProfilePage() {
                   )}
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-xl font-bold truncate">{session?.user.name ?? "Username"}</h2>
+                  <h2 className="text-xl font-bold truncate">{session?.user.name ?? t("dashboard.editProfile.username")}</h2>
                   {bio && <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{bio}</p>}
                   {skills && skills.split(",").map(s => s.trim()).filter(Boolean).length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-1.5">

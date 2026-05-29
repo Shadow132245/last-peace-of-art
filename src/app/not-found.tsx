@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
+import { useI18n } from "@/providers/i18n-provider";
 
 export default function NotFound() {
+  const { t } = useI18n();
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -25,7 +27,7 @@ export default function NotFound() {
         transition={{ delay: 0.25, duration: 0.3 }}
         className="mt-4 text-lg text-zinc-500 dark:text-zinc-400"
       >
-        Page not found
+        {t("notFound.description")}
       </motion.p>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -36,7 +38,7 @@ export default function NotFound() {
           href="/"
           className="mt-8 inline-block rounded-lg bg-zinc-900 px-6 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
         >
-          Go Home
+          {t("notFound.goHome")}
         </Link>
       </motion.div>
     </motion.div>

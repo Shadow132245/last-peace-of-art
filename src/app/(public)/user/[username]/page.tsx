@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { AddFriendButton } from "@/components/friends/friend-button";
 import { SafeImg, SafeBanner } from "@/components/ui/safe-image";
 import { FadeInView } from "@/components/ui/fade-in-view";
+import { getServerT } from "@/lib/server-i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,10 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
   const decoded = decodeURIComponent(username);
   const user = await findUser(decoded);
 
-  if (!user) return { title: "User Not Found" };
+  if (!user) {
+    const { t } = await getServerT();
+    return { title: t("profile.userNotFound") };
+  }
 
   return {
     title: `${user.name} — Profile`,
@@ -34,6 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
 }
 
 export default async function UserProfilePage({ params }: { params: Promise<{ username: string }> }) {
+  const { t: pt } = await getServerT();
   const { username } = await params;
   const decoded = decodeURIComponent(username);
 
@@ -120,7 +125,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
                   href={`/dashboard/messages?userId=${user.id}`}
                   className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
                 >
-                  Send Message
+                  {pt("profile.sendMessage")}
                 </Link>
                 <AddFriendButton userId={user.id} />
               </div>
@@ -132,7 +137,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       {user.threads.length > 0 && (
         <FadeInView>
           <section className="mb-8">
-            <h2 className="mb-4 text-xl font-semibold">Threads ({user.threads.length})</h2>
+            <h2 className="mb-4 text-xl font-semibold">{pt("profile.threads").replace("{count}", String(user.threads.length))}</h2>
             <div className="grid gap-3">
               {user.threads.map((thread) => (
                 <Link
@@ -142,7 +147,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
                 >
                   <div className="flex items-center justify-between">
                     <h3 className="font-semibold">{thread.pinned && "📌 "}{thread.title}</h3>
-                    <span className="text-xs text-zinc-400">{thread._count.comments} comments</span>
+                    <span className="text-xs text-zinc-400">{thread._count.comments} {pt("forum.comments")}</span>
                   </div>
                   {thread.tags.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
@@ -161,7 +166,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       {user.projects.length > 0 && (
         <FadeInView delay={0.1}>
           <section className="mb-8">
-            <h2 className="mb-4 text-xl font-semibold">Projects ({user.projects.length})</h2>
+            <h2 className="mb-4 text-xl font-semibold">{pt("profile.projects").replace("{count}", String(user.projects.length))}</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               {user.projects.map((project) => (
                 <Link
@@ -181,7 +186,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       {user.posts.length > 0 && (
         <FadeInView delay={0.2}>
           <section className="mb-8">
-            <h2 className="mb-4 text-xl font-semibold">Posts ({user.posts.length})</h2>
+            <h2 className="mb-4 text-xl font-semibold">{pt("profile.posts").replace("{count}", String(user.posts.length))}</h2>
             <div className="grid gap-4">
               {user.posts.map((post) => (
                 <Link
@@ -201,14 +206,14 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       {user.comments.length > 0 && (
         <FadeInView delay={0.3}>
           <section className="mb-8">
-            <h2 className="mb-4 text-xl font-semibold">Recent Comments</h2>
+            <h2 className="mb-4 text-xl font-semibold">{pt("profile.recentComments")}</h2>
             <div className="grid gap-3">
               {user.comments.map((comment) => (
                 <div key={comment.id} className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
                   <p className="text-sm text-zinc-700 dark:text-zinc-300">{comment.content}</p>
                   {comment.thread && (
                     <Link href={`/forum/${comment.thread.id}`} className="mt-1 inline-block text-xs text-amber-600 hover:underline dark:text-amber-400">
-                      on {comment.thread.title}
+                      {pt("profile.onComment").replace("{title}", comment.thread.title)}
                     </Link>
                   )}
                   <p className="mt-1 text-xs text-zinc-400">{new Date(comment.createdAt).toLocaleDateString()}</p>
@@ -221,7 +226,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
 
       {!user.threads.length && !user.projects.length && !user.posts.length && !user.comments.length && (
         <FadeInView>
-          <p className="text-zinc-400">This user hasn&apos;t published anything yet.</p>
+          <p className="text-zinc-400">{pt("profile.noContent")}</p>
         </FadeInView>
       )}
     </div>

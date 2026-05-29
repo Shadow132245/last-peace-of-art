@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { motion } from "motion/react";
 import { StaggerList, StaggerItem } from "@/components/ui/stagger-list";
+import { useI18n } from "@/providers/i18n-provider";
 
 type SearchResult = {
   id: string;
@@ -20,15 +21,16 @@ type SearchResult = {
   commentCount: number;
 };
 
-const typeMeta: Record<string, { label: string; badge: string }> = {
-  post: { label: "Post", badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
-  project: { label: "Project", badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300" },
-  thread: { label: "Thread", badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
-  user: { label: "User", badge: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300" },
+const typeBadges: Record<string, string> = {
+  post: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  project: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+  thread: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  user: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
 };
 
-function ResultCard({ r }: { r: SearchResult }) {
-  const meta = typeMeta[r.type] ?? typeMeta.post;
+function ResultCard({ r, t }: { r: SearchResult; t: (key: string) => string }) {
+  const badge = typeBadges[r.type] ?? typeBadges.post;
+  const label = t(`search.types.${r.type}`);
 
   return (
     <Link
@@ -39,8 +41,8 @@ function ResultCard({ r }: { r: SearchResult }) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h3 className="truncate font-semibold">{r.title}</h3>
-            <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium ${meta.badge}`}>
-              {meta.label}
+            <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium ${badge}`}>
+              {label}
             </span>
           </div>
           {r.description && (
@@ -101,6 +103,7 @@ function ResultCard({ r }: { r: SearchResult }) {
 }
 
 export default function SearchPage() {
+  const { t } = useI18n();
   const [q, setQ] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -153,7 +156,7 @@ export default function SearchPage() {
         transition={{ delay: 0.1, duration: 0.3 }}
         className="mb-8 text-3xl font-bold"
       >
-        Search
+        {t("search.title")}
       </motion.h1>
 
       <motion.div
@@ -166,7 +169,7 @@ export default function SearchPage() {
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search posts, projects, threads, users..."
+          placeholder={t("search.placeholder")}
           className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 pl-12 text-sm text-zinc-900 placeholder-zinc-400 transition-colors focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
           autoFocus
         />
@@ -194,7 +197,7 @@ export default function SearchPage() {
           transition={{ delay: 0.2 }}
           className="py-12 text-center"
         >
-          <p className="text-zinc-500 dark:text-zinc-400">No results for &ldquo;{q}&rdquo;</p>
+          <p className="text-zinc-500 dark:text-zinc-400">{t("search.noResults").replace("{query}", q)}</p>
         </motion.div>
       )}
 
@@ -205,12 +208,12 @@ export default function SearchPage() {
           transition={{ delay: 0.2, duration: 0.3 }}
           className="space-y-6"
         >
-          <p className="text-sm text-zinc-500">{results.length} result{results.length !== 1 ? "s" : ""}</p>
+          <p className="text-sm text-zinc-500">{t("search.results").replace("{count}", String(results.length))}</p>
 
           {typeOrder.map((type) => {
             const items = grouped[type];
             if (!items || items.length === 0) return null;
-            const meta = typeMeta[type] ?? typeMeta.post;
+            const label = t(`search.types.${type}`);
             return (
               <motion.section
                 key={type}
@@ -219,12 +222,12 @@ export default function SearchPage() {
                 transition={{ duration: 0.3, delay: 0.25 }}
               >
                 <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
-                  {meta.label}s ({items.length})
+                  {label}s ({items.length})
                 </h2>
                 <StaggerList className="space-y-2">
                   {items.map((r) => (
                     <StaggerItem key={`${r.type}-${r.id}`}>
-                      <ResultCard r={r} />
+                      <ResultCard r={r} t={t} />
                     </StaggerItem>
                   ))}
                 </StaggerList>

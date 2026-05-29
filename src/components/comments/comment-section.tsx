@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useI18n } from "@/providers/i18n-provider";
 
 type Comment = {
   id: string;
@@ -14,6 +15,7 @@ type Comment = {
 };
 
 export function CommentSection({ entityType, entityId }: { entityType: string; entityId: string }) {
+  const { t } = useI18n();
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -49,17 +51,17 @@ export function CommentSection({ entityType, entityId }: { entityType: string; e
   };
 
   const handleDelete = async (commentId: string) => {
-    if (!confirm("Delete this comment?")) return;
+    if (!confirm(t("comments.deleteConfirm"))) return;
     const res = await fetch(`/api/comments/${commentId}`, { method: "DELETE" });
     if (res.ok) setComments((prev) => prev.filter((c) => c.id !== commentId));
   };
 
   return (
     <div className="mt-12">
-      <h2 className="mb-6 text-xl font-semibold">{comments.length} Comment{comments.length !== 1 ? "s" : ""}</h2>
+      <h2 className="mb-6 text-xl font-semibold">{comments.length === 1 ? t("comments.titleSingular") : t("comments.title").replace("{count}", String(comments.length))}</h2>
 
       {fetching ? (
-        <p className="text-sm text-zinc-400">Loading comments...</p>
+        <p className="text-sm text-zinc-400">{t("comments.loading")}</p>
       ) : (
         <div className="space-y-6">
           {comments.map((comment) => (
@@ -71,7 +73,7 @@ export function CommentSection({ entityType, entityId }: { entityType: string; e
                   <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
                 </div>
                 {session?.user.name === comment.user.name && (
-                  <button onClick={() => handleDelete(comment.id)} className="text-xs text-red-500 hover:underline">Delete</button>
+                  <button onClick={() => handleDelete(comment.id)} className="text-xs text-red-500 hover:underline">{t("comments.delete")}</button>
                 )}
               </div>
               <p className="text-sm text-zinc-700 dark:text-zinc-300">{comment.content}</p>
@@ -88,16 +90,16 @@ export function CommentSection({ entityType, entityId }: { entityType: string; e
               rows={3}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Write a comment..."
+              placeholder={t("comments.placeholder")}
               required
             />
             <div className="flex justify-end">
-              <Button type="submit" loading={loading} size="sm">Post Comment</Button>
+              <Button type="submit" loading={loading} size="sm">{t("comments.postComment")}</Button>
             </div>
           </form>
         ) : (
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            <Link href="/login" className="text-amber-600 hover:underline dark:text-amber-400">Sign in</Link> to leave a comment.
+            <Link href="/login" className="text-amber-600 hover:underline dark:text-amber-400">{t("comments.signInLink")}</Link> {t("comments.signInToComment")}
           </p>
         )}
       </div>

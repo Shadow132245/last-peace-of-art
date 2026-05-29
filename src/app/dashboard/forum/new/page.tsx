@@ -6,8 +6,10 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { useI18n } from "@/providers/i18n-provider";
 
 export default function NewThreadPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -32,7 +34,7 @@ export default function NewThreadPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error ?? "Failed to create thread");
+      setError(data.error ?? t("dashboard.createThread.error"));
     } else {
       router.push("/forum");
     }
@@ -47,7 +49,7 @@ export default function NewThreadPage() {
         transition={{ duration: 0.3 }}
         className="mb-8 text-3xl font-bold"
       >
-        New Discussion
+        {t("dashboard.createThread.title")}
       </motion.h1>
 
       <motion.form
@@ -57,10 +59,10 @@ export default function NewThreadPage() {
         onSubmit={handleSubmit}
         className="flex flex-col gap-6"
       >
-        <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <Input label={t("dashboard.createProject.titleLabel")} value={title} onChange={(e) => setTitle(e.target.value)} required />
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Content</label>
+            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{t("dashboard.createThread.contentLabel")}</label>
             <ImageUpload mode="markdown" onInsert={(url) => setContent((c) => c + "\n" + url)} />
           </div>
           <textarea
@@ -71,13 +73,13 @@ export default function NewThreadPage() {
             required
           />
         </div>
-        <Input label="Tags (comma-separated)" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="discussion, question" />
+        <Input label={t("dashboard.createProject.tagsLabel")} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("dashboard.createThread.tagsPlaceholder")} />
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <div className="flex gap-4">
-          <Button type="submit" loading={loading}>Create Thread</Button>
-          <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
+          <Button type="submit" loading={loading}>{t("dashboard.createThread.submit")}</Button>
+          <Button type="button" variant="outline" onClick={() => router.back()}>{t("dashboard.createProject.cancel")}</Button>
         </div>
       </motion.form>
     </div>

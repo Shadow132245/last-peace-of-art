@@ -6,13 +6,18 @@ import { headers } from "next/headers";
 import { parsePagination, buildPaginationMeta, getSkipTake } from "@/lib/pagination";
 import { Pagination } from "@/components/ui/pagination";
 import { AnimatedList, AnimatedItem } from "@/components/ui/animated-list";
+import { getServerT } from "@/lib/server-i18n";
 
-export const metadata: Metadata = {
-  title: "Forum",
-  description: "Join discussions, ask questions, and connect with the community.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getServerT();
+  return {
+    title: t("forum.title"),
+    description: "Join discussions, ask questions, and connect with the community.",
+  };
+}
 
 export default async function ForumPage(props: { searchParams?: Promise<{ page?: string }> }) {
+  const { t } = await getServerT();
   const searchParams = await props.searchParams;
   const params = parsePagination(new URLSearchParams(searchParams ?? {}));
   const { skip, take } = getSkipTake(params);
@@ -46,19 +51,19 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
       <div className="flex gap-10">
         <div className="min-w-0 flex-1">
           <div className="mb-8 flex items-center justify-between">
-            <h1 className="text-3xl font-bold">Forum</h1>
+            <h1 className="text-3xl font-bold">{t("forum.title")}</h1>
             {session && (
               <Link
                 href="/dashboard/forum/new"
                 className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
               >
-                New Thread
+                {t("forum.newThread")}
               </Link>
             )}
           </div>
 
           {threads.length === 0 ? (
-            <p className="text-zinc-500 dark:text-zinc-400">No discussions yet. Start one!</p>
+            <p className="text-zinc-500 dark:text-zinc-400">{t("forum.empty")}</p>
           ) : (
             <AnimatedList className="grid gap-4">
               {threads.map((thread) => (
@@ -86,12 +91,12 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
             </AnimatedList>
           )}
 
-          <Pagination basePath="/forum" {...meta} />
+          <Pagination basePath="/forum" previousLabel={t("pagination.previous")} nextLabel={t("pagination.next")} {...meta} />
         </div>
 
         <aside className="hidden w-64 shrink-0 lg:block">
           <div className="sticky top-24 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">Hot Threads</h3>
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">{t("forum.sidebarTitle")}</h3>
             <div className="space-y-4">
               {trending.map((thread, i) => (
                 <Link key={thread.id} href={`/forum/${thread.id}`} className="group block">
@@ -104,7 +109,7 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
                   </div>
                 </Link>
               ))}
-              {trending.length === 0 && <p className="text-sm text-zinc-400">No discussions yet.</p>}
+              {trending.length === 0 && <p className="text-sm text-zinc-400">{t("forum.empty")}</p>}
             </div>
           </div>
         </aside>

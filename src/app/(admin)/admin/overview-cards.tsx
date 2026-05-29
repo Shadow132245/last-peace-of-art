@@ -2,8 +2,10 @@
 
 import { motion } from "motion/react";
 import { staggerContainer, staggerItem } from "@/lib/animations";
+import { useI18n } from "@/providers/i18n-provider";
 
 export function OverviewCards({ stats }: { stats: { label: string; value: number; icon: string; color: string; bg: string }[] }) {
+  const { t } = useI18n();
   return (
     <div>
       <motion.h1
@@ -12,7 +14,7 @@ export function OverviewCards({ stats }: { stats: { label: string; value: number
         transition={{ duration: 0.35 }}
         className="mb-8 text-3xl font-bold"
       >
-        Overview
+        {t("admin.overview")}
       </motion.h1>
       <motion.div
         variants={staggerContainer}

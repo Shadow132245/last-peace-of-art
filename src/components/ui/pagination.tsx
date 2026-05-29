@@ -6,9 +6,11 @@ type Props = {
   totalPages: number;
   hasNext: boolean;
   hasPrev: boolean;
+  previousLabel?: string;
+  nextLabel?: string;
 };
 
-export function Pagination({ basePath, page, totalPages, hasNext, hasPrev }: Props) {
+export function Pagination({ basePath, page, totalPages, hasNext, hasPrev, previousLabel = "Previous", nextLabel = "Next" }: Props) {
   if (totalPages <= 1) return null;
 
   const pages: (number | "...")[] = [];
@@ -27,7 +29,7 @@ export function Pagination({ basePath, page, totalPages, hasNext, hasPrev }: Pro
           href={`${basePath}?page=${page - 1}`}
           className="rounded-lg px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
         >
-          Previous
+          {previousLabel}
         </Link>
       )}
 
@@ -54,7 +56,7 @@ export function Pagination({ basePath, page, totalPages, hasNext, hasPrev }: Pro
           href={`${basePath}?page=${page + 1}`}
           className="rounded-lg px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
         >
-          Next
+          {nextLabel}
         </Link>
       )}
     </nav>

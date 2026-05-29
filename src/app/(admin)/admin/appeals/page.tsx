@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/db";
 import { AppealActions } from "./appeal-actions";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
+import { getServerT } from "@/lib/server-i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminAppealsPage() {
+  const { t } = await getServerT();
   const appeals = await prisma.appeal.findMany({
     include: { user: { select: { name: true, email: true } } },
     orderBy: [{ status: "asc" }, { createdAt: "desc" }],
@@ -12,17 +14,17 @@ export default async function AdminAppealsPage() {
 
   return (
     <div>
-      <AdminPageHeader title="Appeals" />
+      <AdminPageHeader title={t("admin.appeals")} />
       <AdminTable>
         <AdminTableHead>
           <tr>
-            <th className="px-4 py-3 font-medium">User</th>
-            <th className="px-4 py-3 font-medium">Email</th>
-            <th className="px-4 py-3 font-medium">Reason</th>
-            <th className="px-4 py-3 font-medium">Description</th>
-            <th className="px-4 py-3 font-medium">Status</th>
-            <th className="px-4 py-3 font-medium">Date</th>
-            <th className="px-4 py-3 font-medium">Actions</th>
+            <th className="px-4 py-3 font-medium">{t("admin.user")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.email")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.reason")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.description")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.status")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.date")}</th>
+            <th className="px-4 py-3 font-medium">{t("admin.actions")}</th>
           </tr>
         </AdminTableHead>
         <AdminTableBody>
@@ -46,7 +48,7 @@ export default async function AdminAppealsPage() {
                 {appeal.status === "pending" && <AppealActions appealId={appeal.id} />}
                 {appeal.status !== "pending" && (
                   <span className="text-xs text-zinc-400">
-                    {appeal.adminResponse ? `Response: ${appeal.adminResponse}` : "No response"}
+                    {appeal.adminResponse ? `${t("admin.responsePrefix")} ${appeal.adminResponse}` : t("admin.noResponse")}
                   </span>
                 )}
               </AdminCell>
@@ -54,7 +56,7 @@ export default async function AdminAppealsPage() {
           ))}
         </AdminTableBody>
       </AdminTable>
-      {appeals.length === 0 && <AdminEmpty message="No appeals yet." />}
+      {appeals.length === 0 && <AdminEmpty message={t("admin.noAppeals")} />}
     </div>
   );
 }
