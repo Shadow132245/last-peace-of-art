@@ -150,6 +150,9 @@ export function Navbar() {
           <Link href="/search" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
             {t("nav.search")}
           </Link>
+          <Link href="/about" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+            {t("nav.aboutUs")}
+          </Link>
 
           <LocaleSwitcher />
           <button onClick={toggleDark} className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100" aria-label={t("nav.toggleDark")}>
@@ -207,6 +210,7 @@ export function Navbar() {
               <Link href="/blog" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.posts")}</Link>
               <Link href="/forum" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.forum")}</Link>
               <Link href="/search" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.search")}</Link>
+              <Link href="/about" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.aboutUs")}</Link>
               {session ? (
                 <>
                   <Link href={`/user/${encodeURIComponent(session.user.name)}`} className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.viewProfile")}</Link>
