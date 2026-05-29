@@ -79,12 +79,16 @@
 8. **.env.example updated** — added SMTP env vars
 9. **Prisma generate** — client successfully generated with new TwoFactor model
 
-### Session 27 — 2026-05-29 (Bug Fixes: I18nProvider SSR + SSL + Prisma push)
+### Session 27 — 2026-05-29 (Bug Fixes + Resend Email + 2FA Toggle)
 
 1. **I18nProvider SSR crash fix** — `I18nProvider` had a `!mounted` guard that returned children WITHOUT `I18nContext.Provider` during SSR. Any client component calling `useI18n()` during server rendering would throw `useI18n must be used within I18nProvider`. This also caused cascading errors (`Cannot read properties of null (reading 'useRef')`) because motion components couldn't render after the context error. Fix: always render the provider wrapper, even on the server.
 2. **DATABASE_URL SSL mode fixed** — Changed `sslmode=require` to `sslmode=verify-full` to silence the pg SSL deprecation warning and use the stronger security mode.
 3. **Prisma db push** — Ran `npx prisma generate && npx prisma db push` to ensure the `TwoFactor` model table exists in the database (fixes Better Auth `Failed to query fallback join for model user`).
-4. **All pushed to GitHub** — commit `xyz`
+4. **SMTP credentials set in .env** — Gmail App Password configured for sending verification emails and 2FA OTPs.
+5. **Resend verification email** — Added email input + resend button in verify-email page; register form now passes email as query param so it's pre-filled.
+6. **2FA toggle in Settings** — Settings page now has enable/disable toggle with password confirmation + backup codes display + regenerate button.
+7. **auth.ts** — Added `BETTER_AUTH_URL` production URL (`https://lastpeace.vercel.app`).
+8. **All pushed to GitHub** — commit `1b47fbf`
 
 ### Session 26 — 2026-05-29 (i18n Completion)
 

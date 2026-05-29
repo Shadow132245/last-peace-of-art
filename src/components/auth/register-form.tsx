@@ -27,7 +27,7 @@ export function RegisterForm() {
       password,
     });
     if (err) setError(err.message ?? err.statusText);
-    else router.push("/verify-email");
+    else router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     setLoading(false);
   };
 
