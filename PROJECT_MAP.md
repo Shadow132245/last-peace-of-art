@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `173162f` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅**
+> Generated: 2026-05-29 | Last commit: `9d0ea1b` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅**
 
 ---
 
@@ -55,10 +55,17 @@
 | M18 | Persistent file storage — Vercel Blob + data URI fallback: uploads use Vercel Blob (if token set) or base64 data URI in DB (small images <500KB) to survive redeployments; local filesystem as last resort | ✅ |
 | M19 | Profile 404 fix, RoleButton redesign with founder option, case-insensitive username lookup | ✅ |
 | M20 | User avatar dropdown in navbar — click avatar to view profile, posts, threads, projects, dashboard, settings, sign out | ✅ |
+| M21 | Live search rewrite — debounced input, grouped results (posts/projects/threads/users), rich cards with username/likes/dislikes/views/comment count | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 10 — 2026-05-29 (commit `9d0ea1b`)
+
+1. **Search API rewrite** — replaced tsvector full-text search with Prisma `findMany` + `contains` + `mode: "insensitive"` for cross-language support (Arabic, English). Added forum threads to search results. Each result now includes: `userName`, `userId`, `userImage`, `likesCount`, `dislikesCount`, `views`, `commentCount`
+2. **Search page rewrite** — single client component with debounced live search (200ms) instead of form submit. Results grouped by type (Posts, Projects, Threads, Users). Each result card shows type badge, title, description, user avatar+name link, likes/dislikes/views/comment icons with counts. Removed old `search-input.tsx` and `search-results.tsx`
+3. **Profile page posts/projects clickable** — wrapped in `<Link>` to navigate to full detail pages
 
 ### Session 9 — 2026-05-29 (commit `173162f`)
 
@@ -195,7 +202,7 @@ src/
 │   │   ├── blog/                 # Blog listing + [slug] — popular sidebar, comments, likes, views
 │   │   ├── projects/             # Project gallery + [id] detail — trending sidebar, media, comments, likes
 │   │   ├── forum/                # Forum listing + [threadId] detail — hot sidebar, comments, likes
-│   │   ├── search/               # Full-text search
+│   │   ├── search/               # Live search — debounced input, grouped results, rich cards with likes/dislikes/views/username
 │   │   ├── terms/                # Terms of Service
 │   │   ├── privacy/              # Privacy Policy
 │   │   ├── suspended/            # Suspension notice page
@@ -229,8 +236,8 @@ src/
 │   │   ├── posts/                # User posts CRUD + publish toggle (bug_hunter auto-publish)
 │   │   ├── profile/              # GET/PUT profile (avatar, bio, skills, social)
 │   │   ├── forum/                # Threads + comments (bug_hunter auto-publish)
-│   │   ├── upload/               # File upload (images 5MB, zip 50MB) — saves to Vercel Blob (persistent) or local (dev)
-│   │   ├── search/               # Full-text search
+│   │   ├── upload/               # File upload (images 5MB, zip 50MB) — Blob → data URI → local (dev)
+│   │   ├── search/               # Full-text search — posts/projects/threads/users with likes/dislikes/views
 │   │   ├── comments/             # Unified POST/GET/DELETE comments
 │   │   ├── likes/                # POST toggle like/dislike, GET counts
 │   │   ├── reports/              # POST create report + notifies admins
@@ -361,6 +368,19 @@ Notification  → id, userId, type, title, message?, link?, read
 ---
 
 ## [CONVERSATION_LOG]
+
+### Session 10 — Live Search Rewrite (2026-05-29)
+
+**User request in Egyptian Arabic:**
+> "لما باجي اعمل سيرش المفروض ان الموقع يساعدني انو مثلا اول حرف اكتبه يعرضلي كل الحاجات الي في البوستات والبروجكتات الي بنفس الحرف... ولو طلعلو نفس العنوان يتكتب تحت الشئ الي بيبحث عنو اسم المستخدم وعدد الايكات والديس لايكات والمشاهدات"
+> (When I search, the site should show me results as I type the first letter, display posts/projects matching the search, and show username, likes, dislikes, and views under each result to make searching easier)
+
+**What was done:**
+1. **Search API rewrite** — switched from PostgreSQL tsvector to Prisma `findMany` with `contains` + `mode: "insensitive"` for cross-language support (Arabic, English). Added forum threads to search results. Each result now includes: `userName`, `userId`, `userImage`, `likesCount`, `dislikesCount`, `views`, `commentCount`
+2. **Live search** — single client component with debounced input (200ms). Results appear as you type, no form submit needed
+3. **Grouped results** — results organized by type: Posts, Projects, Threads, Users — each with section headers
+4. **Rich result cards** — each card shows: type badge (color-coded), title, description excerpt, user avatar+name (clickable link to profile), likes count, dislikes count, views count, comment count (for threads)
+5. **Removed old files** — deleted `search-input.tsx` and `search-results.tsx`, consolidated into single `page.tsx`
 
 ### Session 9 — Profile Clickable Posts/Projects (2026-05-29)
 
