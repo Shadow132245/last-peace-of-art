@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `f8fa419` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅**
+> Generated: 2026-05-29 | Last commit: `e7419b4` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅**
 
 ---
 
@@ -56,10 +56,21 @@
 | M19 | Profile 404 fix, RoleButton redesign with founder option, case-insensitive username lookup | ✅ |
 | M20 | User avatar dropdown in navbar — click avatar to view profile, posts, threads, projects, dashboard, settings, sign out | ✅ |
 | M21 | Live search rewrite — debounced input, grouped results (posts/projects/threads/users), rich cards with username/likes/dislikes/views/comment count | ✅ |
+| M22 | Ban system fix — banned users blocked from ALL pages via layout checks; suspended users blocked from dashboard/admin; upload persistence — data URI threshold raised to 2MB; upload error handling + revert in profile dashboard | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 12 — 2026-05-29 (commit `e7419b4`)
+
+1. **Ban system implemented** — created `/banned` page at `src/app/banned/page.tsx` (outside `(public)` route group to avoid redirect loop) showing a clear "Account Banned" message with Contact Support link
+2. **Ban check in public layout** — `(public)/layout.tsx` now fetches session and checks `user.banned` → redirects to `/banned` immediately for ALL public pages
+3. **Ban + suspended check in dashboard layout** — `dashboard/layout.tsx` checks banned → `/banned`, suspended → `/suspended`
+4. **Ban + suspended check in admin layout** — `(admin)/layout.tsx` (client component) now checks banned → `/banned`, suspended → `/suspended` before admin role check
+5. **Deleted dead proxy.ts** — the `proxy.ts` file had suspend redirect logic but was never imported anywhere, making it completely dead code
+6. **Data URI threshold raised** — from 500KB to 2MB in `upload/route.ts` `isSmallImage()`, so profile images up to 2MB are stored as base64 data URIs in the database instead of being lost on Vercel redeploy
+7. **Upload error handling in profile dashboard** — added `avatarPrev`/`bannerPrev` state to remember previous values; if upload fails, reverts to the previous value and shows error message; added `uploadError` state with red error text display
 
 ### Session 11 — 2026-05-29 (commit `f8fa419`)
 
@@ -203,6 +214,7 @@ User ──→ /auth/login ──→ [Google OAuth / Email+Password]
 src/
 ├── app/
 │   ├── (public)/                 # Public routes
+│   │   ├── layout.tsx            # Banned check — redirects to /banned
 │   │   ├── page.tsx              # Landing — auth-aware (hides CTA when logged in)
 │   │   ├── blog/                 # Blog listing + [slug] — popular sidebar, comments, likes, views
 │   │   ├── projects/             # Project gallery + [id] detail — trending sidebar, media, comments, likes
@@ -216,8 +228,8 @@ src/
 │   │   ├── apply/                # Staff application form (6 questions)
 │   │   └── user/[username]/      # Public profile — avatar, banner, bio, skills, threads, comments, role badges, msg/friend buttons
 │   ├── (auth)/                   # Login / Register
-│   ├── (admin)/                  # Admin panel
-│   │   ├── layout.tsx            # Sidebar (reports/tickets/applications links added)
+│   ├── (admin)/                  # Admin panel — banned + suspended + role check in layout
+│   │   ├── layout.tsx            # Sidebar, banned/suspended/role checks
 │   │   └── admin/
 │   │       ├── page.tsx          # Overview stats
 │   │       ├── delete-button.tsx # Reusable delete client component
@@ -229,7 +241,7 @@ src/
 │   │       ├── appeals/          # Appeals list + approve/reject
 │   │       ├── tickets/          # Tickets list + inline status change + response
 │   │       └── applications/     # Applications list + accept/reject
-│   ├── dashboard/                # Protected dashboard
+│   ├── dashboard/                # Protected dashboard — banned + suspended check in layout
 │   │   ├── projects/             # My projects CRUD
 │   │   ├── posts/                # My posts CRUD + publish/draft toggle
 │   │   ├── profile/              # Avatar, banner, bio, skills + live preview + resize
@@ -265,11 +277,11 @@ src/
 │   │       ├── tickets/[id]/     # PATCH status + response + notify user
 │   │       ├── applications/     # GET all applications
 │   │       └── applications/[id]/ # PATCH approve/reject + notify + auto-role
+│   ├── banned/                   # Banned notice page (no navbar/footer)
 │   ├── appeals/                  # POST submit appeal (suspended users only)
 │   └── layout.tsx                # Root — dark mode flash prevention script
 │
 ├── next.config.ts                # Security headers + source maps disabled
-├── proxy.ts                      # Route protection + suspension redirect (Next.js 16)
 ├── components/
 │   ├── ui/                       # Button, Input, Markdown, Pagination, ImageUpload, NotificationBell, admin components
 │   ├── layout/                   # Navbar (dark toggle, auth-aware, NotificationBell, Messages/Friends links), Footer
@@ -342,9 +354,14 @@ Notification  → id, userId, type, title, message?, link?, read
 | Conversations deduped | Messages API groups by user, returns latest message per conversation |
 | Persistent file storage | 3-tier: Vercel Blob (cloud) → data URI in DB (small images <500KB) → local `public/uploads/` (dev) |
 | Vercel filesystem ephemeral | Files written to `public/uploads/` are lost on next deploy — Blob + data URI solve this |
-| Data URI threshold | Small images (<500KB) stored as base64 data URIs in the database when no `BLOB_READ_WRITE_TOKEN` |
+| Data URI threshold | Small images (<2MB) stored as base64 data URIs in the database when no `BLOB_READ_WRITE_TOKEN` — raised from 500KB to 2MB to cover most profile images |
 | Blob env var | `BLOB_READ_WRITE_TOKEN` in Vercel Dashboard → env vars enables Vercel Blob for all files including large ones and zips |
 | decodeURIComponent for usernames | Profile URLs use `decodeURIComponent(params.username)` to handle spaces and special characters in names |
+| Ban system — 3 layout checks | `(public)/layout.tsx`, `dashboard/layout.tsx`, `(admin)/layout.tsx` all check `user.banned` and redirect to `/banned` — no middleware needed |
+| Suspended blocked from dashboard/admin | `dashboard/layout.tsx` and `(admin)/layout.tsx` redirect suspended users to `/suspended` |
+| Banned page outside (public) group | `/banned` page at `src/app/banned/page.tsx` uses root layout only (no navbar/footer) to avoid redirect loop |
+| proxy.ts deleted | Old `proxy.ts` was never imported — dead code. All ban/suspend logic now lives in layout files directly |
+| Upload error revert in profile dashboard | Previous avatar/banner values saved on load; on upload failure, state reverts and error message shown |
 
 ---
 
@@ -359,7 +376,8 @@ Notification  → id, userId, type, title, message?, link?, read
 | Read receipts for messages | ❌ Pending | Mark messages as read when opened |
 | WebSocket for real-time chat | ❌ Pending | Currently uses REST + manual refresh |
 | Vercel Blob store setup | ⚠️ Recommended | Small images (<500KB) now stored as data URIs in DB and persist without Blob; Blob still recommended for large files and zips |
-| Migrate existing uploads | ❌ Pending | Files already in `public/uploads/` need manual re-upload; after re-upload, they'll persist via data URI or Blob |
+| Migrate existing uploads | ❌ Pending | Files already in `public/uploads/` need manual re-upload; after re-upload, they'll persist via data URI (<2MB) or Blob |
+| Ban permanent only | ❌ Pending | Ban currently sets expiry to 2099-12-31; no temporary ban option (suspend covers temp) |
 
 ---
 
@@ -374,6 +392,34 @@ Notification  → id, userId, type, title, message?, link?, read
 ---
 
 ## [CONVERSATION_LOG]
+
+### Session 12 — Ban System Fix + Upload Persistence Fix (2026-05-29)
+
+**User reported in Egyptian Arabic:**
+> "البان مش شغال بمعني اصح المفروض لما حد اعملو بان الموقع عنده يقفل نهائي+مشكلة اللوجو والبانر زي ماهي مبتتسيفش"
+> (Ban doesn't actually work — when someone is banned, the site should completely close for them. And the logo/banner problem persists — they still don't save.)
+
+**Issue 1: Ban system was completely non-functional**
+- The `proxy.ts` file had suspend-redirect logic but was **never imported anywhere** — completely dead code
+- No middleware existed to check banned/suspended status
+- Banned users could browse the site normally
+- Suspended users could access dashboard and admin freely
+
+**Fix applied:**
+1. **Created `/banned` page** at `src/app/banned/page.tsx` outside the `(public)` route group to avoid redirect loops — shows "Account Banned" message with Contact Support link
+2. **Public layout check** — `(public)/layout.tsx` fetches session via `auth.api.getSession()` and redirects banned users to `/banned` immediately
+3. **Dashboard layout check** — `dashboard/layout.tsx` checks both banned (→ `/banned`) and suspended (→ `/suspended`)
+4. **Admin layout check** — `(admin)/layout.tsx` (client component) now checks banned and suspended before the admin role check
+5. **Deleted `proxy.ts`** — dead code removed
+
+**Issue 2: Profile images (avatar/banner) lost after deploy**
+- Images >500KB were saved to `public/uploads/` (ephemeral on Vercel) instead of as data URIs in the DB
+- Profile page had no error handling if upload failed — blob URLs would leak into save state
+
+**Fix applied:**
+1. **Data URI threshold raised** from 500KB → **2MB** in `upload/route.ts` `isSmallImage()` — most profile images now stored as base64 data URIs in the database
+2. **Error handling in profile dashboard** — added `avatarPrev`/`bannerPrev` state to remember previous values; on upload failure, reverts to previous value and displays error message
+3. **Error message display** — red error text shown below the upload area when upload fails
 
 ### Session 11 — Safe Image Fallbacks (2026-05-29)
 
