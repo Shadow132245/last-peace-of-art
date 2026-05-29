@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅**
+> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅**
 
 ---
 
@@ -61,6 +61,7 @@
 | M24 | UI Animation overhaul — favicon update; PageTransition on auth layout; motion on login/register/banned/404; AnimatedList on forum; FadeInView on all content pages; StaggerList on dashboard lists; motion on all dashboard forms | ✅ |
 | M25 | Auth enhancements — Remember Me, Email Verification, 2FA/OTP via email; nodemailer integration; TwoFactor model | ✅ |
 | M26 | i18n — full Arabic/English bilingual support for all pages, components, and admin panel | ✅ |
+| M27 | Bug fixes — I18nProvider SSR guard removed (was breaking useI18n), DATABASE_URL SSL mode fixed, prisma db push for TwoFactor | ✅ |
 
 ---
 
@@ -77,6 +78,13 @@
 7. **Prisma schema updated** — added `TwoFactor` model (id, secret, backupCodes, userId @unique, verified) with `@@map("two_factor")`; added `twoFactorEnabled` boolean to User model; added `twoFactor` relation on User
 8. **.env.example updated** — added SMTP env vars
 9. **Prisma generate** — client successfully generated with new TwoFactor model
+
+### Session 27 — 2026-05-29 (Bug Fixes: I18nProvider SSR + SSL + Prisma push)
+
+1. **I18nProvider SSR crash fix** — `I18nProvider` had a `!mounted` guard that returned children WITHOUT `I18nContext.Provider` during SSR. Any client component calling `useI18n()` during server rendering would throw `useI18n must be used within I18nProvider`. This also caused cascading errors (`Cannot read properties of null (reading 'useRef')`) because motion components couldn't render after the context error. Fix: always render the provider wrapper, even on the server.
+2. **DATABASE_URL SSL mode fixed** — Changed `sslmode=require` to `sslmode=verify-full` to silence the pg SSL deprecation warning and use the stronger security mode.
+3. **Prisma db push** — Ran `npx prisma generate && npx prisma db push` to ensure the `TwoFactor` model table exists in the database (fixes Better Auth `Failed to query fallback join for model user`).
+4. **All pushed to GitHub** — commit `xyz`
 
 ### Session 26 — 2026-05-29 (i18n Completion)
 
@@ -446,6 +454,7 @@ Notification  → id, userId, type, title, message?, link?, read
 | i18n — placeholder replacement | Messages use `{count}`, `{name}`, `{key}` placeholders; usage: `.replace("{key}", value)` |
 | i18n — locale persistence | Cookie `locale` (path=/, max-age=1yr) — set by `LocaleSwitcher` on the client, read by `getServerT()` on the server |
 | i18n — Privacy/Terms legal content | Legal text body kept in English (not translated); only page title/h1 and "Last updated" are translated |
+| i18n — I18nProvider SSR guard removed | Provider always renders `I18nContext.Provider` wrapper even before hydration (`!mounted`). On SSR the locale defaults to `"en"`, then `useEffect` updates it client-side. Previously the `!mounted` guard returned children without context, causing `useI18n()` to throw during server rendering |
 | Do NOT run `next build` locally | Build takes ~8 minutes and times out in CLI; trust that `Compiled successfully` means no errors |
 
 ---

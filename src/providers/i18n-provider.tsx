@@ -20,12 +20,13 @@ const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setLocaleState(getLocaleFromCookie());
-    setMounted(true);
-  }, []);
+    const cookieLocale = getLocaleFromCookie();
+    if (cookieLocale !== locale) {
+      setLocaleState(cookieLocale);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
@@ -34,10 +35,6 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const messages = messagesMap[locale];
   const t = useCallback((key: string) => lookup(messages as unknown as Record<string, string | Record<string, unknown>>, key), [messages]);
-
-  if (!mounted) {
-    return <>{children}</>;
-  }
 
   return (
     <I18nContext.Provider value={{ locale, messages, setLocale, t }}>
