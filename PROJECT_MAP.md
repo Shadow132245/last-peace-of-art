@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `807b61b` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅**
+> Generated: 2026-05-29 | Last commit: `173162f` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅**
 
 ---
 
@@ -59,6 +59,10 @@
 ---
 
 ## [SESSION_LOG]
+
+### Session 9 — 2026-05-29 (commit `173162f`)
+
+1. **Profile posts/projects now clickable** — wrapped project cards in `<Link href={/projects/[id]}>` and post cards in `<Link href={/blog/[slug]}>` so clicking from profile goes to full detail page; added hover effects for consistency with threads
 
 ### Session 8 — 2026-05-29 (commits `c59e440` → `807b61b`)
 
@@ -357,6 +361,17 @@ Notification  → id, userId, type, title, message?, link?, read
 ---
 
 ## [CONVERSATION_LOG]
+
+### Session 9 — Profile Clickable Posts/Projects (2026-05-29)
+
+**User reported in Egyptian Arabic:**
+> "لما دخلت علي البروفايل ظهر البوست بتاعي لما بدوس عليه مبيودنيش ليه اني اشوفه بالكامل هو بس مديني التايتل"
+> (On the profile page, my posts show — but clicking them doesn't take me to the full content, just shows the title)
+
+**Fix:**
+- Wrapped project cards in `<Link href={/projects/[id]}>` with hover border transition
+- Wrapped post cards in `<Link href={/blog/[slug]}>` with hover border transition
+- Threads were already linked; now all three content types are clickable from the profile page
 
 ### Session 8 — Profile 404 Fix v2 + Data URI Fallback (2026-05-29)
 
