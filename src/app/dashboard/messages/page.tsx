@@ -24,13 +24,18 @@ export default function MessagesPage() {
 
   useEffect(() => {
     if (!session) { router.push("/login"); return; }
-    fetch("/api/messages").then((r) => r.json()).then((data) => {
+    const userId = searchParams.get("userId");
+    fetch("/api/messages").then((r) => r.json()).then(async (data) => {
       setConversations(data);
       setLoading(false);
-      const userId = searchParams.get("userId");
-      if (userId && data.length > 0) {
+      if (userId) {
         const conv = data.find((c: any) => c.id === userId);
-        if (conv) selectUser(conv);
+        if (conv) { selectUser(conv); return; }
+        const res = await fetch(`/api/users/${userId}`);
+        if (res.ok) {
+          const user = await res.json();
+          selectUser(user);
+        }
       }
     });
   }, [session]);
