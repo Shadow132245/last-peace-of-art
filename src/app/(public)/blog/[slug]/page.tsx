@@ -32,7 +32,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
       <h1 className="text-4xl font-bold">{post.title}</h1>
       <div className="mt-4 flex items-center gap-3 text-sm text-zinc-500">
-        <Link href={`/user/${post.user.name}`} className="flex items-center gap-2 hover:text-zinc-900 dark:hover:text-zinc-100">
+        <Link href={`/user/${encodeURIComponent(post.user.name)}`} className="flex items-center gap-2 hover:text-zinc-900 dark:hover:text-zinc-100">
           {post.user.image ? (
             <img src={post.user.image} alt="" className="h-6 w-6 rounded-full object-cover" />
           ) : (

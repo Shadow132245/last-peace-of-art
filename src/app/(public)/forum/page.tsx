@@ -74,7 +74,7 @@ export default async function ForumPage(props: { searchParams?: Promise<{ page?:
                     <span className="shrink-0 text-sm text-zinc-400">{thread._count.comments}</span>
                   </div>
                   <div className="mt-3 flex items-center gap-3 text-xs text-zinc-400">
-                    <span>{thread.user.name}</span>
+                    <Link href={`/user/${encodeURIComponent(thread.user.name)}`} className="hover:text-zinc-900 dark:hover:text-zinc-100">{thread.user.name}</Link>
                     <span>{thread.createdAt.toLocaleDateString()}</span>
                     <span>{thread.views} views</span>
                     <span>{thread.likesCount} likes</span>

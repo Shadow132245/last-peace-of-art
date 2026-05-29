@@ -31,7 +31,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ threadI
       <div className="mb-8">
         <h1 className="text-3xl font-bold">{thread.title}</h1>
         <div className="mt-2 flex items-center gap-3 text-sm text-zinc-500">
-          <Link href={`/user/${thread.user.name}`} className="flex items-center gap-2 hover:text-zinc-900 dark:hover:text-zinc-100">
+          <Link href={`/user/${encodeURIComponent(thread.user.name)}`} className="flex items-center gap-2 hover:text-zinc-900 dark:hover:text-zinc-100">
             {thread.user.image ? (
               <img src={thread.user.image} alt="" className="h-6 w-6 rounded-full object-cover" />
             ) : (

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "motion/react";
 
-const roles = ["user", "bug_hunter", "admin", "founder"];
+const roles = ["user", "bug_hunter", "admin"];
 
 export function RoleButton({ userId, currentRole }: { userId: string; currentRole: string }) {
   const router = useRouter();

@@ -48,7 +48,7 @@ export default async function ProjectsPage(props: { searchParams?: Promise<{ pag
                   <h3 className="font-semibold">{project.title}</h3>
                   <p className="mt-2 text-sm text-zinc-500 line-clamp-3 dark:text-zinc-400">{project.description}</p>
                   <div className="mt-4 flex items-center gap-3 text-xs text-zinc-400">
-                    <span>{project.user.name}</span>
+                    <Link href={`/user/${encodeURIComponent(project.user.name)}`} className="hover:text-zinc-900 dark:hover:text-zinc-100">{project.user.name}</Link>
                     <span>{project.views} views</span>
                     <span>{project.likesCount} likes</span>
                   </div>

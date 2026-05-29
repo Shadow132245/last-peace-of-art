@@ -30,7 +30,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
       <h1 className="text-4xl font-bold">{project.title}</h1>
       <div className="mt-4 flex items-center gap-3 text-sm text-zinc-500">
-        <Link href={`/user/${project.user.name}`} className="flex items-center gap-2 hover:text-zinc-900 dark:hover:text-zinc-100">
+        <Link href={`/user/${encodeURIComponent(project.user.name)}`} className="flex items-center gap-2 hover:text-zinc-900 dark:hover:text-zinc-100">
           {project.user.image ? (
             <img src={project.user.image} alt="" className="h-6 w-6 rounded-full object-cover" />
           ) : (

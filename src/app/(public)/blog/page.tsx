@@ -48,7 +48,7 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
                   <h3 className="text-lg font-semibold group-hover:text-amber-600 dark:group-hover:text-amber-400">{post.title}</h3>
                   {post.excerpt && <p className="mt-2 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{post.excerpt}</p>}
                   <div className="mt-3 flex items-center gap-3 text-xs text-zinc-400">
-                    <span>{post.user.name}</span>
+                    <Link href={`/user/${encodeURIComponent(post.user.name)}`} className="hover:text-zinc-900 dark:hover:text-zinc-100">{post.user.name}</Link>
                     <span>{post.createdAt.toLocaleDateString()}</span>
                     <span>{post.views} views</span>
                     <span>{post.likesCount} likes</span>

@@ -23,6 +23,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
       if (!["user", "bug_hunter", "admin", "founder"].includes(role)) {
         return NextResponse.json({ error: "Invalid role" }, { status: 400 });
       }
+      const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+      if (!currentUser || currentUser.email !== "fghfghffdgfhfgh@gmail.com") {
+        return NextResponse.json({ error: "Only the founder can change roles" }, { status: 403 });
+      }
       const user = await prisma.user.update({
         where: { id: userId },
         data: { role },
