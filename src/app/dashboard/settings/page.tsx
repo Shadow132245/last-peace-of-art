@@ -26,10 +26,9 @@ export default function SettingsPage() {
   };
 
   const handleEnable2FA = async () => {
-    if (!twoFactorPassword) return;
     setTwoFactorLoading(true);
     setTwoFactorError("");
-    const { data, error } = await authClient.twoFactor.enable({ password: twoFactorPassword });
+    const { data, error } = await authClient.twoFactor.enable({ password: twoFactorPassword || undefined });
     if (error) {
       setTwoFactorError(error.message ?? error.statusText);
     } else {
@@ -42,10 +41,9 @@ export default function SettingsPage() {
   };
 
   const handleDisable2FA = async () => {
-    if (!twoFactorPassword) return;
     setTwoFactorLoading(true);
     setTwoFactorError("");
-    const { error } = await authClient.twoFactor.disable({ password: twoFactorPassword });
+    const { error } = await authClient.twoFactor.disable({ password: twoFactorPassword || undefined });
     if (error) {
       setTwoFactorError(error.message ?? error.statusText);
     } else {
@@ -104,6 +102,7 @@ export default function SettingsPage() {
             value={twoFactorPassword}
             onChange={(e) => { setTwoFactorPassword(e.target.value); setTwoFactorError(""); }}
           />
+          <p className="-mt-2 text-xs text-zinc-400">{t("twoFactor.passwordOptional")}</p>
 
           {twoFactorError && <p className="text-sm text-red-500">{twoFactorError}</p>}
 

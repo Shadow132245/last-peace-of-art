@@ -12,6 +12,7 @@ export const auth = betterAuth({
   plugins: [
     nextCookies(),
     twoFactor({
+      allowPasswordless: true,
       otpOptions: {
         async sendOTP({ user, otp }) {
           await sendEmail({
