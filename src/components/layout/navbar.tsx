@@ -97,6 +97,7 @@ function AvatarDropdown({ session }: { session: any }) {
 }
 
 export function Navbar() {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [dark, setDark] = useState(() => {
