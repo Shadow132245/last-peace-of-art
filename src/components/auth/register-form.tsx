@@ -25,7 +25,7 @@ export function RegisterForm() {
       password,
     });
     if (err) setError(err.message ?? err.statusText);
-    else router.push("/dashboard");
+    else router.push("/verify-email");
     setLoading(false);
   };
 

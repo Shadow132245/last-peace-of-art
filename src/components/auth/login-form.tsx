@@ -10,23 +10,91 @@ export function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [twoFactorRequired, setTwoFactorRequired] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    const { error: err } = await authClient.signIn.email({ email, password });
+    const { data, error: err } = await authClient.signIn.email({
+      email,
+      password,
+      rememberMe,
+    });
+    if (err) {
+      setError(err.message ?? err.statusText);
+    } else if (data && "twoFactorRedirect" in data && data.twoFactorRedirect) {
+      setTwoFactorRequired(true);
+      await authClient.twoFactor.sendOtp();
+    } else {
+      router.push("/dashboard");
+    }
+    setLoading(false);
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setOtpLoading(true);
+
+    const { error: err } = await authClient.twoFactor.verifyOtp({ code: otpCode });
     if (err) setError(err.message ?? err.statusText);
     else router.push("/dashboard");
-    setLoading(false);
+    setOtpLoading(false);
   };
 
   const handleGoogleLogin = async () => {
     await authClient.signIn.social({ provider: "google" });
   };
+
+  if (twoFactorRequired) {
+    return (
+      <div className="w-full max-w-sm mx-auto">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold">Two-factor authentication</h1>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            Enter the code sent to your email
+          </p>
+        </div>
+
+        <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
+          <Input
+            label="Verification code"
+            type="text"
+            placeholder="000000"
+            value={otpCode}
+            onChange={(e) => setOtpCode(e.target.value)}
+            required
+          />
+
+          {error && (
+            <p className="text-sm text-red-500">{error}</p>
+          )}
+
+          <Button type="submit" loading={otpLoading} className="w-full">
+            Verify
+          </Button>
+        </form>
+
+        <p className="mt-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
+          Didn&apos;t receive the code?{" "}
+          <button
+            type="button"
+            onClick={() => authClient.twoFactor.sendOtp()}
+            className="font-medium text-zinc-900 underline dark:text-zinc-100"
+          >
+            Resend
+          </button>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-sm mx-auto">
@@ -77,6 +145,16 @@ export function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
+        <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 dark:border-zinc-600 dark:text-zinc-100 dark:focus:ring-zinc-100"
+          />
+          Remember me
+        </label>
 
         {error && (
           <p className="text-sm text-red-500">{error}</p>

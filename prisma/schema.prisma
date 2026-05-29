@@ -23,6 +23,7 @@ model User {
   suspendedAt   DateTime?
   suspendedUntil DateTime?
   suspensionReason String?
+  twoFactorEnabled Boolean @default(false)
 
   sessions    Session[]
   accounts    Account[]
@@ -41,6 +42,7 @@ model User {
   receivedRequests FriendRequest[] @relation("ReceivedRequests")
   notifications Notification[]
   profile     Profile?
+  twoFactor   TwoFactor?
 
   @@unique([email])
   @@map("user")
@@ -108,6 +110,18 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model TwoFactor {
+  id          String  @id
+  secret      String
+  backupCodes String
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified    Boolean  @default(true)
+
+  @@index([userId])
+  @@map("two_factor")
 }
 
 model Profile {

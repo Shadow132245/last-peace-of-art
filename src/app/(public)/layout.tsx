@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { PageTransition } from "@/components/ui/page-transition";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export default async function PublicLayout({ children }: { children: React.React
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />
+      <ScrollToTop />
     </>
   );
 }

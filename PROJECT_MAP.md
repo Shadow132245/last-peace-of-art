@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅**
+> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅**
 
 ---
 
@@ -59,10 +59,23 @@
 | M22 | Ban system fix — banned users blocked from ALL pages via layout checks; suspended users blocked from dashboard/admin; upload persistence — data URI threshold raised to 2MB; upload error handling + revert in profile dashboard | ✅ |
 | M23 | Upload reliability — ALL images use data URI when Blob unavailable (no size limit); Blob failure degrades to data URI instead of crashing; navbar avatar syncs with profile avatar (User.image updated on save) | ✅ |
 | M24 | UI Animation overhaul — favicon update; PageTransition on auth layout; motion on login/register/banned/404; AnimatedList on forum; FadeInView on all content pages; StaggerList on dashboard lists; motion on all dashboard forms | ✅ |
+| M25 | Auth enhancements — Remember Me, Email Verification, 2FA/OTP via email; nodemailer integration; TwoFactor model | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 25 — 2026-05-29
+
+1. **Email utility created** — `src/lib/email.ts`: nodemailer transport configured via SMTP env vars (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`)
+2. **auth.ts updated** — session `expiresIn: 30 days` + `updateAge: 1 day` (remember me); `emailVerification` with `sendVerificationEmail` callback + `sendOnSignUp: true` + `autoSignInAfterVerification: false`; `requireEmailVerification: true` in `emailAndPassword`; `twoFactor` plugin with `otpOptions.sendOTP` callback sending codes via nodemailer
+3. **auth-client.ts updated** — added `twoFactorClient()` plugin
+4. **Login form updated** — "Remember me" checkbox (default checked); 2FA flow: when sign-in response has `twoFactorRedirect`, auto-sends OTP and shows verification code input; resend button
+5. **Register form updated** — redirects to `/verify-email` after signup instead of `/dashboard` (since email must be verified first)
+6. **Verify-email page created** — `(auth)/verify-email/page.tsx` with "Check your email" message + "Return to sign in" link
+7. **Prisma schema updated** — added `TwoFactor` model (id, secret, backupCodes, userId @unique, verified) with `@@map("two_factor")`; added `twoFactorEnabled` boolean to User model; added `twoFactor` relation on User
+8. **.env.example updated** — added SMTP env vars
+9. **Prisma generate** — client successfully generated with new TwoFactor model
 
 ### Session 14 — 2026-05-29
 
@@ -231,8 +244,16 @@ Previous session — commit `ea8ca63`:
 ```
 User ──→ /auth/login ──→ [Google OAuth / Email+Password]
        │
-       ├── Google ──→ Better Auth Google Provider ──→ Redirect ──→ Dashboard
-       └── Email ────→ Better Auth Credentials ──→ Email Verification ──→ Dashboard
+       ├── Google ──→ Better Auth Google Provider ──→ Dashboard
+       └── Email ────→ Better Auth Credentials
+              │
+              ├── Remember Me = true  ──→ Session expires in 30 days
+              ├── Remember Me = false ──→ Session expires in 1 day
+              │
+              ├── 2FA enabled? ──→ Send OTP email ──→ Verify OTP ──→ Dashboard
+              │
+              ├── Email not verified? ──→ Sign-in blocked (requireEmailVerification)
+              └── Sign up ──→ Send verification email ──→ /verify-email page ──→ Click link → email verified
 ```
 
 ---
@@ -256,7 +277,7 @@ src/
 │   │   ├── tickets/              # Ticket submission form
 │   │   ├── apply/                # Staff application form (6 questions)
 │   │   └── user/[username]/      # Public profile — avatar, banner, bio, skills, threads, comments, role badges, msg/friend buttons
-│   ├── (auth)/                   # Login / Register
+│   ├── (auth)/                   # Login / Register / Verify email
 │   ├── (admin)/                  # Admin panel — banned + suspended + role check in layout
 │   │   ├── layout.tsx            # Sidebar, banned/suspended/role checks
 │   │   └── admin/
@@ -314,7 +335,7 @@ src/
 ├── components/
 │   ├── ui/                       # Button, Input, Markdown, Pagination, ImageUpload, NotificationBell, admin components
 │   ├── layout/                   # Navbar (dark toggle, auth-aware, NotificationBell, Messages/Friends links), Footer
-│   ├── auth/                     # LoginForm, RegisterForm
+│   ├── auth/                     # LoginForm (remember me + 2FA OTP), RegisterForm
 │   ├── comments/                 # CommentSection (shared b/w blog/projects/forum)
 │   ├── likes/                    # LikeButton (optimistic UI, SVG icons)
 │   ├── reports/                  # ReportButton (modal with reason + description)
@@ -323,7 +344,8 @@ src/
 │   └── ui/safe-image.tsx         # SafeImg / SafeBanner — graceful fallback for broken image URLs
 ├── lib/
 │   ├── auth.ts                   # Better Auth server config (Google + Email)
-│   ├── auth-client.ts            # Better Auth client (browser)
+│   ├── auth-client.ts            # Better Auth client (browser, twoFactorClient plugin)
+│   ├── email.ts                  # nodemailer transport (verification, OTP, password reset)
 │   ├── db.ts                     # PrismaClient singleton (PrismaPg adapter)
 │   ├── logger.ts                 # pino logger
 │   ├── admin.ts                  # requireAdmin() helper
@@ -334,9 +356,10 @@ src/
 └── generated/prisma/             # Generated Prisma client
 ```
 
-### Schema (Prisma) — Core Entities (19 models)
+### Schema (Prisma) — Core Entities (20 models)
 ```
-User          → id, name (unique), email, role, banned, banReason, banExpires, suspended, suspendedAt, suspendedUntil, suspensionReason
+User          → id, name (unique), email, role, banned, banReason, banExpires, suspended, suspendedAt, suspendedUntil, suspensionReason, twoFactorEnabled
+TwoFactor     → id, secret, backupCodes, userId (unique), verified
 Profile       → id, userId, bio, avatar, location, website, company, skills[], social (JSON: {banner, avatarSize, bannerHeight})
 Project       → id, userId, title, description, content, media[], tags[], links (JSON), published, views, likesCount, dislikesCount
 Post          → id, userId, title, slug (unique), content, excerpt, coverImage, tags[], published, views, likesCount, dislikesCount
@@ -401,8 +424,6 @@ Notification  → id, userId, type, title, message?, link?, read
 
 | Item | Status | Notes |
 |------|--------|-------|
-| Email verification flow | ❌ Pending | Better Auth supports; needs UI |
-| Email templates | ❌ Pending | Better Auth supports customization |
 | Google OAuth live credentials | ❌ Pending | Need to set AUTH_GOOGLE_ID + AUTH_GOOGLE_SECRET in Vercel |
 | Deployed site testing | ❌ Pending | Verify all features end-to-end |
 | Read receipts for messages | ❌ Pending | Mark messages as read when opened |
