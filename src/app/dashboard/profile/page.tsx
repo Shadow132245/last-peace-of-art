@@ -11,11 +11,14 @@ export default function ProfilePage() {
 
   const [avatar, setAvatar] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
+  const [avatarPrev, setAvatarPrev] = useState<string | null>(null);
+  const [bannerPrev, setBannerPrev] = useState<string | null>(null);
   const [avatarSize, setAvatarSize] = useState(80);
   const [bannerHeight, setBannerHeight] = useState(192);
   const [bio, setBio] = useState("");
   const [skills, setSkills] = useState("");
   const [uploading, setUploading] = useState<"avatar" | "banner" | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -24,9 +27,13 @@ export default function ProfilePage() {
       .then((r) => r.json())
       .then((data) => {
         if (data.profile) {
-          setAvatar(data.profile.avatar);
+          const avatarVal = data.profile.avatar;
           const social: Record<string, unknown> = data.profile.social ?? {};
-          setBanner((social.banner as string) ?? null);
+          const bannerVal = (social.banner as string) ?? null;
+          setAvatar(avatarVal);
+          setAvatarPrev(avatarVal);
+          setBanner(bannerVal);
+          setBannerPrev(bannerVal);
           setAvatarSize((social.avatarSize as number) ?? 80);
           setBannerHeight((social.bannerHeight as number) ?? 192);
           setBio(data.profile.bio ?? "");
@@ -40,6 +47,7 @@ export default function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setUploadError(null);
     const localUrl = URL.createObjectURL(file);
     if (type === "avatar") setAvatar(localUrl);
     else setBanner(localUrl);
@@ -54,9 +62,13 @@ export default function ProfilePage() {
     if (res.ok) {
       if (type === "avatar") setAvatar(data.url);
       else setBanner(data.url);
+    } else {
+      setUploadError(data.error || "Upload failed");
+      if (type === "avatar") setAvatar(avatarPrev);
+      else setBanner(bannerPrev);
     }
     setUploading(null);
-  }, []);
+  }, [avatarPrev, bannerPrev]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -181,6 +193,7 @@ export default function ProfilePage() {
             />
           </div>
 
+          {uploadError && <p className="text-sm text-red-500">{uploadError}</p>}
           {saved && <p className="text-sm text-green-500">Profile saved!</p>}
 
           <div className="flex gap-4">

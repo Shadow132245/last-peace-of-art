@@ -25,7 +25,7 @@ async function uploadLocally(filename: string, buffer: Buffer): Promise<string> 
 
 function isSmallImage(file: File): boolean {
   const isImage = file.type.startsWith("image/");
-  const small = file.size <= 500 * 1024;
+  const small = file.size <= 2 * 1024 * 1024;
   return isImage && small;
 }
 

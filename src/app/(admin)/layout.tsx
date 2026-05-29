@@ -31,7 +31,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         router.push("/login");
         return;
       }
-      const role = (data.user as any).role;
+      const user = data.user as any;
+      if (user.banned) {
+        router.push("/banned");
+        return;
+      }
+      if (user.suspended) {
+        router.push("/suspended");
+        return;
+      }
+      const role = user.role;
       if (role !== "admin" && role !== "founder") {
         router.push("/login");
         return;
