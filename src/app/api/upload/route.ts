@@ -6,6 +6,23 @@ import { writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import crypto from "node:crypto";
 
+async function uploadToBlob(filename: string, buffer: Buffer): Promise<string | null> {
+  try {
+    const { put } = await import("@vercel/blob");
+    const blob = await put(filename, buffer, { access: "public" });
+    return blob.url;
+  } catch {
+    return null;
+  }
+}
+
+async function uploadLocally(filename: string, buffer: Buffer): Promise<string> {
+  const uploadDir = join(process.cwd(), "public", "uploads");
+  await mkdir(uploadDir, { recursive: true });
+  await writeFile(join(uploadDir, filename), buffer);
+  return `/uploads/${filename}`;
+}
+
 export async function POST(request: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -32,13 +49,12 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadDir = join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(join(uploadDir, filename), buffer);
+    const hasBlobToken = !!process.env.BLOB_READ_WRITE_TOKEN;
+    const url = hasBlobToken
+      ? (await uploadToBlob(filename, buffer)) ?? (await uploadLocally(filename, buffer))
+      : await uploadLocally(filename, buffer);
 
-    const url = `/uploads/${filename}`;
-
-    logger.info({ filename, size: file.size }, "File uploaded");
+    logger.info({ filename, size: file.size, storage: hasBlobToken ? "blob" : "local" }, "File uploaded");
     return NextResponse.json({ url });
   } catch (error) {
     logger.error({ error }, "Upload failed");

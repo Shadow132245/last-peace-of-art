@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `f32cb23` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅**
+> Generated: 2026-05-29 | Last commit: `NEXT` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅**
 
 ---
 
@@ -25,6 +25,7 @@
 | Database    | PostgreSQL (Neon)  | 16          | ✅ Stable  |
 | Runtime     | Node.js            | 22 LTS      | ✅ Stable  |
 | Package Mgr | npm                | 11.13.0     | ✅ Stable  |
+| File Storage | Vercel Blob        | —           | ✅ Integrated |
 
 **Deprecation warnings:** None — all packages at latest stable as of 2026-05-28.
 
@@ -51,10 +52,20 @@
 | M15 | Notifications system + Ticket system + Admin tickets panel + Role badges + Profile links | ✅ |
 | M16 | File uploads (zip), Bug Hunter auto-approval, Applications system (form + admin + accept/reject) | ✅ |
 | M17 | Messaging/chat UI, Friend requests system, Profile interact buttons (message/add friend) | ✅ |
+| M18 | Persistent file storage — Vercel Blob integration for uploads (avatars, banners, images, zip) so files survive Vercel redeployments | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 5 — 2026-05-29 (commit `NEXT`)
+
+1. **Vercel Blob integration** — installed `@vercel/blob` package, rewrote upload API to use `BLOB_READ_WRITE_TOKEN` env var for persistent cloud storage
+2. **Upload API updated** — `POST /api/upload` now uploads to Vercel Blob when `BLOB_READ_WRITE_TOKEN` is set, with automatic fallback to local `public/uploads/` for development
+3. **.env.example updated** — added `BLOB_READ_WRITE_TOKEN` placeholder
+4. **PROJECT_MAP.md updated** — Session 5 entry, M18 milestone, Vercel Blob in tech stack, critical context additions
+5. **Solution to disappearing uploads** — uploads (avatars, banners, images, zip) now persist across Vercel deployments via Vercel Blob storage
+6. **User must set up Blob store** — go to Vercel Dashboard → Storage → Create Blob Store → add `BLOB_READ_WRITE_TOKEN` to environment variables in Vercel Dashboard
 
 ### Session 4 — 2026-05-29 (commits `475e370` → `16fc21f` → `f32cb23`)
 
@@ -194,7 +205,7 @@ src/
 │   │   ├── posts/                # User posts CRUD + publish toggle (bug_hunter auto-publish)
 │   │   ├── profile/              # GET/PUT profile (avatar, bio, skills, social)
 │   │   ├── forum/                # Threads + comments (bug_hunter auto-publish)
-│   │   ├── upload/               # File upload (images 5MB, zip 50MB)
+│   │   ├── upload/               # File upload (images 5MB, zip 50MB) — saves to Vercel Blob (persistent) or local (dev)
 │   │   ├── search/               # Full-text search
 │   │   ├── comments/             # Unified POST/GET/DELETE comments
 │   │   ├── likes/                # POST toggle like/dislike, GET counts
@@ -292,6 +303,9 @@ Notification  → id, userId, type, title, message?, link?, read
 | Friend request flow | Request → notification → accept/reject → notification back to sender |
 | Messages notification | Sending a message creates a notification for the receiver with link to `/dashboard/messages` |
 | Conversations deduped | Messages API groups by user, returns latest message per conversation |
+| Persistent file storage | Upload API uses `@vercel/blob` when `BLOB_READ_WRITE_TOKEN` is set; falls back to local `public/uploads/` for dev |
+| Vercel filesystem ephemeral | Files written to `public/uploads/` during runtime are lost on next deploy — Vercel Blob solves this |
+| Blob env var | `BLOB_READ_WRITE_TOKEN` must be set in Vercel Dashboard → Environment Variables for production persistence |
 
 ---
 
@@ -305,6 +319,8 @@ Notification  → id, userId, type, title, message?, link?, read
 | Deployed site testing | ❌ Pending | Verify all features end-to-end |
 | Read receipts for messages | ❌ Pending | Mark messages as read when opened |
 | WebSocket for real-time chat | ❌ Pending | Currently uses REST + manual refresh |
+| Vercel Blob store setup | ❌ Pending | Need to create Blob Store in Vercel Dashboard and add `BLOB_READ_WRITE_TOKEN` to env vars |
+| Migrate existing uploads | ❌ Pending | Files already in `public/uploads/` need manual re-upload or migration script |
 
 ---
 
@@ -319,6 +335,27 @@ Notification  → id, userId, type, title, message?, link?, read
 ---
 
 ## [CONVERSATION_LOG]
+
+### Session 5 — Persistent Storage Fix (2026-05-29)
+
+**User's complaint in Egyptian Arabic:**
+> "لما بتيجي ترفع اي تحديث للموقع الوجو والبنر بتوع الحساب بيختفو الي انا كنت حاططهم... انا مش عايز اي حاجة بتاعت مستخدمين تضيع"
+> (When I deploy updates, the logo and banner images disappear. I don't want any user data to be lost.)
+
+**Problem identified:**
+- Files stored on Vercel's ephemeral filesystem in `public/uploads/` are wiped on every deployment.
+- All user-uploaded content (avatars, banners, profile images, project media, zip files) relies on this local directory.
+
+**Solution implemented:**
+1. Installed `@vercel/blob` — Vercel's native persistent blob storage.
+2. Rewrote `POST /api/upload` to upload to Vercel Blob when `BLOB_READ_WRITE_TOKEN` is available.
+3. Graceful fallback to local filesystem for development environments.
+4. Added `BLOB_READ_WRITE_TOKEN` to `.env.example`.
+
+**To activate:**
+- User must go to Vercel Dashboard → Storage → Create Blob Store.
+- Add the generated `BLOB_READ_WRITE_TOKEN` to Vercel → Project → Environment Variables.
+- Redeploy — all new uploads will persist permanently.
 
 ### Session 4 — Full Feature Request (2026-05-29)
 
