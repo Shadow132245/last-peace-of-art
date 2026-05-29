@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅**
+> Generated: 2026-05-29 | Last commit: `f32cb23` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅**
 
 ---
 
@@ -56,7 +56,7 @@
 
 ## [SESSION_LOG]
 
-### Session 4 — 2026-05-29 (Latest — commit `475e370` → current)
+### Session 4 — 2026-05-29 (commits `475e370` → `16fc21f` → `f32cb23`)
 
 1. **File uploads (zip)** — upload API now accepts zip files up to 50MB; `ImageUpload` component now handles both images and zip files
 2. **Bug Hunter auto-approval** — posts/projects/threads created by `bug_hunter` users are automatically `published: true`
@@ -70,7 +70,8 @@
 10. **Profile interact buttons** — `/user/[name]` now has "Send Message" (links to `/dashboard/messages?userId=`) and "Add Friend" (client component with sent state)
 11. **Dashboard updates** — added Messages, Friends, Support Tickets, Apply for Staff cards; message count + friend count shown
 12. **Navbar updates** — Messages and Friends links added for authenticated users (desktop + mobile)
-13. **All pushed to GitHub**
+13. **All pushed to GitHub** — commit `16fc21f`
+14. **Vercel TypeScript fix** — `admin/layout.tsx`: moved null check for `res.data` before accessing `role` to fix production build error. Commit `f32cb23`
 
 ### Session 3 — 2026-05-29 (commit `475e370`)
 
@@ -314,3 +315,42 @@ Notification  → id, userId, type, title, message?, link?, read
 - **Database:** Neon PostgreSQL (serverless)
 - **Build command:** `npx prisma generate && next build`
 - **Admin user:** Email `fghfghffdgfhfgh@gmail.com` — role set via SQL
+
+---
+
+## [CONVERSATION_LOG]
+
+### Session 4 — Full Feature Request (2026-05-29)
+
+The user requested the following features be implemented all at once, and explained in Egyptian Arabic:
+
+1. **رفع ملفات مضغوطة (zip files)** — أي حد يقدر يرفع zip لما يرفع بروجكت أو بوست أو ثريد
+2. **نظام Bug Hunter** — يوزر يكتشف مشكلة أو ثغرة، يفتح تicket، التكت يوصل للأدمن، الأدمن يرد ويقدر يدي رتبة bug_hunter من لوحة التحكم، وصاحب الرتبة البوست/البروجكت/الثريد بتاعه ينشر على طول بدون موافقة
+3. **البروفايل** — لما تدوس على اسم الناشر في بوست/بروجكت/ثريد، تروح على البروفايل بتاعه، تقدر تبعتله رسالة وتطلبه صديق. ويظهر جنب اسمه صورة الحساب
+4. **رتبة Founder** — رتبة صاحب الموقع تكون founder مش admin
+5. **نظام التقديم (Staff Application)** — قسم تقديم على إدارة الموقع بأسئلة حلوة، التقديمات تتبعت للأدمن، يقدر يقبل أو يرفض، واليوزر يستلم notification
+6. **Notifications** — زرار notification في الموقع للتحديثات والرسائل وطلبات الصداقة
+
+### What was done (Session 4):
+- ✅ Upload API: zip files up to 50MB accepted; ImageUpload component handles images + zip
+- ✅ Bug hunter auto-approval: posts/projects/threads from bug_hunter users auto-published
+- ✅ Bug hunter via tickets: ticket system already existed from Session 3 (user submits → admin panel → admin responds)
+- ✅ Role assignment from admin: RoleButton in `/admin/users` existed from Session 3
+- ✅ Profile links on blog/projects/forum: existed from Session 3
+- ✅ Profile buttons: `/user/[name]` now has "Send Message" + "Add Friend"
+- ✅ Founder role: admin layout already checks for both `admin` and `founder` from Session 3
+- ✅ Applications: `/apply` page with 6 questions, admin page with accept/reject, notification to user, auto-role on approve
+- ✅ Notification bell: existed from Session 3 (30s polling, unread count, all types)
+- ✅ Messaging UI: `/dashboard/messages` with conversation sidebar + chat window
+- ✅ Friends UI: `/dashboard/friends` with friends list, pending requests, add friend search
+- ✅ Navbar: Messages + Friends links added for authenticated users
+
+### Previous context from user:
+- The user's role is **founder** (not admin)
+- Admin user email: `fghfghffdgfhfgh@gmail.com`
+- Repo: `github.com/Shadow132245/last-peace-of-art`
+- Hosted on Vercel with Neon PostgreSQL
+- User speaks Egyptian Arabic — all future communication should be in Egyptian Arabic
+- After every change, push directly to GitHub — never keep changes only locally
+- Always read PROJECT_MAP.md first before starting any new task
+- Do NOT run `next build` locally (user said "متعملش بيلد للموقع")
