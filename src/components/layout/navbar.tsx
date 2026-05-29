@@ -1,10 +1,97 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { authClient } from "@/lib/auth-client";
 import { AnimatePresence, motion } from "motion/react";
 import { NotificationBell } from "@/components/ui/notification-bell";
+
+function AvatarDropdown({ session }: { session: any }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const user = session.user;
+  const name: string = user.name ?? "";
+  const image: string | null = user.image ?? null;
+  const initial = name[0]?.toUpperCase() ?? "?";
+  const role: string = (user as any).role ?? "user";
+  const profileUrl = `/user/${encodeURIComponent(name)}`;
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const links = [
+    { href: profileUrl, label: "View Profile" },
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/dashboard/posts", label: "My Posts" },
+    { href: "/dashboard/forum", label: "My Threads" },
+    { href: "/dashboard/projects", label: "My Projects" },
+    { href: "/dashboard/messages", label: "Messages" },
+    { href: "/dashboard/friends", label: "Friends" },
+    { href: "/dashboard/settings", label: "Settings" },
+    ...(role === "admin" || role === "founder" ? [{ href: "/admin", label: "Admin" }] : []),
+  ];
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 rounded-full transition-opacity hover:opacity-80"
+      >
+        {image ? (
+          <img src={image} alt="" className="h-8 w-8 rounded-full object-cover" />
+        ) : (
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+            {initial}
+          </span>
+        )}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.95 }}
+            transition={{ duration: 0.12 }}
+            className="absolute right-0 top-full z-50 mt-2 min-w-[180px] overflow-hidden rounded-xl border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
+          >
+            <div className="border-b border-zinc-100 px-3 py-2 dark:border-zinc-800">
+              <p className="truncate text-sm font-medium">{name}</p>
+              <p className="truncate text-xs text-zinc-400">{user.email}</p>
+            </div>
+
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className="flex px-3 py-1.5 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            <div className="border-t border-zinc-100 dark:border-zinc-800">
+              <button
+                type="button"
+                onClick={() => authClient.signOut()}
+                className="flex w-full px-3 py-1.5 text-left text-sm text-red-500 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              >
+                Sign Out
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -65,23 +152,7 @@ export function Navbar() {
           {session ? (
             <div className="flex items-center gap-3">
               <NotificationBell />
-              <Link href="/dashboard/messages" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                Messages
-              </Link>
-              <Link href="/dashboard/friends" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                Friends
-              </Link>
-              {["admin", "founder"].includes((session.user as any).role) && (
-                <Link href="/admin" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                  Admin
-                </Link>
-              )}
-              <Link
-                href="/dashboard"
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:shadow-none dark:hover:bg-zinc-100"
-              >
-                Dashboard
-              </Link>
+              <AvatarDropdown session={session} />
             </div>
           ) : (
             <Link
@@ -123,9 +194,18 @@ export function Navbar() {
               <Link href="/search" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Search</Link>
               {session ? (
                 <>
+                  <Link href={`/user/${encodeURIComponent(session.user.name)}`} className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>View Profile</Link>
+                  <Link href="/dashboard" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Dashboard</Link>
+                  <Link href="/dashboard/posts" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>My Posts</Link>
+                  <Link href="/dashboard/forum" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>My Threads</Link>
+                  <Link href="/dashboard/projects" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>My Projects</Link>
                   <Link href="/dashboard/messages" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Messages</Link>
                   <Link href="/dashboard/friends" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Friends</Link>
-                  <Link href="/dashboard" className="text-sm font-medium text-zinc-900 dark:text-zinc-100" onClick={() => setOpen(false)}>Dashboard</Link>
+                  <Link href="/dashboard/settings" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Settings</Link>
+                  {["admin", "founder"].includes((session.user as any).role) && (
+                    <Link href="/admin" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>Admin</Link>
+                  )}
+                  <button onClick={() => authClient.signOut()} className="text-left text-sm text-red-500">Sign Out</button>
                 </>
               ) : (
                 <Link href="/login" className="text-sm font-medium text-zinc-900 dark:text-zinc-100" onClick={() => setOpen(false)}>Sign In</Link>

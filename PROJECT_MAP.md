@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-29 | Last commit: `50bc746` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅**
+> Generated: 2026-05-29 | Last commit: `NEXT` | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅**
 
 ---
 
@@ -54,10 +54,17 @@
 | M17 | Messaging/chat UI, Friend requests system, Profile interact buttons (message/add friend) | ✅ |
 | M18 | Persistent file storage — Vercel Blob integration for uploads (avatars, banners, images, zip) so files survive Vercel redeployments | ✅ |
 | M19 | Profile 404 fix, RoleButton redesign with founder option, case-insensitive username lookup | ✅ |
+| M20 | User avatar dropdown in navbar — click avatar to view profile, posts, threads, projects, dashboard, settings, sign out | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 7 — 2026-05-29 (commit `NEXT`)
+
+1. **User avatar dropdown in navbar** — added clickable avatar (with fallback initials) in desktop navbar that opens a dropdown menu with links to: View Profile, Dashboard, My Posts, My Threads, My Projects, Messages, Friends, Settings, Admin (if role allows), Sign Out
+2. **Mobile nav updated** — added View Profile, Messages, Friends links in mobile menu for authenticated users
+3. **TypeScript fix** — `findUniqueOrThrow` instead of `findUnique` in profile page to eliminate `user possibly null` error
 
 ### Session 6 — 2026-05-29 (commit `50bc746`)
 
