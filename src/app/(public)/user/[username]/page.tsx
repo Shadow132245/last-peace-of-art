@@ -155,10 +155,14 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           <h2 className="mb-4 text-xl font-semibold">Projects ({user.projects.length})</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {user.projects.map((project) => (
-              <div key={project.id} className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-transparent dark:shadow-none">
+              <Link
+                key={project.id}
+                href={`/projects/${project.id}`}
+                className="block rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-transparent dark:shadow-none dark:hover:border-zinc-600"
+              >
                 <h3 className="font-semibold">{project.title}</h3>
                 <p className="mt-1 text-sm text-zinc-500 line-clamp-2">{project.description}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -169,10 +173,14 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           <h2 className="mb-4 text-xl font-semibold">Posts ({user.posts.length})</h2>
           <div className="grid gap-4">
             {user.posts.map((post) => (
-              <div key={post.id} className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+              <Link
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className="block rounded-xl border border-zinc-200 p-4 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-600"
+              >
                 <h3 className="font-semibold">{post.title}</h3>
                 {post.excerpt && <p className="mt-1 text-sm text-zinc-500 line-clamp-2">{post.excerpt}</p>}
-              </div>
+              </Link>
             ))}
           </div>
         </section>
