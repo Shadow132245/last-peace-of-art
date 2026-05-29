@@ -6,9 +6,21 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { AddFriendButton } from "@/components/friends/friend-button";
 
+export const dynamic = "force-dynamic";
+
+async function findUser(username: string) {
+  let user = await prisma.user.findUnique({ where: { name: username } });
+  if (!user) {
+    user = await prisma.user.findFirst({
+      where: { name: { mode: "insensitive", equals: username } },
+    });
+  }
+  return user;
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
   const { username } = await params;
-  const user = await prisma.user.findUnique({ where: { name: username } });
+  const user = await findUser(username);
 
   if (!user) return { title: "User Not Found" };
 
@@ -21,8 +33,12 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
 export default async function UserProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
 
+  const found = await findUser(username);
+
+  if (!found) notFound();
+
   const user = await prisma.user.findUnique({
-    where: { name: username },
+    where: { id: found.id },
     include: {
       profile: true,
       projects: { where: { published: true }, orderBy: { createdAt: "desc" } },
@@ -40,8 +56,6 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       },
     },
   });
-
-  if (!user) notFound();
 
   const currentSession = await auth.api.getSession({ headers: await headers() });
   const isOwnProfile = currentSession?.user.id === user.id;
