@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅**
+> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅**
 
 ---
 
@@ -70,6 +70,7 @@
 | M33 | Vercel Analytics integration (Speed Insights + Web Analytics) | ✅ |
 | M34 | Draft/Publish UX fix + Admin delete error handling | ✅ |
 | M35 | Admin approval system + Content moderation (keyword filter) | ✅ |
+| M36 | HTML email templates + 2FA flow fix + TOTP/OTP login fix | ✅ |
 
 ---
 
@@ -84,6 +85,13 @@
 5. **allowPasswordless for OAuth 2FA** — Added `allowPasswordless: true` to twoFactor plugin config in `auth.ts`. Password input is now optional. Added `passwordOptional` i18n key
 6. **Proper TOTP 2FA flow** — After `enable()`, UI now shows: QR code → secret key → backup codes → 6-digit code input → verify button calling `verifyTotp()`. 2FA only activates after successful TOTP verification. New i18n keys: `setupTitle`, `scanQR`, `manualSetup`, `enterCode`, `verify`, `verifying`, `invalidCode`
 7. **Client-side QR generation** — Created `TotpQr` component at `src/components/ui/totp-qr.tsx` using `qrcode` npm package (Canvas-based). Replaced external `api.qrserver.com` API
+
+### Session 36 — 2026-05-30
+
+1. **Beautiful HTML email templates** — `auth.ts` email templates redesigned: branded gradient header, responsive layout, styled buttons, clean typography. Both verification email (big "Verify Email" button with fallback link) and OTP email (large monospace code display with expiry notice) now look professional
+2. **2FA login flow confirmation step** — Login form now shows a confirmation screen: "Code sent to your email" with an email icon and an OK button before showing the code input. Resend also goes through the confirmation screen
+3. **TOTP + OTP verification fix** — `handleVerifyCode` now tries `verifyTotp()` first (for authenticator app users), then falls back to `verifyOtp()` (email code). Fixes the bug where entering a correct TOTP code showed "wrong code" because only `verifyOtp()` was being called
+4. **New translation key** — Added `auth.codeSentDesc` in both `en.json` and `ar.json` for the confirmation screen message
 
 ### Session 35 — 2026-05-30
 
@@ -528,6 +536,10 @@ Notification  → id, userId, type, title, message?, link?, read
 | Moderation system | `src/lib/moderation.ts` — keyword-based filter with English + Arabic banned words. `checkContent()` returns `{ flagged, matches }`. `notifyAdmins()` creates notifications for all admin/founder users |
 | Bug Hunter moderation | Bug Hunter content is auto-published but scanned by `checkContent()`. If flagged, admins receive notification with details and link to admin panel |
 | Admin API routes founder fix | All admin API routes (`requireAdmin()`) now check for both `admin` and `founder` roles using `["admin", "founder"].includes()` |
+| HTML email templates | Both emails (verification + OTP) use branded responsive HTML templates with gradient header, styled buttons, monospace code display, and fallback text links |
+| 2FA login flow | Login form: after `twoFactorRedirect` → auto-send OTP → confirmation screen ("Code sent to your email") with OK button → code input. Resend also shows confirmation |
+| TOTP + OTP fallback in login | `handleVerifyCode()` tries `verifyTotp()` first (authenticator app), falls back to `verifyOtp()` (email). Fixes "correct TOTP code shows wrong" bug |
+| `auth.codeSentDesc` | New translation key for the 2FA confirmation screen message in both `en.json` and `ar.json` |
 
 ---
 

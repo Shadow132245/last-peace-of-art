@@ -38,6 +38,7 @@
     "alreadyHaveAccount": "Already have an account?",
     "twoFactorTitle": "Two-factor authentication",
     "twoFactorDesc": "Enter the code sent to your email",
+    "codeSentDesc": "We've sent a verification code to your email. Check your inbox and enter the code below.",
     "verificationCode": "Verification code",
     "verify": "Verify",
     "resendCode": "Didn't receive the code?",

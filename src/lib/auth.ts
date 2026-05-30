@@ -17,8 +17,33 @@ export const auth = betterAuth({
         async sendOTP({ user, otp }) {
           await sendEmail({
             to: user.email,
-            subject: "Your verification code",
-            html: `<p>Your verification code is: <strong>${otp}</strong></p>`,
+            subject: "Your verification code — Last Peace of Art",
+            html: `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;padding:40px 20px">
+<tr><td align="center">
+<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08)">
+<tr><td style="background:linear-gradient(135deg,#18181b,#27272a);padding:32px 40px;text-align:center">
+<h1 style="margin:0;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.3px">Last Peace of Art</h1>
+<p style="margin:6px 0 0;font-size:13px;color:#a1a1aa">Your creative space</p>
+</td></tr>
+<tr><td style="padding:36px 40px 28px">
+<h2 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#18181b">Verification code</h2>
+<p style="margin:0 0 20px;font-size:14px;color:#52525b;line-height:1.5">Use the code below to complete your sign-in. This code expires in 5 minutes.</p>
+<div style="background:#f4f4f5;border-radius:8px;padding:20px;text-align:center;margin-bottom:20px">
+<span style="font-size:32px;font-weight:700;letter-spacing:8px;color:#18181b;font-family:monospace">${otp}</span>
+</div>
+<p style="margin:0;font-size:13px;color:#71717a">If you didn't request this code, you can safely ignore this email.</p>
+</td></tr>
+<tr><td style="padding:0 40px 28px;border-top:1px solid #e4e4e7">
+<p style="margin:16px 0 0;font-size:12px;color:#a1a1aa;text-align:center">Last Peace of Art — All rights reserved.</p>
+</td></tr>
+</table>
+</td></tr></table>
+</body>
+</html>`,
           });
         },
       },
@@ -72,8 +97,36 @@ export const auth = betterAuth({
     async sendVerificationEmail({ user, url }) {
       await sendEmail({
         to: user.email,
-        subject: "Verify your email",
-        html: `<p>Click <a href="${url}">here</a> to verify your email.</p>`,
+        subject: "Verify your email — Last Peace of Art",
+        html: `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;padding:40px 20px">
+<tr><td align="center">
+<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08)">
+<tr><td style="background:linear-gradient(135deg,#18181b,#27272a);padding:32px 40px;text-align:center">
+<h1 style="margin:0;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.3px">Last Peace of Art</h1>
+<p style="margin:6px 0 0;font-size:13px;color:#a1a1aa">Your creative space</p>
+</td></tr>
+<tr><td style="padding:36px 40px 28px">
+<h2 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#18181b">Verify your email address</h2>
+<p style="margin:0 0 24px;font-size:14px;color:#52525b;line-height:1.5">Thanks for joining Last Peace of Art! Click the button below to verify your email and activate your account.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto">
+<tr><td style="background-color:#18181b;border-radius:8px;padding:0">
+<a href="${url}" style="display:inline-block;padding:13px 32px;font-size:14px;font-weight:600;color:#ffffff;background-color:#18181b;border-radius:8px;text-decoration:none">Verify Email</a>
+</td></tr>
+</table>
+<p style="margin:24px 0 0;font-size:13px;color:#71717a">If the button doesn't work, copy and paste this link into your browser:</p>
+<p style="margin:4px 0 0;font-size:12px;color:#a1a1aa;word-break:break-all">${url}</p>
+</td></tr>
+<tr><td style="padding:0 40px 28px;border-top:1px solid #e4e4e7">
+<p style="margin:16px 0 0;font-size:12px;color:#a1a1aa;text-align:center">Last Peace of Art — All rights reserved.</p>
+</td></tr>
+</table>
+</td></tr></table>
+</body>
+</html>`,
       });
     },
   },

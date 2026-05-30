@@ -16,6 +16,7 @@ export function LoginForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [twoFactorRequired, setTwoFactorRequired] = useState(false);
+  const [codeSent, setCodeSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [otpLoading, setOtpLoading] = useState(false);
 
@@ -40,13 +41,20 @@ export function LoginForm() {
     setLoading(false);
   };
 
-  const handleVerifyOtp = async (e: React.FormEvent) => {
+  const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setOtpLoading(true);
 
-    const { error: err } = await authClient.twoFactor.verifyOtp({ code: otpCode });
-    if (err) setError(err.message ?? err.statusText);
+    const { error: totpErr } = await authClient.twoFactor.verifyTotp({ code: otpCode });
+    if (!totpErr) {
+      router.push("/dashboard");
+      setOtpLoading(false);
+      return;
+    }
+
+    const { error: otpErr } = await authClient.twoFactor.verifyOtp({ code: otpCode });
+    if (otpErr) setError(otpErr.message ?? otpErr.statusText);
     else router.push("/dashboard");
     setOtpLoading(false);
   };
@@ -56,44 +64,58 @@ export function LoginForm() {
   };
 
   if (twoFactorRequired) {
+    if (codeSent) {
+      return (
+        <div className="w-full max-w-sm mx-auto">
+          <div className="mb-8 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/50">
+              <svg className="h-7 w-7 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold">{t("auth.twoFactorTitle")}</h1>
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{t("auth.twoFactorDesc")}</p>
+          </div>
+
+          <form onSubmit={handleVerifyCode} className="flex flex-col gap-4">
+            <Input
+              label={t("auth.verificationCode")}
+              type="text"
+              placeholder="000000"
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value)}
+              required
+            />
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            <Button type="submit" loading={otpLoading} className="w-full">{t("auth.verify")}</Button>
+          </form>
+
+          <p className="mt-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
+            {t("auth.resendCode")}{" "}
+            <button
+              type="button"
+              onClick={async () => { await authClient.twoFactor.sendOtp(); setCodeSent(false); }}
+              className="font-medium text-zinc-900 underline dark:text-zinc-100"
+            >
+              {t("auth.verificationCode")}
+            </button>
+          </p>
+        </div>
+      );
+    }
+
     return (
       <div className="w-full max-w-sm mx-auto">
         <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
+            <svg className="h-7 w-7 text-zinc-600 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
           <h1 className="text-2xl font-bold">{t("auth.twoFactorTitle")}</h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            {t("auth.twoFactorDesc")}
-          </p>
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{t("auth.codeSentDesc")}</p>
         </div>
-
-        <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
-          <Input
-            label={t("auth.verificationCode")}
-            type="text"
-            placeholder="000000"
-            value={otpCode}
-            onChange={(e) => setOtpCode(e.target.value)}
-            required
-          />
-
-          {error && (
-            <p className="text-sm text-red-500">{error}</p>
-          )}
-
-          <Button type="submit" loading={otpLoading} className="w-full">
-            {t("auth.verify")}
-          </Button>
-        </form>
-
-        <p className="mt-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
-          {t("auth.resendCode")}{" "}
-          <button
-            type="button"
-            onClick={() => authClient.twoFactor.sendOtp()}
-            className="font-medium text-zinc-900 underline dark:text-zinc-100"
-          >
-            {t("auth.verificationCode")}
-          </button>
-        </p>
+        <Button onClick={() => setCodeSent(true)} className="w-full">{t("auth.verify")}</Button>
       </div>
     );
   }
@@ -102,9 +124,7 @@ export function LoginForm() {
     <div className="w-full max-w-sm mx-auto">
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-bold">{t("auth.welcomeBack")}</h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          {t("auth.signInToAccount")}
-        </p>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t("auth.signInToAccount")}</p>
       </div>
 
       <div className="flex flex-col gap-3">
@@ -124,54 +144,27 @@ export function LoginForm() {
           <span className="w-full border-t border-zinc-300 dark:border-zinc-600" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
-            {t("auth.orWith")}
-          </span>
+          <span className="bg-white px-2 text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">{t("auth.orWith")}</span>
         </div>
       </div>
 
       <form onSubmit={handleEmailLogin} className="flex flex-col gap-4">
-        <Input
-          label={t("auth.email")}
-          type="email"
-          placeholder="you@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <Input
-          label={t("auth.password")}
-          type="password"
-          placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <Input label={t("auth.email")} type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <Input label={t("auth.password")} type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 
         <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-          <input
-            type="checkbox"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-            className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 dark:border-zinc-600 dark:text-zinc-100 dark:focus:ring-zinc-100"
-          />
+          <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 dark:border-zinc-600 dark:text-zinc-100 dark:focus:ring-zinc-100" />
           {t("auth.rememberMe")}
         </label>
 
-        {error && (
-          <p className="text-sm text-red-500">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-500">{error}</p>}
 
-        <Button type="submit" loading={loading} className="w-full">
-          {t("auth.signIn")}
-        </Button>
+        <Button type="submit" loading={loading} className="w-full">{t("auth.signIn")}</Button>
       </form>
 
       <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
         {t("auth.dontHaveAccount")}{" "}
-        <a href="/register" className="font-medium text-zinc-900 underline dark:text-zinc-100">
-          {t("auth.signUp")}
-        </a>
+        <a href="/register" className="font-medium text-zinc-900 underline dark:text-zinc-100">{t("auth.signUp")}</a>
       </p>
     </div>
   );
