@@ -1,14 +1,28 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useI18n } from "@/providers/i18n-provider";
 import { FadeInView } from "@/components/ui/fade-in-view";
-import { getServerT } from "@/lib/server-i18n";
 
-export const metadata: Metadata = {
-  title: "Terms of Service",
-  description: "Terms of Service for Last Peace of Art.",
-};
+export default function TermsPage() {
+  const { t } = useI18n();
 
-export default async function TermsPage() {
-  const { t } = await getServerT();
+  const sections = [
+    { title: t("legal.terms.s1Title"), content: t("legal.terms.s1Content") },
+    { title: t("legal.terms.s2Title"), content: t("legal.terms.s2Content") },
+    { title: t("legal.terms.s3Title"), content: t("legal.terms.s3Content") },
+    { title: t("legal.terms.s4Title"), content: t("legal.terms.s4Content") },
+    { title: t("legal.terms.s5Title"), list: t("legal.terms.s5List") },
+    { title: t("legal.terms.s6Title"), content: t("legal.terms.s6Content") },
+    { title: t("legal.terms.s7Title"), content: t("legal.terms.s7Content") },
+    { title: t("legal.terms.s8Title"), content: t("legal.terms.s8Content") },
+    { title: t("legal.terms.s9Title"), content: t("legal.terms.s9Content") },
+    { title: t("legal.terms.s10Title"), content: t("legal.terms.s10Content") },
+    { title: t("legal.terms.s11Title"), content: t("legal.terms.s11Content") },
+    { title: t("legal.terms.s12Title"), content: t("legal.terms.s12Content") },
+    { title: t("legal.terms.s13Title"), content: t("legal.terms.s13Content") },
+    { title: t("legal.terms.s14Title"), content: t("legal.terms.s14Content") },
+  ];
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
       <FadeInView>
@@ -20,85 +34,27 @@ export default async function TermsPage() {
 
       <FadeInView delay={0.15}>
         <div className="mt-10 space-y-8 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">1. Acceptance of Terms</h2>
-            <p>By accessing or using Last Peace of Art ("the Platform"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Platform.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">2. Eligibility</h2>
-            <p>You must be at least 13 years old to use the Platform. By creating an account, you represent that you meet this requirement and that all information you provide is accurate.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">3. Account Responsibilities</h2>
-            <p>You are solely responsible for maintaining the confidentiality of your account credentials and for all activities under your account. Notify us immediately of any unauthorized use.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">4. User Content</h2>
-            <p>You retain ownership of all content you post. By posting, you grant the Platform a non-exclusive, royalty-free license to display and distribute your content on the Platform. You represent that your content does not violate any third-party rights.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">5. Prohibited Conduct</h2>
-            <p>You agree not to:</p>
-            <ul className="mt-2 list-inside list-disc space-y-1 pl-4">
-              <li>Post illegal, harassing, threatening, or abusive content</li>
-              <li>Impersonate any person or entity</li>
-              <li>Upload viruses, malware, or harmful code</li>
-              <li>Attempt to access another user&apos;s account without permission</li>
-              <li>Use the Platform for spam, phishing, or unsolicited advertising</li>
-              <li>Violate any applicable laws or regulations</li>
-              <li>Interfere with the proper functioning of the Platform</li>
-              <li>Scrape, crawl, or harvest data without authorization</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">6. Content Moderation</h2>
-            <p>We reserve the right to remove or moderate any content that violates these terms. We may suspend or terminate accounts that repeatedly infringe upon these rules.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">7. Intellectual Property</h2>
-            <p>The Platform&apos;s name, logo, design, and code are the property of Last Peace of Art. You may not copy, modify, or distribute them without written permission.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">8. Third-Party Links</h2>
-            <p>The Platform may contain links to third-party websites. We are not responsible for their content, privacy practices, or terms.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">9. Disclaimer of Warranties</h2>
-            <p>The Platform is provided "as is" without warranties of any kind, express or implied. We do not guarantee uninterrupted or error-free service.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">10. Limitation of Liability</h2>
-            <p>To the fullest extent permitted by law, we shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Platform.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">11. Termination</h2>
-            <p>We may suspend or terminate your account at any time, with or without cause, with or without notice. Upon termination, your right to use the Platform ceases immediately.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">12. Changes to Terms</h2>
-            <p>We may update these terms at any time. Continued use of the Platform after changes constitutes acceptance of the new terms. We will notify you of material changes via email or platform notice.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">13. Governing Law</h2>
-            <p>These terms are governed by the laws of the Arab Republic of Egypt. Any disputes shall be resolved in the courts of Egypt.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">14. Contact</h2>
-            <p>For questions about these terms, contact us at <a href="mailto:fghfghffdgfhfgh@gmail.com" className="text-amber-600 hover:underline dark:text-amber-400">fghfghffdgfhfgh@gmail.com</a>.</p>
-          </section>
+          {sections.map((s, i) => {
+            if (!s.title || s.title.startsWith("legal.")) return null;
+            return (
+              <section key={i}>
+                <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">{s.title}</h2>
+                {s.content && !s.content.startsWith("legal.") && <p>{s.content}</p>}
+                {s.list && !s.list.startsWith("legal.") && (
+                  <ul className="mt-2 list-inside list-disc space-y-1 pl-4">
+                    {s.list.split(" | ").map((item, j) => (
+                      <li key={j}>{item.trim()}</li>
+                    ))}
+                  </ul>
+                )}
+                {i === sections.length - 1 && (
+                  <p className="mt-2">
+                    <a href="mailto:fghfghffdgfhfgh@gmail.com" className="text-amber-600 hover:underline dark:text-amber-400">fghfghffdgfhfgh@gmail.com</a>
+                  </p>
+                )}
+              </section>
+            );
+          })}
         </div>
       </FadeInView>
     </div>

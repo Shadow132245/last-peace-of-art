@@ -75,6 +75,8 @@
 | M37 | Forgot/Reset password flow + Admin verify-users tool + i18n keys | ✅ |
 | M38 | Fix: direct fetch for forgot/reset + per-user verify button + build fix | ✅ |
 | M39 | Auto sign-in after verification, ScrollToTop redesign, About page animations + redesign | ✅ |
+| M40 | Smoother spring animations across all components + About page translation fix + dashboard/admin UI polish | ✅ |
+| M41 | Terms & Privacy full Arabic translation, agree-to-terms on register, custom scrollbar, ScrollToTop glitch fix | 🏗️ |
 
 ---
 
@@ -138,7 +140,13 @@
 7. **NEVER run `npm run build` or `next build`** — Added to RULES section in PROJECT_MAP.md. Building locally times out (~8 min) and fails; Vercel handles builds on deploy
 8. **Commit `6420b68`** — Fix About page Arabic translation (convert to Client Component)
 
-### Session 36 — 2026-05-30
+### Session 41 — 2026-05-31 (Terms/Privacy Arabic, agree-to-terms, custom scrollbar, ScrollToTop glitch fix)
+
+1. **Terms & Privacy full Arabic translation** — Both pages converted from Server Components (`getServerT()`) to Client Components (`useI18n()`) so they immediately respond to locale switching. All 14 Terms sections and 11 Privacy sections with their titles, content, and bullet lists are now fully translated in `ar.json` with proper Arabic legal text, Arabic-Indic numerals (١٢٣), and culturally appropriate phrasing. English legal text moved from hardcoded JSX to `en.json` translation keys
+2. **Agree-to-terms checkbox on registration** — Added a required checkbox in `register-form.tsx` between password and submit button. The label reads "I agree to the [Terms of Service] and [Privacy Policy]" with clickable links to `/terms` and `/privacy`. Submit button is only enabled when checked. Error message shown if user tries to submit without agreeing. Translation keys: `auth.agreeToTerms`, `auth.agreeToTermsAnd`, `auth.agreeToTermsError`, `auth.termsLink`, `auth.privacyLink`
+3. **Custom scrollbar styling** — Added `::-webkit-scrollbar` CSS rules in `globals.css` with 8px width, rounded thumb (`#d4d4d8` in light mode, `#3f3f46` in dark mode), transparent track, and hover states. Added Firefox `scrollbar-width: thin` + `scrollbar-color` fallback. The browser scrollbar now matches the site's zinc/neutral color scheme
+4. **ScrollToTop glitch fix** — Changed `position: fixed; right-6` to `end-6` (logical property for RTL support). Added `mode="popLayout"` to `AnimatePresence` to prevent layout shift during exit animation. Added explicit `key="scroll-to-top"` for proper React reconciliation. This fixes the duplicate/center-position glitch
+5. **NEVER run `npm run build` or `next build`** — Already in RULES section
 
 1. **Beautiful HTML email templates** — `auth.ts` email templates redesigned: branded gradient header, responsive layout, styled buttons, clean typography. Both verification email (big "Verify Email" button with fallback link) and OTP email (large monospace code display with expiry notice) now look professional
 2. **2FA login flow confirmation step** — Login form now shows a confirmation screen: "Code sent to your email" with an email icon and an OK button before showing the code input. Resend also goes through the confirmation screen

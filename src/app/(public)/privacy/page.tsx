@@ -1,14 +1,25 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useI18n } from "@/providers/i18n-provider";
 import { FadeInView } from "@/components/ui/fade-in-view";
-import { getServerT } from "@/lib/server-i18n";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description: "Privacy Policy for Last Peace of Art.",
-};
+export default function PrivacyPage() {
+  const { t } = useI18n();
 
-export default async function PrivacyPage() {
-  const { t } = await getServerT();
+  const sections = [
+    { title: t("legal.privacy.s1Title"), content: t("legal.privacy.s1Content"), list: t("legal.privacy.s1List") },
+    { title: t("legal.privacy.s2Title"), content: t("legal.privacy.s2Content"), list: t("legal.privacy.s2List") },
+    { title: t("legal.privacy.s3Title"), content: t("legal.privacy.s3Content"), list: t("legal.privacy.s3List") },
+    { title: t("legal.privacy.s4Title"), content: t("legal.privacy.s4Content") },
+    { title: t("legal.privacy.s5Title"), content: t("legal.privacy.s5Content") },
+    { title: t("legal.privacy.s6Title"), content: t("legal.privacy.s6Content"), list: t("legal.privacy.s6List"), footer: t("legal.privacy.s6Footer") },
+    { title: t("legal.privacy.s7Title"), content: t("legal.privacy.s7Content") },
+    { title: t("legal.privacy.s8Title"), content: t("legal.privacy.s8Content"), list: t("legal.privacy.s8List"), footer: t("legal.privacy.s8Footer") },
+    { title: t("legal.privacy.s9Title"), content: t("legal.privacy.s9Content") },
+    { title: t("legal.privacy.s10Title"), content: t("legal.privacy.s10Content") },
+    { title: t("legal.privacy.s11Title"), content: t("legal.privacy.s11Content") },
+  ];
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
       <FadeInView>
@@ -20,97 +31,28 @@ export default async function PrivacyPage() {
 
       <FadeInView delay={0.15}>
         <div className="mt-10 space-y-8 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">1. Information We Collect</h2>
-            <p>We collect the following information when you use the Platform:</p>
-            <ul className="mt-2 list-inside list-disc space-y-1 pl-4">
-              <li><strong>Account Information:</strong> name, email address, and profile photo when you register via email or Google OAuth.</li>
-              <li><strong>Profile Information:</strong> bio, skills, avatar, banner, and any other content you add to your profile.</li>
-              <li><strong>Content:</strong> projects, blog posts, forum threads, comments, and any other content you create.</li>
-              <li><strong>Usage Data:</strong> pages visited, time spent, and interactions with the Platform.</li>
-              <li><strong>Technical Data:</strong> IP address, browser type, device information, and operating system.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">2. How We Use Your Information</h2>
-            <p>We use your information to:</p>
-            <ul className="mt-2 list-inside list-disc space-y-1 pl-4">
-              <li>Provide, maintain, and improve the Platform</li>
-              <li>Authenticate your identity and secure your account</li>
-              <li>Display your profile and content to other users</li>
-              <li>Send you important account-related notifications</li>
-              <li>Respond to your support requests</li>
-              <li>Detect and prevent fraudulent or abusive activity</li>
-              <li>Analyze usage patterns to improve user experience</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">3. Data Sharing</h2>
-            <p>We do not sell your personal information. We may share your data only in the following cases:</p>
-            <ul className="mt-2 list-inside list-disc space-y-1 pl-4">
-              <li>With your explicit consent</li>
-              <li>With service providers who help operate the Platform (e.g., hosting, analytics)</li>
-              <li>To comply with legal obligations or respond to lawful requests</li>
-              <li>To protect the rights, property, or safety of our users or the public</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">4. Data Storage and Security</h2>
-            <p>Your data is stored securely on servers provided by Neon (PostgreSQL) and Vercel. We implement industry-standard security measures including encryption in transit (TLS) and at rest. However, no method of electronic storage is 100% secure.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">5. Data Retention</h2>
-            <p>We retain your data for as long as your account is active. If you delete your account, we will delete your personal information within 30 days, except where retention is required by law.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">6. Your Rights</h2>
-            <p>Depending on your jurisdiction, you may have the right to:</p>
-            <ul className="mt-2 list-inside list-disc space-y-1 pl-4">
-              <li>Access the personal data we hold about you</li>
-              <li>Request correction of inaccurate data</li>
-              <li>Request deletion of your data</li>
-              <li>Object to or restrict processing of your data</li>
-              <li>Data portability</li>
-              <li>Withdraw consent at any time</li>
-            </ul>
-            <p className="mt-2">To exercise these rights, contact us at the email below.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">7. Cookies</h2>
-            <p>We use essential cookies for authentication and session management. We may also use analytics cookies to understand how the Platform is used. You can control cookies through your browser settings.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">8. Third-Party Services</h2>
-            <p>The Platform uses the following third-party services:</p>
-            <ul className="mt-2 list-inside list-disc space-y-1 pl-4">
-              <li><strong>Google OAuth:</strong> for authentication via Google accounts</li>
-              <li><strong>Neon:</strong> for PostgreSQL database hosting</li>
-              <li><strong>Vercel:</strong> for application hosting and deployment</li>
-            </ul>
-            <p className="mt-2">Each service has its own privacy policy governing data handling.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">9. Children&apos;s Privacy</h2>
-            <p>The Platform is not directed at children under 13. We do not knowingly collect personal information from children. If we learn that a child under 13 has provided us with personal data, we will delete it.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">10. Changes to This Policy</h2>
-            <p>We may update this Privacy Policy from time to time. We will notify you of material changes via email or a notice on the Platform.</p>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">11. Contact</h2>
-            <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:fghfghffdgfhfgh@gmail.com" className="text-amber-600 hover:underline dark:text-amber-400">fghfghffdgfhfgh@gmail.com</a>.</p>
-          </section>
+          {sections.map((s, i) => {
+            if (!s.title || s.title.startsWith("legal.")) return null;
+            return (
+              <section key={i}>
+                <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">{s.title}</h2>
+                {s.content && !s.content.startsWith("legal.") && <p>{s.content}</p>}
+                {s.list && !s.list.startsWith("legal.") && (
+                  <ul className="mt-2 list-inside list-disc space-y-1 pl-4">
+                    {s.list.split(" | ").map((item, j) => (
+                      <li key={j}>{item.trim()}</li>
+                    ))}
+                  </ul>
+                )}
+                {s.footer && !s.footer.startsWith("legal.") && <p className="mt-2">{s.footer}</p>}
+                {i === sections.length - 1 && (
+                  <p className="mt-2">
+                    <a href="mailto:fghfghffdgfhfgh@gmail.com" className="text-amber-600 hover:underline dark:text-amber-400">fghfghffdgfhfgh@gmail.com</a>
+                  </p>
+                )}
+              </section>
+            );
+          })}
         </div>
       </FadeInView>
     </div>

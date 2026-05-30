@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,11 +14,13 @@ export function RegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleEmailRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreeToTerms) { setError(t("auth.agreeToTermsError")); return; }
     setError("");
     setLoading(true);
 
@@ -93,6 +96,21 @@ export function RegisterForm() {
           minLength={8}
           required
         />
+
+        <label className="flex cursor-pointer items-start gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+          <input
+            type="checkbox"
+            checked={agreeToTerms}
+            onChange={(e) => setAgreeToTerms(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 dark:border-zinc-600 dark:text-zinc-100 dark:focus:ring-zinc-100"
+          />
+          <span>
+            {t("auth.agreeToTerms")}{" "}
+            <Link href="/terms" className="font-medium text-amber-600 hover:underline dark:text-amber-400">{t("auth.termsLink")}</Link>{" "}
+            {t("auth.agreeToTermsAnd")}{" "}
+            <Link href="/privacy" className="font-medium text-amber-600 hover:underline dark:text-amber-400">{t("auth.privacyLink")}</Link>
+          </span>
+        </label>
 
         {error && (
           <p className="text-sm text-red-500">{error}</p>
