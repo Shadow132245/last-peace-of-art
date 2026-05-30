@@ -16,6 +16,7 @@ export default function NewProjectPage() {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
   const [media, setMedia] = useState<string[]>([]);
+  const [published, setPublished] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -33,6 +34,7 @@ export default function NewProjectPage() {
         content,
         tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
         media,
+        published,
       }),
     });
 
@@ -113,6 +115,11 @@ export default function NewProjectPage() {
         </div>
 
         <Input label={t("dashboard.createProject.tagsLabel")} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("dashboard.createProject.tagsPlaceholder")} />
+
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} className="h-4 w-4 rounded border-zinc-300" />
+          {t("dashboard.publishCheckLabel")}
+        </label>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 

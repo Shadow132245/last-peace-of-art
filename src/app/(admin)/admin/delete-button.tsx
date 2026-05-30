@@ -11,7 +11,13 @@ export function DeleteButton({ url, label = "Delete" }: { url: string; label?: s
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this item?")) return;
     setLoading(true);
-    await fetch(url, { method: "DELETE" });
+    const res = await fetch(url, { method: "DELETE" });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error ?? "Failed to delete item");
+      setLoading(false);
+      return;
+    }
     router.refresh();
     setLoading(false);
   };

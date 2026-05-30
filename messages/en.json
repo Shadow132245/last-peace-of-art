@@ -169,6 +169,9 @@
     "newPostBtn": "New Post",
     "newProjectBtn": "New Project",
     "newThreadBtn": "New Thread",
+    "publish": "Publish",
+    "unpublish": "Unpublish",
+    "publishCheckLabel": "Publish immediately",
     "noPosts": "No posts yet. Start writing!",
     "noProjects": "No projects yet. Create your first one!",
     "noDiscussions": "No discussions yet.",
@@ -419,7 +422,11 @@
     "noReports": "No reports yet.",
     "noApplications": "No applications yet.",
     "noAppeals": "No appeals yet.",
-    "noTickets": "No tickets yet."
+    "noTickets": "No tickets yet.",
+    "delete": {
+      "error": "Failed to delete",
+      "success": "Deleted successfully"
+    }
   },
   "about": {
     "title": "About Us",

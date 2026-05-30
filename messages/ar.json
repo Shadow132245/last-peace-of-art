@@ -169,6 +169,9 @@
     "newPostBtn": "مقال جديد",
     "newProjectBtn": "مشروع جديد",
     "newThreadBtn": "موضوع جديد",
+    "publish": "نشر",
+    "unpublish": "إلغاء النشر",
+    "publishCheckLabel": "انشر فوراً",
     "noPosts": "لا توجد مقالات بعد. ابدأ الكتابة!",
     "noProjects": "لا توجد مشاريع بعد. أنشئ أول مشروع!",
     "noDiscussions": "لا توجد مناقشات بعد.",
@@ -419,7 +422,11 @@
     "noReports": "لا توجد بلاغات بعد.",
     "noApplications": "لا توجد طلبات بعد.",
     "noAppeals": "لا توجد استئنافات بعد.",
-    "noTickets": "لا توجد تذاكر بعد."
+    "noTickets": "لا توجد تذاكر بعد.",
+    "delete": {
+      "error": "فشل الحذف",
+      "success": "تم الحذف بنجاح"
+    }
   },
   "about": {
     "title": "من نحن",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useI18n } from "@/providers/i18n-provider";
 
 type EntityType = "posts" | "projects" | "forum";
 
@@ -13,6 +14,7 @@ export function TogglePublish({
   entityId: string;
   published: boolean;
 }) {
+  const { t } = useI18n();
   const [loading, setLoading] = useState(false);
 
   const handleToggle = async () => {
@@ -34,22 +36,22 @@ export function TogglePublish({
     }
   };
 
+  const label = published ? t("dashboard.unpublish") : t("dashboard.publish");
+
   return (
     <button
       onClick={handleToggle}
       disabled={loading}
       className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 ${
         published
-          ? "bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800"
-          : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
+          ? "bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/50 dark:text-amber-300 dark:hover:bg-amber-800/50"
+          : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-300 dark:hover:bg-emerald-800/50"
       }`}
     >
       {loading ? (
         <span className="inline-block animate-pulse">...</span>
-      ) : published ? (
-        "Published"
       ) : (
-        "Draft"
+        label
       )}
     </button>
   );

@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅**
+> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅**
 
 ---
 
@@ -68,6 +68,7 @@
 | M31 | Client-side QR generation with qrcode library | ✅ |
 | M32 | Seed script with sample user + starter content (projects, posts, threads) | ✅ |
 | M33 | Vercel Analytics integration (Speed Insights + Web Analytics) | ✅ |
+| M34 | Draft/Publish UX fix + Admin delete error handling | ✅ |
 
 ---
 
@@ -82,6 +83,14 @@
 5. **allowPasswordless for OAuth 2FA** — Added `allowPasswordless: true` to twoFactor plugin config in `auth.ts`. Password input is now optional. Added `passwordOptional` i18n key
 6. **Proper TOTP 2FA flow** — After `enable()`, UI now shows: QR code → secret key → backup codes → 6-digit code input → verify button calling `verifyTotp()`. 2FA only activates after successful TOTP verification. New i18n keys: `setupTitle`, `scanQR`, `manualSetup`, `enterCode`, `verify`, `verifying`, `invalidCode`
 7. **Client-side QR generation** — Created `TotpQr` component at `src/components/ui/totp-qr.tsx` using `qrcode` npm package (Canvas-based). Replaced external `api.qrserver.com` API
+
+### Session 34 — 2026-05-30
+
+1. **TogglePublish action labels** — `toggle-publish.tsx` now shows the action the user will perform (green "Publish" when currently draft, amber "Unpublish" when currently published) instead of the current state ("Published"/"Draft"). Uses `useI18n()` for translated labels. Color scheme: emerald for publish action, amber for unpublish action
+2. **Creation forms draft/publish option** — `dashboard/posts/new/page.tsx`, `dashboard/projects/new/page.tsx`, `dashboard/forum/new/page.tsx` now include a `published` checkbox (default unchecked = draft). `published` value sent in request body
+3. **API routes respect `published` field** — `api/posts/route.ts`, `api/projects/route.ts`, `api/forum/route.ts` changed from `published: autoPublish` to `published: published ?? autoPublish` — uses explicit `published` from request body if provided, otherwise falls back to role-based `autoPublish`
+4. **Admin DeleteButton checks response** — `delete-button.tsx` now checks `if (!res.ok)`, reads error message from JSON response, and shows `alert()` with the error. Only calls `router.refresh()` on successful deletion
+5. **Translation keys added** — `dashboard.publish`, `dashboard.unpublish`, `dashboard.publishCheckLabel`, `admin.delete.error`, `admin.delete.success` in both `en.json` and `ar.json`
 
 ### Session 31 — 2026-05-30
 
@@ -502,6 +511,10 @@ Notification  → id, userId, type, title, message?, link?, read
 | Dashboard grid — 5 stats cards | `lg:grid-cols-5` so all 5 cards (projects/posts/discussions/messages/friends) fit on one row on large screens |
 | Quick actions — no duplicates | Messages and Friends quick action links removed since they're already in the stats grid |
 | Vercel Analytics | `<Analytics />` component from `@vercel/analytics/react` added to root layout — tracks page views, geolocation, and performance automatically on Vercel |
+| TogglePublish action labels | Button shows the action the user will perform ("Publish" meaning "click to publish", "Unpublish" meaning "click to unpublish"), not the current state — solves the "Draft button publishes" confusion. Green for publish, amber for unpublish |
+| Creation forms draft checkbox | `published` checkbox (default unchecked = draft) added to posts/projects/forum creation forms; value sent as `published: boolean` in POST body |
+| API routes respect explicit `published` | Routes use `published: published ?? autoPublish` — explicit `published` from client request body takes priority over role-based `autoPublish` logic |
+| DeleteButton error handling | `fetch` response checked with `if (!res.ok)`, error message shown via `alert()`, `router.refresh()` only called on success |
 
 ---
 
