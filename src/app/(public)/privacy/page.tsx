@@ -26,7 +26,7 @@ export default function PrivacyPage() {
         <h1 className="text-4xl font-bold">{t("legal.privacyTitle")}</h1>
       </FadeInView>
       <FadeInView delay={0.1}>
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{t("legal.lastUpdated").replace("{date}", "May 28, 2026")}</p>
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{t("legal.lastUpdated").replace("{date}", t("legal.privacyDate"))}</p>
       </FadeInView>
 
       <FadeInView delay={0.15}>

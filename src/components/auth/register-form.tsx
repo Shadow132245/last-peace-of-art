@@ -35,6 +35,7 @@ export function RegisterForm() {
   };
 
   const handleGoogleLogin = async () => {
+    if (!agreeToTerms) { setError(t("auth.agreeToTermsError")); return; }
     await authClient.signIn.social({ provider: "google" });
   };
 

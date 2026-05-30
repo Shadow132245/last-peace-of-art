@@ -76,7 +76,8 @@
 | M38 | Fix: direct fetch for forgot/reset + per-user verify button + build fix | ✅ |
 | M39 | Auto sign-in after verification, ScrollToTop redesign, About page animations + redesign | ✅ |
 | M40 | Smoother spring animations across all components + About page translation fix + dashboard/admin UI polish | ✅ |
-| M41 | Terms & Privacy full Arabic translation, agree-to-terms on register, custom scrollbar, ScrollToTop glitch fix | 🏗️ |
+| M41 | Terms & Privacy full Arabic translation, agree-to-terms on register, custom scrollbar, ScrollToTop glitch fix | ✅ |
+| M42 | Google OAuth agree-to-terms, hardcoded date translated, overflow-x-hidden fix, PROJECT_MAP.md recorded SMTP on Vercel | ✅ |
 
 ---
 
@@ -147,6 +148,14 @@
 3. **Custom scrollbar styling** — Added `::-webkit-scrollbar` CSS rules in `globals.css` with 8px width, rounded thumb (`#d4d4d8` in light mode, `#3f3f46` in dark mode), transparent track, and hover states. Added Firefox `scrollbar-width: thin` + `scrollbar-color` fallback. The browser scrollbar now matches the site's zinc/neutral color scheme
 4. **ScrollToTop glitch fix** — Changed `position: fixed; right-6` to `end-6` (logical property for RTL support). Added `mode="popLayout"` to `AnimatePresence` to prevent layout shift during exit animation. Added explicit `key="scroll-to-top"` for proper React reconciliation. This fixes the duplicate/center-position glitch
 5. **NEVER run `npm run build` or `next build`** — Already in RULES section
+
+### Session 42 — 2026-05-31 (Google OAuth agree-to-terms, hardcoded date fix, overflow-x-hidden, SMTP vars on Vercel)
+
+1. **SMTP env vars added to Vercel Dashboard** — All SMTP environment variables (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`) have been added to Vercel Dashboard → Project Settings → Environment Variables. Production email features (verification, password reset, 2FA OTP) should now work on the live site
+2. **Google OAuth agree-to-terms** — `register-form.tsx` `handleGoogleLogin` now checks `agreeToTerms` before calling `authClient.signIn.social()`. If the checkbox is unchecked, it shows the same error (`auth.agreeToTermsError`) as email registration. Both registration methods (email + Google) now require terms agreement
+3. **Hardcoded English date fixed** — The `May 28, 2026` hardcoded in Terms page and Privacy page `.replace("{date}", ...)` is now replaced with translation key lookups: `t("legal.termsDate")` and `t("legal.privacyDate")`. Added `legal.termsDate` and `legal.privacyDate` to both `en.json` (`"May 28, 2026"`) and `ar.json` (`"٢٨ مايو ٢٠٢٦"`)
+4. **Overflow-x-hidden added** — Added `html { overflow-x: hidden; }` to `globals.css` to prevent horizontal scrollbar glitch where the scroll arrow would appear at the bottom of the page due to element overflow
+5. **All pushed to GitHub** — commit `63f49b4`
 
 1. **Beautiful HTML email templates** — `auth.ts` email templates redesigned: branded gradient header, responsive layout, styled buttons, clean typography. Both verification email (big "Verify Email" button with fallback link) and OTP email (large monospace code display with expiry notice) now look professional
 2. **2FA login flow confirmation step** — Login form now shows a confirmation screen: "Code sent to your email" with an email icon and an OK button before showing the code input. Resend also goes through the confirmation screen

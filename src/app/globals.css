@@ -9,6 +9,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  overflow-x: hidden;
+}
+
 :root {
   --background: #fafafa;
   --foreground: #18181b;
