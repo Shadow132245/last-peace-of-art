@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
+import { checkContent, notifyAdmins } from "@/lib/moderation";
 
 async function getSession() {
   return auth.api.getSession({ headers: await headers() });
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { title, content, excerpt, tags, published } = await request.json();
+    const { title, content, excerpt, tags } = await request.json();
 
     if (!title || !content) {
       return NextResponse.json({ error: "Title and content are required" }, { status: 400 });
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
 
     const slug = slugify(title);
     const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } });
-    const autoPublish = user?.role === "bug_hunter";
+    const isBugHunter = user?.role === "bug_hunter";
 
     const post = await prisma.post.create({
       data: {
@@ -41,10 +42,22 @@ export async function POST(request: Request) {
         content,
         excerpt: excerpt ?? null,
         tags: tags ?? [],
-        published: published ?? autoPublish,
+        published: isBugHunter,
         userId: session.user.id,
       },
     });
+
+    if (isBugHunter) {
+      const { flagged, matches } = checkContent(title + " " + content);
+      if (flagged) {
+        await notifyAdmins(
+          "moderation",
+          "⚠️ Flagged post",
+          `Bug Hunter "${session.user.name}" posted content with: ${matches.join(", ")}`,
+          `/admin/posts`
+        );
+      }
+    }
 
     logger.info({ postId: post.id, slug }, "Post created");
     return NextResponse.json(post, { status: 201 });

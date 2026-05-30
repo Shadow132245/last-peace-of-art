@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅**
+> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅**
 
 ---
 
@@ -69,6 +69,7 @@
 | M32 | Seed script with sample user + starter content (projects, posts, threads) | ✅ |
 | M33 | Vercel Analytics integration (Speed Insights + Web Analytics) | ✅ |
 | M34 | Draft/Publish UX fix + Admin delete error handling | ✅ |
+| M35 | Admin approval system + Content moderation (keyword filter) | ✅ |
 
 ---
 
@@ -83,6 +84,14 @@
 5. **allowPasswordless for OAuth 2FA** — Added `allowPasswordless: true` to twoFactor plugin config in `auth.ts`. Password input is now optional. Added `passwordOptional` i18n key
 6. **Proper TOTP 2FA flow** — After `enable()`, UI now shows: QR code → secret key → backup codes → 6-digit code input → verify button calling `verifyTotp()`. 2FA only activates after successful TOTP verification. New i18n keys: `setupTitle`, `scanQR`, `manualSetup`, `enterCode`, `verify`, `verifying`, `invalidCode`
 7. **Client-side QR generation** — Created `TotpQr` component at `src/components/ui/totp-qr.tsx` using `qrcode` npm package (Canvas-based). Replaced external `api.qrserver.com` API
+
+### Session 35 — 2026-05-30
+
+1. **Admin approval system** — All content (posts/projects/forum threads) is now created as draft by default (`published: false`). Only admin/founder can publish content via the admin panel's Accept button (`AdminPublishToggle`). Bug Hunter role still auto-publishes but content is scanned by moderation
+2. **Content moderation system** — Created `src/lib/moderation.ts` with keyword-based filter (English + Arabic inappropriate words). When Bug Hunter publishes content that matches banned words, a notification is sent to all admins/founders with details of the flagged content
+3. **Creation forms cleaned up** — Removed the `published` checkbox from all 3 creation forms (posts/projects/forum). Users create content as draft, admin approves
+4. **Admin API routes fixed for founder** — Updated `requireAdmin()` in all admin API routes (posts, projects, threads, reports, appeals) to allow both `admin` and `founder` roles. Previously only checked for `admin`, which blocked the site owner from using admin features
+5. **PROJECT_MAP.md updated** — Session 35 entry, M35 milestone
 
 ### Session 34 — 2026-05-30
 
@@ -515,6 +524,10 @@ Notification  → id, userId, type, title, message?, link?, read
 | Creation forms draft checkbox | `published` checkbox (default unchecked = draft) added to posts/projects/forum creation forms; value sent as `published: boolean` in POST body |
 | API routes respect explicit `published` | Routes use `published: published ?? autoPublish` — explicit `published` from client request body takes priority over role-based `autoPublish` logic |
 | DeleteButton error handling | `fetch` response checked with `if (!res.ok)`, error message shown via `alert()`, `router.refresh()` only called on success |
+| Admin approval required | All content (posts/projects/forum) created as draft by default (`published: false`). Only admin/founder can publish via admin panel `Accept` button. Bug Hunter auto-publishes but content is scanned |
+| Moderation system | `src/lib/moderation.ts` — keyword-based filter with English + Arabic banned words. `checkContent()` returns `{ flagged, matches }`. `notifyAdmins()` creates notifications for all admin/founder users |
+| Bug Hunter moderation | Bug Hunter content is auto-published but scanned by `checkContent()`. If flagged, admins receive notification with details and link to admin panel |
+| Admin API routes founder fix | All admin API routes (`requireAdmin()`) now check for both `admin` and `founder` roles using `["admin", "founder"].includes()` |
 
 ---
 

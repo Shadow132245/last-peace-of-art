@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 
 async function requireAdmin() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "admin") throw new Error("Forbidden");
+  if (!session || !["admin", "founder"].includes(session.user.role as string)) throw new Error("Forbidden");
   return session;
 }
 
