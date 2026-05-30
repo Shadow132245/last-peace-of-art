@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { authClient } from "@/lib/auth-client";
+import { FadeInView } from "@/components/ui/fade-in-view";
 
 const navItems = [
   { href: "/admin", label: "Overview", icon: "📊" },
@@ -65,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <motion.aside
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        transition={{ type: "spring", stiffness: 140, damping: 22, mass: 0.7 }}
         className="hidden w-56 shrink-0 md:block"
       >
         <nav className="sticky top-24 flex flex-col gap-1.5 rounded-2xl border border-zinc-200/80 bg-white/60 p-4 backdrop-blur-xl dark:border-zinc-700/50 dark:bg-zinc-900/50">
@@ -113,10 +114,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <motion.main
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
+        transition={{ type: "spring", stiffness: 160, damping: 24, mass: 0.6, delay: 0.1 }}
         className="min-w-0 flex-1"
       >
-        {children}
+        <FadeInView>{children}</FadeInView>
       </motion.main>
     </div>
   );

@@ -121,7 +121,22 @@
 1. **Auto sign-in after email verification** — Changed `autoSignInAfterVerification: false` → `true` in `emailVerification` config in `auth.ts`. When a user clicks the verification link in their email, they will be automatically signed in instead of being redirected to the login page
 2. **ScrollToTop redesign** — Complete rewrite: gradient amber background (`from-amber-500 to-amber-600`), spring animation (`stiffness: 400, damping: 25`), chevron-up SVG icon (no box), hover scale + shadow + slight lift, lower threshold (300px instead of 400), `AnimatePresence` for enter/exit animations
 3. **About page redesign + animations** — Each section wrapped in `FadeInView` (delays 0 → 0.6), added owner card with profile placeholder (initial letter in gradient circle), increased padding/spacing, improved semantic HTML. All sections now fade in as user scrolls
-4. **Translation verification** — Confirmed `ar.json` `aboutUs` key is correct UTF-8 Arabic (bytes: D9-85-D9-86-20-D9-86-D8-AD-D9-86). Discovered that server components don't re-render when client changes locale via cookies — requires page refresh. This is expected behavior for server components with cookie-based i18n
+4. **Translation verification** — Confirmed `ar.json` `aboutUs` key is correct UTF-8 Arabic. Discovered that server components don't re-render when client changes locale via cookies — requires page refresh. This is expected behavior for server components with cookie-based i18n
+
+### Session 40 — 2026-05-31 (Smoother animations, About page translation fix, UI polish)
+
+1. **About page translation fix** — Converted About page from Server Component (`getServerT()`) to Client Component (`useI18n()`). This fixes the Arabic translation not updating when user switches locale via the LocaleSwitcher — the page now re-renders immediately because `useI18n()` responds to client-side locale changes. Trade-off: metadata (`generateMetadata`) no longer exported (client components can't export metadata)
+2. **All animation components updated to spring** — `FadeInView`, `PageTransition`, `StaggerList`/`StaggerItem`, `AnimatedList`/`AnimatedItem`, `AnimateCard` all now use `type: "spring"` with tuned stiffness/damping/mass instead of `duration/ease`. This gives a much smoother, more natural feel:
+   - `FadeInView`: spring stiffness 120, damping 20, mass 0.8 (was duration 0.45 easeOut)
+   - `PageTransition`: spring stiffness 160, damping 24, mass 0.6 (was duration 0.35 easeOut)
+   - `StaggerItem`/`AnimatedItem`: spring stiffness 150-180, damping 22, mass 0.7
+   - `AnimateCard`: spring stiffness 180, damping 22, mass 0.7, hover y: -6
+3. **Dashboard home page animated** — Added `FadeInView` wrapping the title + stats grid + quick actions heading. Quick actions grid now uses `StaggerList`/`StaggerItem` for staggered entrance. DashboardCard and ActionCard now have hover effects: `-translate-y-1`, amber border/shadow on hover, amber text color on hover
+4. **Auth pages (5 pages) updated to spring** — Login, Register, Forgot Password, Reset Password, Verify Email all changed from `duration: 0.4, easeOut` to `spring stiffness: 160, damping: 24, mass: 0.6`
+5. **Admin layout updated** — Sidebar animation changed to spring (`stiffness: 140, damping: 22, mass: 0.7`). Main content area animation changed to spring (`stiffness: 160, damping: 24, mass: 0.6, delay: 0.1`). Added `FadeInView` wrapper around `{children}` so all admin sub-pages get scroll-triggered fade-in
+6. **globals.css improved** — Global transition reduced from `0.3s` to `0.2s` for faster feel. Added `scaleIn` keyframe animation. Main tag animation reduced from `0.5s` to `0.3s`
+7. **NEVER run `npm run build` or `next build`** — Added to RULES section in PROJECT_MAP.md. Building locally times out (~8 min) and fails; Vercel handles builds on deploy
+8. **Commit `6420b68`** — Fix About page Arabic translation (convert to Client Component)
 
 ### Session 36 — 2026-05-30
 

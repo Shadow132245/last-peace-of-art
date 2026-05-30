@@ -7,7 +7,7 @@ export function StaggerList({ children, className }: { children: React.ReactNode
     <motion.div
       initial="hidden"
       animate="visible"
-      variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
+      variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
       className={className}
     >
       {children}
@@ -18,8 +18,8 @@ export function StaggerList({ children, className }: { children: React.ReactNode
 export function StaggerItem({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <motion.div
-      variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
+      variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+      transition={{ type: "spring", stiffness: 150, damping: 22, mass: 0.7 }}
       className={className}
     >
       {children}

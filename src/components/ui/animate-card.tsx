@@ -5,12 +5,12 @@ import { motion } from "motion/react";
 export function AnimateCard({ children, className, href }: { children: React.ReactNode; className?: string; href?: string }) {
   const Component = href ? motion.a : motion.div;
   const props: Record<string, unknown> = {
-    initial: { opacity: 0, y: 12 },
+    initial: { opacity: 0, y: 16 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, margin: "-30px" },
-    whileHover: { y: -4, scale: 1.01 },
-    whileTap: { scale: 0.99 },
-    transition: { duration: 0.3, ease: "easeOut" },
+    whileHover: { y: -6, scale: 1.02 },
+    whileTap: { scale: 0.98 },
+    transition: { type: "spring", stiffness: 180, damping: 22, mass: 0.7 },
     className,
   };
   if (href) (props as any).href = href;

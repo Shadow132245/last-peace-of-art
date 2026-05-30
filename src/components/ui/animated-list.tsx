@@ -19,8 +19,8 @@ export function AnimatedList({ children, className }: { children: React.ReactNod
 export function AnimatedItem({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <motion.div
-      variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
+      transition={{ type: "spring", stiffness: 180, damping: 22, mass: 0.7 }}
       className={className}
     >
       {children}

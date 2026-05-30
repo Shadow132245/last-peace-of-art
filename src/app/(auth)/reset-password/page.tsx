@@ -55,15 +55,15 @@ export default function ResetPasswordPage() {
   if (!token) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4"
-      >
-        <div className="w-full max-w-sm mx-auto text-center">
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold">{t("auth.resetPassword")}</h1>
-            <p className="mt-2 text-sm text-red-500">{t("auth.invalidOrExpiredToken")}</p>
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 160, damping: 24, mass: 0.6 }}
+      className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4"
+    >
+      <div className="w-full max-w-sm mx-auto text-center">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold">{t("auth.resetPassword")}</h1>
+          <p className="mt-2 text-sm text-red-500">{t("auth.invalidOrExpiredToken")}</p>
           </div>
           <Link
             href="/forgot-password"
@@ -81,7 +81,7 @@ export default function ResetPasswordPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        transition={{ type: "spring", stiffness: 160, damping: 24, mass: 0.6 }}
         className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4"
       >
         <div className="w-full max-w-sm mx-auto text-center">
@@ -106,7 +106,7 @@ export default function ResetPasswordPage() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      transition={{ type: "spring", stiffness: 160, damping: 24, mass: 0.6 }}
       className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4"
     >
       <div className="w-full max-w-sm mx-auto text-center">
