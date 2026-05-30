@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅**
+> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅**
 
 ---
 
@@ -71,6 +71,7 @@
 | M34 | Draft/Publish UX fix + Admin delete error handling | ✅ |
 | M35 | Admin approval system + Content moderation (keyword filter) | ✅ |
 | M36 | HTML email templates + 2FA flow fix + TOTP/OTP login fix | ✅ |
+| M37 | Forgot/Reset password flow + Admin verify-users tool + i18n keys | ✅ |
 
 ---
 
@@ -85,6 +86,17 @@
 5. **allowPasswordless for OAuth 2FA** — Added `allowPasswordless: true` to twoFactor plugin config in `auth.ts`. Password input is now optional. Added `passwordOptional` i18n key
 6. **Proper TOTP 2FA flow** — After `enable()`, UI now shows: QR code → secret key → backup codes → 6-digit code input → verify button calling `verifyTotp()`. 2FA only activates after successful TOTP verification. New i18n keys: `setupTitle`, `scanQR`, `manualSetup`, `enterCode`, `verify`, `verifying`, `invalidCode`
 7. **Client-side QR generation** — Created `TotpQr` component at `src/components/ui/totp-qr.tsx` using `qrcode` npm package (Canvas-based). Replaced external `api.qrserver.com` API
+
+### Session 37 — 2026-05-30
+
+1. **sendResetPassword callback** — Added `async sendResetPassword({ user, url })` inside `emailAndPassword` in `auth.ts`. Uses the same branded HTML email template design as verification/OTP emails: gradient header, "Reset Password" button, expiry notice (1 hour), fallback URL text
+2. **Forgot password page** — `(auth)/forgot-password/page.tsx`: email input + "Send Reset Link" button calling `authClient.forgetPassword({ email, redirectTo: "/reset-password" })`. Shows success message when email sent, error on failure. "Return to sign in" link at bottom
+3. **Reset password page** — `(auth)/reset-password/page.tsx`: reads `token` from URL query params. Shows error if token missing. New password + confirm password inputs calling `authClient.resetPassword({ newPassword, token })`. Shows success message with "Return to sign in" link on completion
+4. **Forgot password link in login form** — `login-form.tsx`: wrapped Remember Me checkbox and "Forgot password?" link in a flex row (`flex items-center justify-between`). Link points to `/forgot-password`
+5. **Admin verify-users API** — `api/admin/verify-users/route.ts`: POST endpoint, checks admin session, runs `prisma.user.updateMany({ where: { emailVerified: false }, data: { emailVerified: true } })`. Returns `{ updated: count }`
+6. **Verify All Users button** — `overview-cards.tsx`: added "Verify All Users" button below stat cards. On click, calls POST `/api/admin/verify-users`, shows result ("Verified X users") in green, error in red. Loading state during request
+7. **Translation keys** — Added 11 new keys in `en.json` and `ar.json`: `forgotPassword`, `forgotPasswordTitle`, `forgotPasswordDesc`, `sendResetLink`, `resetLinkSent`, `resetPassword`, `resetPasswordTitle`, `resetPasswordDesc`, `newPassword`, `confirmPassword`, `passwordResetSuccess`, `passwordMismatch`, `invalidOrExpiredToken`
+8. **All pushed to GitHub** — commit `c14f28e`
 
 ### Session 36 — 2026-05-30
 
@@ -343,6 +355,12 @@ User ──→ /auth/login ──→ [Google OAuth / Email+Password]
               ├── 2FA enabled? ──→ Send OTP email ──→ Verify OTP ──→ Dashboard
               │
               ├── Email not verified? ──→ Sign-in blocked (requireEmailVerification)
+              │       │
+              │       └── Forgot password? ──→ /forgot-password ──→ Send reset email ──→ Click link ──→ /reset-password?token=xxx ──→ Set new password ──→ /login
+              │
+              ├── Forgot password? link ──→ /forgot-password ──→ Enter email → sendResetPassword callback ──→ Email with reset link
+              │                                           └── Success: "Reset link sent! Check your email."
+              │
               └── Sign up ──→ Send verification email ──→ /verify-email page ──→ Click link → email verified
 ```
 
@@ -367,7 +385,7 @@ src/
 │   │   ├── tickets/              # Ticket submission form
 │   │   ├── apply/                # Staff application form (6 questions)
 │   │   └── user/[username]/      # Public profile — avatar, banner, bio, skills, threads, comments, role badges, msg/friend buttons
-│   ├── (auth)/                   # Login / Register / Verify email
+│   ├── (auth)/                   # Login / Register / Verify email / Forgot password / Reset password
 │   ├── (admin)/                  # Admin panel — banned + suspended + role check in layout
 │   │   ├── layout.tsx            # Sidebar, banned/suspended/role checks
 │   │   └── admin/
@@ -406,6 +424,7 @@ src/
 │   │   ├── friends/              # GET friends, DELETE unfriend
 │   │   ├── friends/requests/     # GET pending, POST send request
 │   │   ├── friends/requests/[id] # PATCH accept/reject request
+│   │   ├── admin/verify-users/   # POST — fix emailVerified for all users (admin only)
 │   │   └── admin/                # Admin operations
 │   │       ├── users/[userId]/   # Ban/unban + suspend/unsuspend + role change
 │   │       ├── projects/[id]/    # Delete project
@@ -425,7 +444,7 @@ src/
 ├── components/
 │   ├── ui/                       # Button, Input, Markdown, Pagination, ImageUpload, NotificationBell, admin components
 │   ├── layout/                   # Navbar (dark toggle, auth-aware, NotificationBell, Messages/Friends links), Footer
-│   ├── auth/                     # LoginForm (remember me + 2FA OTP), RegisterForm
+│   ├── auth/                     # LoginForm (remember me + 2FA OTP + forgot password link), RegisterForm
 │   ├── comments/                 # CommentSection (shared b/w blog/projects/forum)
 │   ├── likes/                    # LikeButton (optimistic UI, SVG icons)
 │   ├── reports/                  # ReportButton (modal with reason + description)
@@ -433,9 +452,9 @@ src/
 │   ├── friends/                  # FriendButton (add friend, sent state, loading)
 │   └── ui/safe-image.tsx         # SafeImg / SafeBanner — graceful fallback for broken image URLs
 ├── lib/
-│   ├── auth.ts                   # Better Auth server config (Google + Email)
+│   ├── auth.ts                   # Better Auth server config (Google + Email + forgot/reset password email template)
 │   ├── auth-client.ts            # Better Auth client (browser, twoFactorClient plugin)
-│   ├── email.ts                  # nodemailer transport (verification, OTP, password reset)
+│   ├── email.ts                  # nodemailer transport (verification, OTP, password reset, sendResetPassword)
 │   ├── db.ts                     # PrismaClient singleton (PrismaPg adapter)
 │   ├── logger.ts                 # pino logger
 │   ├── admin.ts                  # requireAdmin() helper
@@ -540,6 +559,11 @@ Notification  → id, userId, type, title, message?, link?, read
 | 2FA login flow | Login form: after `twoFactorRedirect` → auto-send OTP → confirmation screen ("Code sent to your email") with OK button → code input. Resend also shows confirmation |
 | TOTP + OTP fallback in login | `handleVerifyCode()` tries `verifyTotp()` first (authenticator app), falls back to `verifyOtp()` (email). Fixes "correct TOTP code shows wrong" bug |
 | `auth.codeSentDesc` | New translation key for the 2FA confirmation screen message in both `en.json` and `ar.json` |
+| Forgot/Reset password flow | `sendResetPassword` callback in `emailAndPassword` sends HTML email with "Reset Password" button; `forgetPassword()` client method triggers email; `resetPassword()` verifies token + updates password; `redirectTo: "/reset-password"` sets the URL in the email |
+| `authClient.forgetPassword()` | Built-in Better Auth v1 client method — no extra plugin needed. Usage: `authClient.forgetPassword({ email, redirectTo: "/reset-password" })` |
+| `authClient.resetPassword()` | Built-in Better Auth v1 client method. Usage: `authClient.resetPassword({ newPassword, token })` where `token` comes from URL query param |
+| Admin verify-users API | `POST /api/admin/verify-users` checks admin session, sets `emailVerified: true` for all users where `emailVerified: false`. "Verify All Users" button in admin overview page below stat cards |
+| `requireEmailVerification` breaks old users | Users who registered before `requireEmailVerification: true` was enabled have `emailVerified: false` and can't sign in. Use "Verify All Users" button in admin, or use forgot password flow (which doesn't check email verification) |
 
 ---
 
@@ -825,3 +849,25 @@ The user requested the following features be implemented all at once, and explai
 - Prefers step-by-step instructions in Egyptian Arabic
 - Sensitive env vars go in Vercel Dashboard (Production only), never in committed files
 - Trusts Vercel build over local `next build` (local times out)
+
+### Session 37 — Forgot/Reset Password + Admin Verify Users (2026-05-30)
+
+**User reported in Egyptian Arabic:**
+> "صاحبي كان مسجل بالحساب ده 13mazloum37@gmail.com في الموقع وواخد رتبة ادمن فا لما جه يسجل دخول تاني لحسابه قاله انو الايميل نوت فيرفايد ازاي ولما حتي جه يستعمل نفس الايميل في التسجيل بجوجل قال الموقع ان الايميل مش مربوط بحساب+ عايز في صفحة تسجيل الدخول يبقا في زر نسيت كلمة المرور ويظهرله انه يكتب الايميل بتاعه عشان يتبعتله عليه لينك لاعادة تعيين الباسورد الخاص بحسابه"
+> (My friend was registered as admin with email 13mazloum37@gmail.com. When he tried to log in again, it said email not verified. Also when he tried to sign in with Google using the same email, it said the email is not linked to an account. I want a "Forgot Password" button on the login page.)
+
+**Problem:**
+1. `requireEmailVerification: true` was enabled after the friend's account was created → all existing users have `emailVerified: false` and can't sign in
+2. Google Sign-In creates a NEW account linked to Google account ID, not by email match — using the same email via Google doesn't link to the existing email/password account
+3. No forgot password flow existed in the app — users couldn't reset their passwords
+
+**Solution:**
+1. Added `sendResetPassword` callback in `auth.ts` → branded HTML email with "Reset Password" button
+2. Created `(auth)/forgot-password/page.tsx` → email input, calls `authClient.forgetPassword()`
+3. Created `(auth)/reset-password/page.tsx` → reads token from URL, new password + confirm, calls `authClient.resetPassword()`
+4. Added "Forgot password?" link in `login-form.tsx` → flex row with Remember Me checkbox
+5. Created `POST /api/admin/verify-users/route.ts` → sets `emailVerified: true` for all users
+6. Added "Verify All Users" button in admin overview page
+7. Added 13 new translation keys in `en.json` and `ar.json`
+
+**Commit:** `c14f28e` — Add forgot/reset password flow with email template, admin verify-users tool, and translation keys
