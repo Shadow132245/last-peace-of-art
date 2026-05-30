@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BanButton } from "./ban-button";
 import { SuspendButton } from "./suspend-button";
 import { RoleButton } from "./role-button";
+import { VerifyButton } from "./verify-button";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
 import { getServerT } from "@/lib/server-i18n";
 
@@ -47,9 +48,10 @@ export default async function AdminUsersPage() {
               </AdminCell>
               <AdminCell className="text-zinc-500">{user.createdAt.toLocaleDateString()}</AdminCell>
               <AdminCell>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <BanButton userId={user.id} banned={user.banned} />
                   <SuspendButton userId={user.id} suspended={user.suspended} suspensionReason={user.suspensionReason} suspendedUntil={user.suspendedUntil?.toISOString() ?? null} />
+                  <VerifyButton userId={user.id} emailVerified={user.emailVerified} />
                 </div>
               </AdminCell>
             </AdminTableRow>

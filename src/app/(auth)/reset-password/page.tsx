@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useI18n } from "@/providers/i18n-provider";
@@ -38,12 +37,18 @@ export default function ResetPasswordPage() {
     }
 
     setLoading(true);
-    const { error: err } = await authClient.resetPassword({
-      newPassword: password,
-      token,
-    });
-    if (err) setError(err.message ?? err.statusText);
-    else setSuccess(true);
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newPassword: password, token }),
+      });
+      const data = await res.json();
+      if (!res.ok) setError(data.message ?? data.statusText ?? "Failed");
+      else setSuccess(true);
+    } catch {
+      setError("Network error");
+    }
     setLoading(false);
   };
 

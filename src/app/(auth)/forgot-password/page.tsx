@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useI18n } from "@/providers/i18n-provider";
@@ -20,12 +19,18 @@ export default function ForgotPasswordPage() {
     if (!email) return;
     setLoading(true);
     setError("");
-    const { error: err } = await authClient.forgetPassword({
-      email,
-      redirectTo: "/reset-password",
-    });
-    if (err) setError(err.message ?? err.statusText);
-    else setSent(true);
+    try {
+      const res = await fetch("/api/auth/request-password-reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, redirectTo: "/reset-password" }),
+      });
+      const data = await res.json();
+      if (!res.ok) setError(data.message ?? data.statusText ?? "Failed");
+      else setSent(true);
+    } catch {
+      setError("Network error");
+    }
     setLoading(false);
   };
 

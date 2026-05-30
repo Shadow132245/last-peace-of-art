@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅**
+> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅**
 
 ---
 
@@ -72,6 +72,7 @@
 | M35 | Admin approval system + Content moderation (keyword filter) | ✅ |
 | M36 | HTML email templates + 2FA flow fix + TOTP/OTP login fix | ✅ |
 | M37 | Forgot/Reset password flow + Admin verify-users tool + i18n keys | ✅ |
+| M38 | Fix: direct fetch for forgot/reset + per-user verify button + build fix | ✅ |
 
 ---
 
@@ -97,6 +98,13 @@
 6. **Verify All Users button** — `overview-cards.tsx`: added "Verify All Users" button below stat cards. On click, calls POST `/api/admin/verify-users`, shows result ("Verified X users") in green, error in red. Loading state during request
 7. **Translation keys** — Added 11 new keys in `en.json` and `ar.json`: `forgotPassword`, `forgotPasswordTitle`, `forgotPasswordDesc`, `sendResetLink`, `resetLinkSent`, `resetPassword`, `resetPasswordTitle`, `resetPasswordDesc`, `newPassword`, `confirmPassword`, `passwordResetSuccess`, `passwordMismatch`, `invalidOrExpiredToken`
 8. **All pushed to GitHub** — commit `c14f28e`
+
+### Session 37b — 2026-05-30 (Fix: direct fetch + per-user verify)
+
+1. **Fixed TypeScript error** — `authClient.forgetPassword()` and `authClient.resetPassword()` don't exist in Better Auth v1 client. Changed both pages to use `fetch("/api/auth/request-password-reset", ...)` and `fetch("/api/auth/reset-password", ...)` directly
+2. **verify-users API now accepts specific user IDs** — POST body can include `{ userIds: ["id1", "id2"] }` to verify specific users, or call without body to verify all. Filtered to only update `emailVerified: false` users
+3. **Per-user Verify button** — Created `verify-button.tsx` client component showing "Verify" link (or "Verified" badge if already done). Added to admin users table actions column next to Ban/Suspend buttons
+4. **All pushed to GitHub** — see commit below
 
 ### Session 36 — 2026-05-30
 
