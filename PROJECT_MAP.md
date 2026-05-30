@@ -8,6 +8,7 @@
 - **Always push to GitHub after every change** — never keep changes only locally
 - **Always read PROJECT_MAP.md first** before any new task to know where we left off
 - **Never ask me what we did before** — just read this file
+- **NEVER run `npm run build` or `next build`** — building times out (~8 min) and fails locally; trust Vercel to build on deploy
 
 ---
 

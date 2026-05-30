@@ -1,19 +1,10 @@
-import type { Metadata } from "next";
-import { getServerT } from "@/lib/server-i18n";
+"use client";
+
+import { useI18n } from "@/providers/i18n-provider";
 import { FadeInView } from "@/components/ui/fade-in-view";
 
-export const dynamic = "force-dynamic";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getServerT();
-  return {
-    title: `${t("about.title")} — Last Peace of Art`,
-    description: t("about.subtitle"),
-  };
-}
-
-export default async function AboutPage() {
-  const { t } = await getServerT();
+export default function AboutPage() {
+  const { t } = useI18n();
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-16 sm:py-24">
