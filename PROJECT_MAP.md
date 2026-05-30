@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-30 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅**
+> Generated: 2026-05-31 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅**
 
 ---
 
@@ -73,6 +73,7 @@
 | M36 | HTML email templates + 2FA flow fix + TOTP/OTP login fix | ✅ |
 | M37 | Forgot/Reset password flow + Admin verify-users tool + i18n keys | ✅ |
 | M38 | Fix: direct fetch for forgot/reset + per-user verify button + build fix | ✅ |
+| M39 | Auto sign-in after verification, ScrollToTop redesign, About page animations + redesign | ✅ |
 
 ---
 
@@ -113,6 +114,13 @@
 3. **Root cause of email not arriving** — SMTP env vars (`SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`, etc.) are missing from Vercel environment variables. The local `.env` has them but they're not deployed to Vercel
 4. **Root cause of `useRef` error** — Runtime error `Cannot read properties of null (reading 'useRef')` in `src_components_0q~jzsi._.js` chunk (contains `NotificationBell`, `Navbar`, `PageTransition`, `LocaleSwitcher`, `ScrollToTop`). All have `"use client"`. Likely a Turbopack bundling/optimization issue with `motion` + React 19 on Vercel serverless
 5. **All pushed to GitHub** — commit `5359cd6`
+
+### Session 39 — 2026-05-31 (Auto sign-in, ScrollToTop redesign, About page animations)
+
+1. **Auto sign-in after email verification** — Changed `autoSignInAfterVerification: false` → `true` in `emailVerification` config in `auth.ts`. When a user clicks the verification link in their email, they will be automatically signed in instead of being redirected to the login page
+2. **ScrollToTop redesign** — Complete rewrite: gradient amber background (`from-amber-500 to-amber-600`), spring animation (`stiffness: 400, damping: 25`), chevron-up SVG icon (no box), hover scale + shadow + slight lift, lower threshold (300px instead of 400), `AnimatePresence` for enter/exit animations
+3. **About page redesign + animations** — Each section wrapped in `FadeInView` (delays 0 → 0.6), added owner card with profile placeholder (initial letter in gradient circle), increased padding/spacing, improved semantic HTML. All sections now fade in as user scrolls
+4. **Translation verification** — Confirmed `ar.json` `aboutUs` key is correct UTF-8 Arabic (bytes: D9-85-D9-86-20-D9-86-D8-AD-D9-86). Discovered that server components don't re-render when client changes locale via cookies — requires page refresh. This is expected behavior for server components with cookie-based i18n
 
 ### Session 36 — 2026-05-30
 
