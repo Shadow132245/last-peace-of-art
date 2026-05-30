@@ -49,7 +49,20 @@
     "returnToSignIn": "العودة إلى تسجيل الدخول",
     "orWith": "أو بالبريد الإلكتروني",
     "enterEmail": "أدخل بريدك الإلكتروني",
-    "sendLink": "إرسال رابط التحقق"
+    "sendLink": "إرسال رابط التحقق",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "forgotPasswordTitle": "نسيت كلمة المرور؟",
+    "forgotPasswordDesc": "أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين.",
+    "sendResetLink": "إرسال رابط إعادة التعيين",
+    "resetLinkSent": "تم إرسال رابط إعادة التعيين! تفقد بريدك الإلكتروني.",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "resetPasswordTitle": "تعيين كلمة مرور جديدة",
+    "resetPasswordDesc": "أدخل كلمة المرور الجديدة أدناه.",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "passwordResetSuccess": "تم إعادة تعيين كلمة المرور بنجاح!",
+    "passwordMismatch": "كلمات المرور غير متطابقة",
+    "invalidOrExpiredToken": "رابط إعادة التعيين غير صالح أو منتهي الصلاحية"
   },
   "twoFactor": {
     "enable": "تفعيل التحقق بخطوتين",

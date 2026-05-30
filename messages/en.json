@@ -49,7 +49,20 @@
     "returnToSignIn": "Return to sign in",
     "orWith": "Or with email",
     "enterEmail": "Enter your email address",
-    "sendLink": "Send verification link"
+    "sendLink": "Send verification link",
+    "forgotPassword": "Forgot password?",
+    "forgotPasswordTitle": "Forgot your password?",
+    "forgotPasswordDesc": "Enter your email and we'll send you a reset link.",
+    "sendResetLink": "Send Reset Link",
+    "resetLinkSent": "Reset link sent! Check your email.",
+    "resetPassword": "Reset Password",
+    "resetPasswordTitle": "Set a new password",
+    "resetPasswordDesc": "Enter your new password below.",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "passwordResetSuccess": "Password reset successfully!",
+    "passwordMismatch": "Passwords don't match",
+    "invalidOrExpiredToken": "Invalid or expired reset link"
   },
   "twoFactor": {
     "enable": "Enable Two-Factor Authentication",

@@ -152,10 +152,13 @@ export function LoginForm() {
         <Input label={t("auth.email")} type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <Input label={t("auth.password")} type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 
-        <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="flex items-center justify-between">
+          <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
           <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 dark:border-zinc-600 dark:text-zinc-100 dark:focus:ring-zinc-100" />
           {t("auth.rememberMe")}
         </label>
+        <a href="/forgot-password" className="text-sm font-medium text-zinc-900 underline dark:text-zinc-100">{t("auth.forgotPassword")}</a>
+        </div>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 

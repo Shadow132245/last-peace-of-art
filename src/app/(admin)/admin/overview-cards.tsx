@@ -1,11 +1,30 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "motion/react";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useI18n } from "@/providers/i18n-provider";
+import { Button } from "@/components/ui/button";
 
 export function OverviewCards({ stats }: { stats: { label: string; value: number; icon: string; color: string; bg: string }[] }) {
   const { t } = useI18n();
+  const [verifying, setVerifying] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<string | null>(null);
+
+  const handleVerifyAll = async () => {
+    setVerifying(true);
+    setVerifyResult(null);
+    try {
+      const res = await fetch("/api/admin/verify-users", { method: "POST" });
+      const data = await res.json();
+      if (res.ok) setVerifyResult(`Verified ${data.updated} users`);
+      else setVerifyResult(data.error ?? "Failed");
+    } catch {
+      setVerifyResult("Network error");
+    }
+    setVerifying(false);
+  };
+
   return (
     <div>
       <motion.h1
@@ -41,6 +60,17 @@ export function OverviewCards({ stats }: { stats: { label: string; value: number
           </motion.div>
         ))}
       </motion.div>
+
+      <div className="mt-8 flex items-center gap-4">
+        <Button onClick={handleVerifyAll} loading={verifying} variant="outline">
+          Verify All Users (emailVerified)
+        </Button>
+        {verifyResult && (
+          <span className={`text-sm ${verifyResult.startsWith("Verified") ? "text-green-600" : "text-red-500"}`}>
+            {verifyResult}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
