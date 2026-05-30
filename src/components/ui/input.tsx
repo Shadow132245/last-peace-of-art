@@ -1,3 +1,5 @@
+"use client";
+
 import { type InputHTMLAttributes, forwardRef } from "react";
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {

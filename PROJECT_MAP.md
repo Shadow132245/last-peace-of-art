@@ -106,6 +106,14 @@
 3. **Per-user Verify button** — Created `verify-button.tsx` client component showing "Verify" link (or "Verified" badge if already done). Added to admin users table actions column next to Ban/Suspend buttons
 4. **All pushed to GitHub** — commit `fb44b8b`
 
+### Session 37c — 2026-05-30 (Fix: `"use client"` on Button/Input + SMTP investigation)
+
+1. **Added `"use client"` to Button and Input** — `button.tsx` and `input.tsx` use `forwardRef` but were missing `"use client"` directive. Added it to ensure proper client boundary in SSR
+2. **Investigated email-not-sending bug** — Discovered Better Auth v1's `sendResetPassword` callback is wrapped in `runInBackgroundOrAwait()` which **catches all errors** and logs them via `logger.error("Failed to run background task:", e)`, then **always returns 200** (`{ status: true, message: "If this email exists..." }`). This means SMTP failures are silently swallowed and the user always sees "email sent"
+3. **Root cause of email not arriving** — SMTP env vars (`SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`, etc.) are missing from Vercel environment variables. The local `.env` has them but they're not deployed to Vercel
+4. **Root cause of `useRef` error** — Runtime error `Cannot read properties of null (reading 'useRef')` in `src_components_0q~jzsi._.js` chunk (contains `NotificationBell`, `Navbar`, `PageTransition`, `LocaleSwitcher`, `ScrollToTop`). All have `"use client"`. Likely a Turbopack bundling/optimization issue with `motion` + React 19 on Vercel serverless
+5. **All pushed to GitHub** — commit `5359cd6`
+
 ### Session 36 — 2026-05-30
 
 1. **Beautiful HTML email templates** — `auth.ts` email templates redesigned: branded gradient header, responsive layout, styled buttons, clean typography. Both verification email (big "Verify Email" button with fallback link) and OTP email (large monospace code display with expiry notice) now look professional
@@ -540,6 +548,9 @@ Notification  → id, userId, type, title, message?, link?, read
 | Suspended blocked from dashboard/admin | `dashboard/layout.tsx` and `(admin)/layout.tsx` redirect suspended users to `/suspended` |
 | Banned page outside (public) group | `/banned` page at `src/app/banned/page.tsx` uses root layout only (no navbar/footer) to avoid redirect loop |
 | proxy.ts deleted | Old `proxy.ts` was never imported — dead code. All ban/suspend logic now lives in layout files directly |
+| Better Auth `sendResetPassword` error handling | Better Auth v1 wraps `sendResetPassword` callback in `runInBackgroundOrAwait()` which catches ALL errors and logs them, then ALWAYS returns 200 with `{ status: true }`. SMTP failures are silently swallowed. User always sees "email sent" even when email was never queued |
+| `useRef` error in SSR chunk | `Cannot read properties of null (reading 'useRef')` from `src_components_0q~jzsi` chunk on Vercel. Contains `NotificationBell`, `Navbar`, `PageTransition`, `LocaleSwitcher`, `ScrollToTop`. All have `"use client"`. Likely Turbopack bundling issue with `motion` + React 19. Add SMTP env vars to Vercel Dashboard to fix email |
+| SMTP on Vercel | Local `.env` has SMTP config but Vercel env vars are missing. Must add `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` to Vercel Dashboard → Environment Variables |
 | Upload error revert in profile dashboard | Previous avatar/banner values saved on load; on upload failure, state reverts and error message shown |
 | i18n — two translation mechanisms | Server components: `getServerT()` reads locale cookie + loads JSON. Client components: `useI18n()` from `I18nProvider` context |
 | i18n — key lookup | `lookup(obj, "a.b.c")` tokenizes by dot and traverses nested objects; returns key itself if not found |
