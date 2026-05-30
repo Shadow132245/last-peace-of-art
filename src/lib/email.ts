@@ -20,5 +20,11 @@ export async function sendEmail({
   html: string;
 }) {
   const from = process.env.SMTP_FROM ?? "noreply@lastpeaceof.art";
-  await transporter.sendMail({ from, to, subject, html });
+  try {
+    const info = await transporter.sendMail({ from, to, subject, html });
+    console.log("Email sent:", info.messageId);
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    throw error;
+  }
 }

@@ -19,6 +19,28 @@ interface I18nContextValue {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
+function LocaleAnimation({ locale, children }: { locale: Locale; children: ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  if (!mounted) return <>{children}</>;
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={locale}
+        initial={{ opacity: 0, x: locale === "ar" ? 20 : -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: locale === "ar" ? -20 : 20 }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
 
@@ -40,17 +62,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   return (
     <I18nContext.Provider value={{ locale, messages, setLocale, t }}>
       <div dir={locale === "ar" ? "rtl" : "ltr"}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={locale}
-            initial={{ opacity: 0, x: locale === "ar" ? 20 : -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: locale === "ar" ? -20 : 20 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        <LocaleAnimation locale={locale}>{children}</LocaleAnimation>
       </div>
     </I18nContext.Provider>
   );
