@@ -104,7 +104,7 @@
 1. **Fixed TypeScript error** — `authClient.forgetPassword()` and `authClient.resetPassword()` don't exist in Better Auth v1 client. Changed both pages to use `fetch("/api/auth/request-password-reset", ...)` and `fetch("/api/auth/reset-password", ...)` directly
 2. **verify-users API now accepts specific user IDs** — POST body can include `{ userIds: ["id1", "id2"] }` to verify specific users, or call without body to verify all. Filtered to only update `emailVerified: false` users
 3. **Per-user Verify button** — Created `verify-button.tsx` client component showing "Verify" link (or "Verified" badge if already done). Added to admin users table actions column next to Ban/Suspend buttons
-4. **All pushed to GitHub** — see commit below
+4. **All pushed to GitHub** — commit `fb44b8b`
 
 ### Session 36 — 2026-05-30
 
