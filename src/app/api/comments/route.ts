@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
+import { checkContent, notifyAdmins } from "@/lib/moderation";
 import { extractMentions, notifyMentioned } from "@/lib/mentions";
 
 async function getSession() {
@@ -16,14 +17,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { content, entityType, entityId } = await request.json();
-    if (!content || !entityType || !entityId) {
+    const { content: text, entityType, entityId } = await request.json();
+    if (!text || !entityType || !entityId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const { flagged, matches } = await checkContent(text);
+    if (flagged) {
+      await notifyAdmins("moderation", "🚩 Flagged comment blocked", `User "${session.user.name}" tried to post comment with: ${matches.join(", ")}`, "/admin");
+      return NextResponse.json({ error: `Comment blocked — prohibited words: ${matches.join(", ")}`, flagged: true, matches }, { status: 403 });
     }
 
     const data: Record<string, unknown> = {
       id: crypto.randomUUID(),
-      content,
+      content: text,
       userId: session.user.id,
     };
     if (entityType === "thread") data.threadId = entityId;
@@ -36,7 +43,7 @@ export async function POST(request: Request) {
       include: { user: { select: { name: true, image: true } } },
     });
 
-    const mentions = extractMentions(content);
+    const mentions = extractMentions(text);
     if (mentions.length > 0) {
       const link = entityType === "thread" ? `/forum/${entityId}` : entityType === "post" ? `/blog/${entityId}` : `/projects/${entityId}`;
       await notifyMentioned(mentions, session.user.name, link, prisma);

@@ -84,10 +84,21 @@
 | M46 | Gamification (points/auto-rank), @Mentions, Bookmarks, Polls, Upload Progress Bar, Read Receipts, Rich Embeds | ✅ |
 | M47 | Footer Arabic translation fix, friend button status fix, messages user link to profile, non-friends message privacy setting | ✅ |
 | M48 | Auto-moderation for all users (blocks flagged content + warning), auto-publish for everyone, edit pages + PUT API for posts/threads/projects, username change API + UI, admin edit notifications, image crop (react-easy-crop) for avatar/banner with zoom | ✅ |
+| M49 | Advanced moderation — massively expanded banned word list (300+ English, 200+ Arabic), leetspeak normalizer, repeated char detection, separator bypass detection, optional OpenAI Moderation API integration | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 49 — 2026-06-01 (Advanced moderation: expanded words, bypass detection, AI integration)
+
+1. **Massively expanded banned word list** — `src/lib/moderation.ts` now has 300+ English words and 200+ Arabic words organized into categories: sexual/profanity/slur/violence/drugs/hate-speech/social-media-scams for English, and sex/profanity/slurs/violence/religious-insults/harassment for Arabic
+2. **Leetspeak normalizer** — `normalizeText()` converts common character substitutions before checking: `@→a`, `0→o`, `3→e`, `1→i/l`, `$→s`, `!→i`, `+→t`, `4→a`, `5→s`, `7→t`, `2→z`, `6→g`, `8→b`, `9→g`. Catches attempts like `f@ck`, `s3x`, `p0rn`, `n1gg3r`
+3. **Separator bypass detection** — Removes dots, dashes, underscores, spaces, asterisks, pipes between characters before checking. Catches `f.u.c.k`, `s-e-x`, `n_i_g_g_a`
+4. **Repeated character normalization** — Collapses 3+ consecutive same chars to 2. Catches `fuuuuck`, `seeeex`, `shiiiit`
+5. **Optional OpenAI Moderation API** — `src/lib/openai-moderation.ts` created. If `OPENAI_API_KEY` env var is set, calls OpenAI's free moderation endpoint as an ADDITIONAL check layer. If key is not set, falls back gracefully to local filter only
+6. **Multi-layer check** — `checkContent()` now runs 4 layers: (1) exact match, (2) normalized (leetspeak + separator + repeat), (3) AI moderation (if configured), (4) returns union of all flagged matches
+7. **All pushed to GitHub** — commit `...`
 
 ### Session 48 — 2026-06-01 (Auto-moderation for all users, edit pages, username change, crop system)
 

@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
     const slug = slugify(title);
 
-    const { flagged, matches } = checkContent(title + " " + content);
+    const { flagged, matches } = await checkContent(title + " " + content);
     if (flagged) {
       await notifyAdmins(
         "moderation",

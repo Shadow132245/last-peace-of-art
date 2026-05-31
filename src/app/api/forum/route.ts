@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
     const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true, name: true } });
 
-    const { flagged, matches } = checkContent(title + " " + content);
+    const { flagged, matches } = await checkContent(title + " " + content);
     if (flagged) {
       await notifyAdmins(
         "moderation",
