@@ -84,25 +84,26 @@
 | M46 | Gamification (points/auto-rank), @Mentions, Bookmarks, Polls, Upload Progress Bar, Read Receipts, Rich Embeds | ✅ |
 | M47 | Footer Arabic translation fix, friend button status fix, messages user link to profile, non-friends message privacy setting | ✅ |
 | M48 | Auto-moderation for all users (blocks flagged content + warning), auto-publish for everyone, edit pages + PUT API for posts/threads/projects, username change API + UI, admin edit notifications, image crop (react-easy-crop) for avatar/banner with zoom | ✅ |
-| M49 | Advanced moderation — massively expanded banned word list (300+ English, 200+ Arabic), leetspeak normalizer, repeated char / separator / missing-letter bypass detection, optional OpenAI Moderation API, comment moderation, fix: profile session refetch overwrite, fix: Arabic post titles empty slug | ✅ |
+| M49 | Advanced moderation v2 — 700+ banned words across 11 categories + hacking, Google Gemini AI (free, no card), link scanning (porn/hack domains), comment moderation, profile fix, Arabic slug fix | ✅ |
 
 ---
 
 ## [SESSION_LOG]
 
-### Session 49 — 2026-06-01 (Advanced moderation: expanded words, bypass detection, AI integration)
+### Session 49 — 2026-06-01 → 2026-06-02 (Advanced moderation v2: massive word expansion, Google Gemini AI, link scanning)
 
-1. **Massively expanded banned word list** — `src/lib/moderation.ts` now has 300+ English words and 200+ Arabic words organized into categories: sexual/profanity/slur/violence/drugs/hate-speech/social-media-scams for English, and sex/profanity/slurs/violence/religious-insults/harassment for Arabic
-2. **Leetspeak normalizer** — `normalizeText()` converts common character substitutions before checking: `@→a`, `0→o`, `3→e`, `1→i/l`, `$→s`, `!→i`, `+→t`, `4→a`, `5→s`, `7→t`, `2→z`, `6→g`, `8→b`, `9→g`. Catches attempts like `f@ck`, `s3x`, `p0rn`, `n1gg3r`
-3. **Separator bypass detection** — Removes dots, dashes, underscores, spaces, asterisks, pipes between characters before checking. Catches `f.u.c.k`, `s-e-x`, `n_i_g_g_a`
-4. **Repeated character normalization** — Collapses 3+ consecutive same chars to 2. Catches `fuuuuck`, `seeeex`, `shiiiit`
-5. **Missing-letter detection** — Pre-computes every "remove-one-char" variant of every banned word (e.g. "fuck" → "uck","fck","fuk","fuc"). At check time, splits input into words and looks up each word in the variant map. Catches `fck`→`fuck`, `sx`→`sex`, `assole`→`asshole`, `fuk`→`fuck`
-6. **Optional OpenAI Moderation API** — `src/lib/openai-moderation.ts` created. If `OPENAI_API_KEY` env var is set, calls OpenAI's free moderation endpoint as an ADDITIONAL check layer. If key is not set, falls back gracefully to local filter only
-7. **Multi-layer check** — `checkContent()` now runs 4 layers: (1) exact match, (2) normalized (leetspeak + separator + repeat), (3) missing-letter subsequence, (4) AI moderation (if configured), returns union of all flagged matches
-8. **Comment moderation** — comments now also go through `checkContent()` before creation
-9. **Fix: profile session refetch overwrite** — Added `initialLoadDone` ref to prevent `useEffect` from re-fetching profile data (and overwriting unsaved bio/avatar/banner) when `refetchSession()` fires after username update
-10. **Fix: Arabic post titles → empty slug** — `slugify()` now falls back to post UUID when no Latin characters exist in title. PUT handler also regenerates slug on title change
-11. **All pushed to GitHub** — commits `78f4987` `1a6d031` `5a2c116` `51902bd`
+1. **Massively expanded banned word list** — `src/lib/moderation.ts` now has 400+ English words and 300+ Arabic words across new categories: `ENG_HACKING`, `AR_HACKING` (hacking/carding/piracy), plus significant additions to all existing categories (step-sister/daddy/hentai/R34, additional slurs, drugs, hate, phishing/scam keywords, etc.)
+2. **Leetspeak normalizer** — `normalizeText()` converts common character substitutions before checking. Catches `f@ck`, `s3x`, `p0rn`, `n1gg3r`
+3. **Separator bypass detection** — Removes dots, dashes, underscores, pipes between chars. Catches `f.u.c.k`, `s-e-x`
+4. **Repeated character normalization** — Collapses 3+ same chars to 2. Catches `fuuuuck`
+5. **Missing-letter detection** — Pre-computed "remove-one-char" variant map. Catches `fck`→`fuck`, `sx`→`sex`, `assole`→`asshole`
+6. **Google Gemini AI (FREE)** — `src/lib/ai-moderation.ts` replaces the old `openai-moderation.ts`. Now supports **two AI providers**: Gemini (free tier, 1500 req/day, NO credit card needed) and OpenAI (optional). Just set `GEMINI_API_KEY` in `.env`. You can get one free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey). Falls back to OpenAI if Gemini isn't configured
+7. **Link scanning** — New `checkUrls()` function: extracts all URLs from text using regex, checks each against a comprehensive blocklist of 100+ forbidden domain patterns (porn sites, adult cams, dating/escort, hacking, malware, phishing, cheat sites, carding, pirate/warez, keygen). `checkContent()` now includes URL checking as a 5th layer
+8. **Multi-layer check** — `checkContent()` now runs 5 layers: (1) exact match, (2) normalized, (3) missing-letter, (4) URL domain blocklist, (5) AI moderation (Gemini → OpenAI). Returns `urlFlagged` and `urlMatches` alongside word matches
+9. **Comment moderation** — comments now also go through `checkContent()` before creation
+10. **Fix: profile session refetch overwrite** — `initialLoadDone` ref prevents unsaved bio/avatar/banner from being wiped on `refetchSession()`
+11. **Fix: Arabic post titles → empty slug** — `slugify()` falls back to post UUID when no Latin characters exist. PUT handler regenerates slug on title change
+12. **All pushed to GitHub** — commits `78f4987` `1a6d031` `5a2c116` `51902bd` `4d101ca` `773e1c9`
 
 ### Session 48 — 2026-06-01 (Auto-moderation for all users, edit pages, username change, crop system)
 
