@@ -52,15 +52,13 @@ export default async function DashboardPage() {
         <h2 className="mb-5 text-xl font-semibold">Quick Actions</h2>
       </FadeInView>
 
-      <StaggerList>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          <StaggerItem><ActionCard title={t("dashboard.newProject")} desc={t("dashboard.newProjectDesc")} href="/dashboard/projects/new" /></StaggerItem>
-          <StaggerItem><ActionCard title={t("dashboard.newPost")} desc={t("dashboard.newPostDesc")} href="/dashboard/posts/new" /></StaggerItem>
-          <StaggerItem><ActionCard title={t("dashboard.editProfileLabel")} desc={t("dashboard.editProfileDesc")} href="/dashboard/profile" /></StaggerItem>
-          <StaggerItem><ActionCard title={t("dashboard.settings")} desc={t("dashboard.settingsDesc")} href="/dashboard/settings" /></StaggerItem>
-          <StaggerItem><ActionCard title={t("dashboard.supportTickets")} desc={t("dashboard.supportTicketsDesc")} href="/tickets" /></StaggerItem>
-          <StaggerItem><ActionCard title={t("dashboard.applyForStaff")} desc={t("dashboard.applyForStaffDesc")} href="/apply" /></StaggerItem>
-        </div>
+      <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <StaggerItem><ActionCard title={t("dashboard.newProject")} desc={t("dashboard.newProjectDesc")} href="/dashboard/projects/new" /></StaggerItem>
+        <StaggerItem><ActionCard title={t("dashboard.newPost")} desc={t("dashboard.newPostDesc")} href="/dashboard/posts/new" /></StaggerItem>
+        <StaggerItem><ActionCard title={t("dashboard.editProfileLabel")} desc={t("dashboard.editProfileDesc")} href="/dashboard/profile" /></StaggerItem>
+        <StaggerItem><ActionCard title={t("dashboard.settings")} desc={t("dashboard.settingsDesc")} href="/dashboard/settings" /></StaggerItem>
+        <StaggerItem><ActionCard title={t("dashboard.supportTickets")} desc={t("dashboard.supportTicketsDesc")} href="/tickets" /></StaggerItem>
+        <StaggerItem><ActionCard title={t("dashboard.applyForStaff")} desc={t("dashboard.applyForStaffDesc")} href="/apply" /></StaggerItem>
       </StaggerList>
     </div>
   );

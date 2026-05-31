@@ -27,13 +27,12 @@ function LocaleAnimation({ locale, children }: { locale: Locale; children: React
   if (!mounted) return <>{children}</>;
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="popLayout">
       <motion.div
         key={locale}
         initial={{ opacity: 0, x: locale === "ar" ? 20 : -20 }}
         animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: locale === "ar" ? -20 : 20 }}
-        transition={{ duration: 0.2, ease: "easeInOut" }}
+        transition={{ duration: 0.15, ease: "easeInOut" }}
       >
         {children}
       </motion.div>

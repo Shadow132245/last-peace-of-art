@@ -210,20 +210,26 @@
     },
     "createPost": {
       "title": "مقال جديد",
+      "titleLabel": "العنوان",
       "excerptLabel": "المقدمة (اختياري)",
       "contentLabel": "المحتوى (ماركداون)",
       "edit": "تعديل",
       "preview": "معاينة",
       "nothingToPreview": "لا يوجد شيء للمعاينة",
+      "tagsLabel": "الوسوم (مفصولة بفواصل)",
       "tagsPlaceholder": "react, tutorial, web",
       "submit": "نشر المقال",
+      "cancel": "إلغاء",
       "error": "فشل نشر المقال"
     },
     "createThread": {
+      "titleLabel": "العنوان",
       "title": "مناقشة جديدة",
       "contentLabel": "المحتوى",
+      "tagsLabel": "الوسوم (مفصولة بفواصل)",
       "tagsPlaceholder": "discussion, question",
       "submit": "إنشاء الموضوع",
+      "cancel": "إلغاء",
       "error": "فشل إنشاء الموضوع"
     },
     "editProfile": {

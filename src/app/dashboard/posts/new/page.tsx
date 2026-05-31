@@ -63,7 +63,7 @@ export default function NewPostPage() {
         onSubmit={handleSubmit}
         className="flex flex-col gap-6"
       >
-        <Input label={t("dashboard.createProject.titleLabel")} value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <Input label={t("dashboard.createPost.titleLabel")} value={title} onChange={(e) => setTitle(e.target.value)} required />
         <Input label={t("dashboard.createPost.excerptLabel")} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
 
         <div className="flex flex-col gap-1.5">
@@ -95,13 +95,13 @@ export default function NewPostPage() {
           )}
         </div>
 
-        <Input label={t("dashboard.createProject.tagsLabel")} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("dashboard.createPost.tagsPlaceholder")} />
+        <Input label={t("dashboard.createPost.tagsLabel")} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("dashboard.createPost.tagsPlaceholder")} />
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <div className="flex gap-4">
           <Button type="submit" loading={loading}>{t("dashboard.createPost.submit")}</Button>
-          <Button type="button" variant="outline" onClick={() => router.back()}>{t("dashboard.createProject.cancel")}</Button>
+          <Button type="button" variant="outline" onClick={() => router.back()}>{t("dashboard.createPost.cancel")}</Button>
         </div>
       </motion.form>
     </div>

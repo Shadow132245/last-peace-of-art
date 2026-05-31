@@ -59,7 +59,7 @@ export default function NewThreadPage() {
         onSubmit={handleSubmit}
         className="flex flex-col gap-6"
       >
-        <Input label={t("dashboard.createProject.titleLabel")} value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <Input label={t("dashboard.createThread.titleLabel")} value={title} onChange={(e) => setTitle(e.target.value)} required />
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{t("dashboard.createThread.contentLabel")}</label>
@@ -73,13 +73,13 @@ export default function NewThreadPage() {
             required
           />
         </div>
-        <Input label={t("dashboard.createProject.tagsLabel")} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("dashboard.createThread.tagsPlaceholder")} />
+        <Input label={t("dashboard.createThread.tagsLabel")} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("dashboard.createThread.tagsPlaceholder")} />
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <div className="flex gap-4">
           <Button type="submit" loading={loading}>{t("dashboard.createThread.submit")}</Button>
-          <Button type="button" variant="outline" onClick={() => router.back()}>{t("dashboard.createProject.cancel")}</Button>
+          <Button type="button" variant="outline" onClick={() => router.back()}>{t("dashboard.createThread.cancel")}</Button>
         </div>
       </motion.form>
     </div>

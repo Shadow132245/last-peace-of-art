@@ -210,20 +210,26 @@
     },
     "createPost": {
       "title": "New Post",
+      "titleLabel": "Title",
       "excerptLabel": "Excerpt (optional)",
       "contentLabel": "Content (Markdown)",
       "edit": "Edit",
       "preview": "Preview",
       "nothingToPreview": "Nothing to preview",
+      "tagsLabel": "Tags (comma-separated)",
       "tagsPlaceholder": "react, tutorial, web",
       "submit": "Publish Post",
+      "cancel": "Cancel",
       "error": "Failed to create post"
     },
     "createThread": {
+      "titleLabel": "Title",
       "title": "New Discussion",
       "contentLabel": "Content",
+      "tagsLabel": "Tags (comma-separated)",
       "tagsPlaceholder": "discussion, question",
       "submit": "Create Thread",
+      "cancel": "Cancel",
       "error": "Failed to create thread"
     },
     "editProfile": {

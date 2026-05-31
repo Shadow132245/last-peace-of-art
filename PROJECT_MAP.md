@@ -79,6 +79,7 @@
 | M41 | Terms & Privacy full Arabic translation, agree-to-terms on register, custom scrollbar, ScrollToTop glitch fix | ✅ |
 | M42 | Google OAuth agree-to-terms, hardcoded date translated, overflow-x-hidden fix, PROJECT_MAP.md recorded SMTP on Vercel | ✅ |
 | M43 | Admin verify-users API fixed for founder + Verify button UI polish | ✅ |
+| M44 | Dashboard StaggerList fix, wrong i18n keys fixed, locale switch flash fix | ✅ |
 
 ---
 
@@ -163,7 +164,14 @@
 
 1. **verify-users API fixed for founder** — The `/api/admin/verify-users` route had `session.user.role !== "admin"` which blocked founder from verifying users. Changed to use `requireAdmin()` pattern that allows both `admin` and `founder`
 2. **Verify button UI polish** — `verify-button.tsx` updated: when verified, shows green "Verified" badge with amber dot and emerald background instead of plain text. Button now properly disabled after successful verification
-3. **All pushed to GitHub**
+3. **All pushed to GitHub** — commit `1a5b7c4`
+
+### Session 44 — 2026-05-31 (Dashboard StaggerList fix, wrong i18n keys fixed, locale switch flash fix)
+
+1. **StaggerList chain fixed** — `dashboard/page.tsx` had a plain `<div>` wrapper between `<StaggerList>` and `<StaggerItem>`, breaking the stagger animation chain. Moved the grid className directly onto `<StaggerList>` so staggerChildren propagates correctly to direct `motion` children
+2. **Wrong i18n keys fixed** — `posts/new/page.tsx` used `dashboard.createProject.titleLabel/tagsLabel/cancel` instead of `dashboard.createPost.*`. `forum/new/page.tsx` used `dashboard.createProject.*` instead of `dashboard.createThread.*`. Added missing translation keys (`titleLabel`, `tagsLabel`, `cancel`) to both `createPost` and `createThread` in `en.json` and `ar.json`, then updated all code references
+3. **Locale switch flash fixed** — Changed `AnimatePresence mode="wait"` to `mode="popLayout"` and removed `exit` animation in `i18n-provider.tsx`. The previous `mode="wait"` caused the entire page to fade out (white flash) before fading in the new locale. Now uses `popLayout` for instant layout swap with a quick fade-in only
+4. **All pushed to GitHub**
 
 1. **Beautiful HTML email templates** — `auth.ts` email templates redesigned: branded gradient header, responsive layout, styled buttons, clean typography. Both verification email (big "Verify Email" button with fallback link) and OTP email (large monospace code display with expiry notice) now look professional
 2. **2FA login flow confirmation step** — Login form now shows a confirmation screen: "Code sent to your email" with an email icon and an OK button before showing the code input. Resend also goes through the confirmation screen
