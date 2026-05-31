@@ -360,8 +360,6 @@ const FORBIDDEN_DOMAIN_PATTERNS: string[] = [
   "sex", "sextv", "sexchat", "sexdate",
   "erotic", "erotica", "eroticstories",
   "escort", "escorts", "escortdirectory",
-  "dating", "sugardaddy", "sugarbaby", "sugardaddie",
-  "tinder", "badoo", "hornet", "grindr",
   "swinging", "swinger",
   "bondage", "bdsm",
 ];
