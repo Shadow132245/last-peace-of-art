@@ -60,10 +60,15 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       }, { status: 403 });
     }
 
+    const newSlug = title !== post.title
+      ? title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 100) || post.slug
+      : post.slug;
+
     const updated = await prisma.post.update({
       where: { id },
       data: {
         title,
+        slug: newSlug,
         content,
         excerpt: excerpt ?? null,
         tags: tags ?? [],

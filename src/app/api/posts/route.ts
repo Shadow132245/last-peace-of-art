@@ -9,12 +9,13 @@ async function getSession() {
   return auth.api.getSession({ headers: await headers() });
 }
 
-function slugify(text: string): string {
-  return text
+function slugify(text: string, fallback?: string): string {
+  const slug = text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 100);
+  return slug || fallback || "post";
 }
 
 export async function POST(request: Request) {
@@ -30,7 +31,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Title and content are required" }, { status: 400 });
     }
 
-    const slug = slugify(title);
+    const postId = crypto.randomUUID();
+    const slug = slugify(title, postId);
 
     const { flagged, matches } = await checkContent(title + " " + content);
     if (flagged) {
@@ -49,7 +51,7 @@ export async function POST(request: Request) {
 
     const post = await prisma.post.create({
       data: {
-        id: crypto.randomUUID(),
+        id: postId,
         title,
         slug,
         content,
