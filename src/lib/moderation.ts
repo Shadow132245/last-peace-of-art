@@ -268,6 +268,25 @@ const BANNED_WORDS: string[] = [
   ...AR_VIOLENCE, ...AR_RELIGIOUS, ...AR_HARASSMENT,
 ];
 
+// ─── Pre-compute "missing letter" variants for every banned word ────
+// If someone writes "fck" (missing 'u'), "sx" (missing 'e'), or "assole" (missing 'h'),
+// this set lets us catch it efficiently.
+const MISSING_LETTER_MAP = new Map<string, string[]>();
+(() => {
+  for (const bw of BANNED_WORDS) {
+    if (bw.length < 3) continue;
+    for (let i = 0; i < bw.length; i++) {
+      const variant = bw.slice(0, i) + bw.slice(i + 1);
+      const existing = MISSING_LETTER_MAP.get(variant);
+      if (existing) {
+        if (!existing.includes(bw)) existing.push(bw);
+      } else {
+        MISSING_LETTER_MAP.set(variant, [bw]);
+      }
+    }
+  }
+})();
+
 // ─── Normalize text to catch bypass attempts ────────────────────────
 function normalizeText(text: string): string {
   let normalized = text.toLowerCase();
@@ -306,7 +325,18 @@ export async function checkContent(text: string): Promise<{
   const exactMatches = BANNED_WORDS.filter((word) => lower.includes(word));
   const normalizedMatches = BANNED_WORDS.filter((word) => normalized.includes(word));
 
-  const allMatches = [...new Set([...exactMatches, ...normalizedMatches])];
+  // Missing-letter detection: "fck" → "fuck", "sx" → "sex", "assole" → "asshole"
+  const missingLetterMatches: string[] = [];
+  const words = normalized.split(/\s+/);
+  for (const w of words) {
+    if (w.length < 2) continue;
+    const candidates = MISSING_LETTER_MAP.get(w);
+    if (candidates) {
+      for (const c of candidates) missingLetterMatches.push(c);
+    }
+  }
+
+  const allMatches = [...new Set([...exactMatches, ...normalizedMatches, ...missingLetterMatches])];
 
   // Optional AI check
   let aiResult: { flagged: boolean; categories: string[] } | null = null;
