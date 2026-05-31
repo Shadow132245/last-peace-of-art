@@ -4,7 +4,7 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useI18n } from "@/providers/i18n-provider";
 import { ImageCropDialog } from "@/components/ui/image-crop-dialog";
 
@@ -34,8 +34,16 @@ export default function ProfilePage() {
   const [savingUsername, setSavingUsername] = useState(false);
   const [usernameSaved, setUsernameSaved] = useState(false);
   const [usernameError, setUsernameError] = useState("");
+  const initialLoadDone = useRef(false);
 
   useEffect(() => {
+    if (session?.user.name) {
+      setUsername(session.user.name);
+    }
+
+    if (initialLoadDone.current || !session) return;
+    initialLoadDone.current = true;
+
     fetch("/api/profile")
       .then((r) => r.json())
       .then((data) => {
@@ -54,7 +62,6 @@ export default function ProfilePage() {
         }
       })
       .catch(() => {});
-    if (session?.user.name) setUsername(session.user.name);
   }, [session]);
 
   const selectFile = useCallback((e: React.ChangeEvent<HTMLInputElement>, type: "avatar" | "banner") => {
