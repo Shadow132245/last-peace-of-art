@@ -20,6 +20,7 @@ export default function MessagesPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
   const [loading, setLoading] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -80,6 +81,7 @@ export default function MessagesPage() {
     e.preventDefault();
     if (!newMessage.trim() || !selectedUser) return;
     setSending(true);
+    setSendError("");
     const res = await fetch("/api/messages", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -90,6 +92,9 @@ export default function MessagesPage() {
       setMessages((prev) => [...prev, msg]);
       setNewMessage("");
       fetch("/api/messages").then((r) => r.json()).then(setConversations);
+    } else {
+      const data = await res.json();
+      setSendError(data.error || "Failed to send message");
     }
     setSending(false);
   };
@@ -177,6 +182,11 @@ export default function MessagesPage() {
                 <div ref={bottomRef} />
               </div>
 
+              {sendError && (
+                <div className="border-t border-red-200 bg-red-50 px-4 py-2 text-center text-sm text-red-600 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400">
+                  {sendError}
+                </div>
+              )}
               <form onSubmit={sendMessage} className="flex gap-3 border-t border-zinc-200 p-4 dark:border-zinc-800">
                 <input
                   value={newMessage}
