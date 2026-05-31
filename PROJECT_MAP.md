@@ -84,7 +84,7 @@
 | M46 | Gamification (points/auto-rank), @Mentions, Bookmarks, Polls, Upload Progress Bar, Read Receipts, Rich Embeds | ✅ |
 | M47 | Footer Arabic translation fix, friend button status fix, messages user link to profile, non-friends message privacy setting | ✅ |
 | M48 | Auto-moderation for all users (blocks flagged content + warning), auto-publish for everyone, edit pages + PUT API for posts/threads/projects, username change API + UI, admin edit notifications, image crop (react-easy-crop) for avatar/banner with zoom | ✅ |
-| M49 | Advanced moderation — massively expanded banned word list (300+ English, 200+ Arabic), leetspeak normalizer, repeated char detection, separator bypass detection, optional OpenAI Moderation API integration, comment moderation | ✅ |
+| M49 | Advanced moderation — massively expanded banned word list (300+ English, 200+ Arabic), leetspeak normalizer, repeated char / separator / missing-letter bypass detection, optional OpenAI Moderation API, comment moderation, fix: profile session refetch overwrite, fix: Arabic post titles empty slug | ✅ |
 
 ---
 
@@ -100,7 +100,9 @@
 6. **Optional OpenAI Moderation API** — `src/lib/openai-moderation.ts` created. If `OPENAI_API_KEY` env var is set, calls OpenAI's free moderation endpoint as an ADDITIONAL check layer. If key is not set, falls back gracefully to local filter only
 7. **Multi-layer check** — `checkContent()` now runs 4 layers: (1) exact match, (2) normalized (leetspeak + separator + repeat), (3) missing-letter subsequence, (4) AI moderation (if configured), returns union of all flagged matches
 8. **Comment moderation** — comments now also go through `checkContent()` before creation
-9. **All pushed to GitHub** — commit `78f4987`
+9. **Fix: profile session refetch overwrite** — Added `initialLoadDone` ref to prevent `useEffect` from re-fetching profile data (and overwriting unsaved bio/avatar/banner) when `refetchSession()` fires after username update
+10. **Fix: Arabic post titles → empty slug** — `slugify()` now falls back to post UUID when no Latin characters exist in title. PUT handler also regenerates slug on title change
+11. **All pushed to GitHub** — commits `78f4987` `1a6d031` `5a2c116` `51902bd`
 
 ### Session 48 — 2026-06-01 (Auto-moderation for all users, edit pages, username change, crop system)
 
