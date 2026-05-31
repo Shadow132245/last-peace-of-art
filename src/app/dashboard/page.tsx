@@ -12,7 +12,8 @@ export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login");
 
-  const [projectCount, postCount, threadCount, messageCount, friendCount] = await Promise.all([
+  const [userData, projectCount, postCount, threadCount, messageCount, friendCount, bookmarkCount] = await Promise.all([
+    prisma.user.findUnique({ where: { id: session.user.id }, select: { points: true, rank: true } }),
     prisma.project.count({ where: { userId: session.user.id } }),
     prisma.post.count({ where: { userId: session.user.id } }),
     prisma.thread.count({ where: { userId: session.user.id } }),
@@ -25,6 +26,7 @@ export default async function DashboardPage() {
         ],
       },
     }),
+    prisma.bookmark.count({ where: { userId: session.user.id } }),
   ]);
 
   return (
@@ -35,16 +37,22 @@ export default async function DashboardPage() {
           <p className="mt-2 text-lg text-zinc-500 dark:text-zinc-400">
             {t("dashboard.welcomeBack").replace("{name}", session.user.name)}
           </p>
+          {userData && (
+            <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
+              {userData.points} pts &middot; {userData.rank}
+            </p>
+          )}
         </div>
       </FadeInView>
 
       <FadeInView delay={0.1}>
-        <div className="mb-12 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+        <div className="mb-6 grid gap-5 sm:grid-cols-2 md:grid-cols-3">
           <DashboardCard title={t("dashboard.projects")} count={projectCount} href="/dashboard/projects" />
           <DashboardCard title={t("dashboard.posts")} count={postCount} href="/dashboard/posts" />
           <DashboardCard title={t("dashboard.discussions")} count={threadCount} href="/dashboard/forum" />
           <DashboardCard title={t("dashboard.messages")} count={messageCount} href="/dashboard/messages" />
           <DashboardCard title={t("dashboard.friends")} count={friendCount} href="/dashboard/friends" />
+          <DashboardCard title={t("dashboard.saved") || "Saved"} count={bookmarkCount} href="/dashboard/saved" />
         </div>
       </FadeInView>
 
@@ -59,6 +67,7 @@ export default async function DashboardPage() {
         <StaggerItem><ActionCard title={t("dashboard.settings")} desc={t("dashboard.settingsDesc")} href="/dashboard/settings" /></StaggerItem>
         <StaggerItem><ActionCard title={t("dashboard.supportTickets")} desc={t("dashboard.supportTicketsDesc")} href="/tickets" /></StaggerItem>
         <StaggerItem><ActionCard title={t("dashboard.applyForStaff")} desc={t("dashboard.applyForStaffDesc")} href="/apply" /></StaggerItem>
+        <StaggerItem><ActionCard title={t("dashboard.saved") || "Saved Items"} desc={t("dashboard.savedDesc") || "View your bookmarked items"} href="/dashboard/saved" /></StaggerItem>
       </StaggerList>
     </div>
   );

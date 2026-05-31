@@ -7,7 +7,7 @@ import { motion } from "motion/react";
 import { useI18n } from "@/providers/i18n-provider";
 
 type User = { id: string; name: string; image: string | null };
-type Message = { id: string; content: string; createdAt: string; sender: User };
+type Message = { id: string; content: string; createdAt: string; read: boolean; readAt: string | null; sender: User };
 
 export default function MessagesPage() {
   const { t } = useI18n();
@@ -149,9 +149,26 @@ export default function MessagesPage() {
                     >
                       <div className={`max-w-[70%] rounded-2xl px-4 py-2 text-sm ${isMine ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "bg-zinc-100 dark:bg-zinc-800"}`}>
                         <p>{msg.content}</p>
-                        <p className={`mt-1 text-[10px] ${isMine ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-400"}`}>
-                          {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                        </p>
+                        <div className={`mt-1 flex items-center gap-1 text-[10px] ${isMine ? "justify-end text-zinc-400 dark:text-zinc-500" : "text-zinc-400"}`}>
+                          <span>{new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                          {isMine && (
+                            <span>
+                              {msg.readAt ? (
+                                <svg className="h-3.5 w-3.5 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M12.5 6.9l-1.4-1.4L5.6 11l3.5 3.5 1.4-1.4-2.1-2.1 4.1-4.1zM17.5 6.9l-1.4-1.4L9 13l1.4 1.4 7.1-7.5zM22.5 6.9l-1.4-1.4L12 15l-2.5-2.5-1.4 1.4L12 17.9l10.5-11z"/>
+                                </svg>
+                              ) : msg.read ? (
+                                <svg className="h-3.5 w-3.5 text-zinc-400" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                              ) : (
+                                <svg className="h-3.5 w-3.5 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
+                                </svg>
+                              )}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </motion.div>
                   );

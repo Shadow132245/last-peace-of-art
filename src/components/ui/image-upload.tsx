@@ -18,34 +18,50 @@ export function ImageUpload({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
+    setProgress(0);
+
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.addEventListener("progress", (evt) => {
+      if (evt.lengthComputable) {
+        setProgress(Math.round((evt.loaded / evt.total) * 100));
+      }
     });
 
-    if (res.ok) {
-      const { url } = await res.json();
-      const isZip = file.type === "application/zip" || file.type === "application/x-zip-compressed" || file.name.endsWith(".zip");
-      if (mode === "markdown" && !isZip) {
-        onInsert(`![${file.name}](${url})`);
-      } else if (mode === "markdown" && isZip) {
-        onInsert(`[${file.name}](${url})`);
-      } else {
-        onInsert(url);
+    xhr.addEventListener("load", () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const { url } = JSON.parse(xhr.responseText);
+        const isZip = file.type === "application/zip" || file.type === "application/x-zip-compressed" || file.name.endsWith(".zip");
+        if (mode === "markdown" && !isZip) {
+          onInsert(`![${file.name}](${url})`);
+        } else if (mode === "markdown" && isZip) {
+          onInsert(`[${file.name}](${url})`);
+        } else {
+          onInsert(url);
+        }
       }
-    }
+      setUploading(false);
+      setProgress(0);
+      if (inputRef.current) inputRef.current.value = "";
+    });
 
-    setUploading(false);
-    if (inputRef.current) inputRef.current.value = "";
+    xhr.addEventListener("error", () => {
+      setUploading(false);
+      setProgress(0);
+    });
+
+    xhr.open("POST", "/api/upload");
+    xhr.send(formData);
   };
 
   return (
@@ -66,10 +82,15 @@ export function ImageUpload({
             <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            {label}
+            {uploading ? `${progress}%` : label}
           </>
         )}
       </motion.button>
+      {uploading && (
+        <div className="mt-1 h-1 w-28 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
+          <div className="h-full rounded-full bg-amber-500 transition-all" style={{ width: `${progress}%` }} />
+        </div>
+      )}
     </>
   );
 }

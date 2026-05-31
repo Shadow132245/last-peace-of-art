@@ -24,6 +24,8 @@ model User {
   suspendedUntil DateTime?
   suspensionReason String?
   twoFactorEnabled Boolean @default(false)
+  points        Int      @default(0)
+  rank          String   @default("bronze")
 
   sessions    Session[]
   accounts    Account[]
@@ -41,6 +43,8 @@ model User {
   sentRequests   FriendRequest[] @relation("SentRequests")
   receivedRequests FriendRequest[] @relation("ReceivedRequests")
   notifications Notification[]
+  bookmarks   Bookmark[]
+  pollVotes   PollVote[]
   profile     Profile?
   twoFactor   TwoFactor?
 
@@ -156,9 +160,9 @@ model Project {
   dislikesCount Int    @default(0)
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comments    Comment[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  comments  Comment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([published])
@@ -206,6 +210,7 @@ model Thread {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments  Comment[]
+  poll      Poll?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -306,6 +311,7 @@ model Message {
   receiverId String
   receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
   read       Boolean  @default(false)
+  readAt     DateTime?
   createdAt  DateTime @default(now())
 
   @@index([senderId])
@@ -342,4 +348,52 @@ model Notification {
   @@index([userId, read])
   @@index([userId, createdAt])
   @@map("notification")
+}
+
+model Bookmark {
+  id         String   @id
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String
+  entityId   String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, entityType, entityId])
+  @@index([userId])
+  @@map("bookmark")
+}
+
+model Poll {
+  id        String   @id
+  question  String
+  threadId  String   @unique
+  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  multiple  Boolean  @default(false)
+  expiresAt DateTime?
+  options   PollOption[]
+  createdAt DateTime @default(now())
+
+  @@map("poll")
+}
+
+model PollOption {
+  id     String     @id
+  pollId String
+  poll   Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  text   String
+  votes  PollVote[]
+
+  @@map("poll_option")
+}
+
+model PollVote {
+  id        String     @id
+  optionId  String
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+
+  @@unique([optionId, userId])
+  @@map("poll_vote")
 }

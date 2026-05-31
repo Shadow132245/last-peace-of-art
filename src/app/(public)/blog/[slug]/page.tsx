@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { Markdown } from "@/components/ui/markdown";
 import { LikeButton } from "@/components/likes/like-button";
+import { BookmarkButton } from "@/components/bookmarks/bookmark-button";
 import { ReportButton } from "@/components/reports/report-button";
 import { CommentSection } from "@/components/comments/comment-section";
 import { ViewTracker } from "@/components/views/view-tracker";
@@ -23,7 +24,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const { slug } = await params;
   const post = await prisma.post.findUnique({
     where: { slug },
-    include: { user: { select: { name: true, image: true, role: true } } },
+    include: { user: { select: { name: true, image: true, role: true, points: true, rank: true } } },
   });
 
   if (!post || !post.published) notFound();
@@ -48,6 +49,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               </span>
             )}
             <span className="font-medium">{post.user.name}</span>
+            <span className="text-[10px] text-zinc-400">({post.user.points} pts - {post.user.rank})</span>
             {post.user.role === "founder" && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">{t("roles.founder")}</span>}
             {post.user.role === "admin" && <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">{t("roles.admin")}</span>}
             {post.user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">{t("roles.bugHunter")}</span>}
@@ -70,8 +72,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       </FadeInView>
 
       <FadeInView delay={0.2}>
-        <div className="mt-6 flex items-center justify-between">
+        <div className="mt-6 flex items-center gap-4">
           <LikeButton entityType="post" entityId={post.id} />
+          <BookmarkButton entityType="post" entityId={post.id} />
           <ReportButton entityType="post" entityId={post.id} />
         </div>
       </FadeInView>

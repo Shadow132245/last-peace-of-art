@@ -17,19 +17,33 @@ export default function NewThreadPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const [pollQuestion, setPollQuestion] = useState("");
+  const [pollOptions, setPollOptions] = useState([""]);
+  const [pollMultiple, setPollMultiple] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
+    const body: Record<string, unknown> = {
+      title,
+      content,
+      tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+    };
+
+    if (pollQuestion && pollOptions.filter(Boolean).length >= 2) {
+      body.poll = {
+        question: pollQuestion,
+        options: pollOptions.filter(Boolean),
+        multiple: pollMultiple,
+      };
+    }
+
     const res = await fetch("/api/forum", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        content,
-        tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {
@@ -74,6 +88,47 @@ export default function NewThreadPage() {
           />
         </div>
         <Input label={t("dashboard.createThread.tagsLabel")} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("dashboard.createThread.tagsPlaceholder")} />
+
+        <details className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+          <summary className="cursor-pointer text-sm font-medium text-zinc-600 dark:text-zinc-400">Add Poll</summary>
+          <div className="mt-4 space-y-3">
+            <Input label="Poll Question" value={pollQuestion} onChange={(e) => setPollQuestion(e.target.value)} placeholder="What do you think?" />
+            {pollOptions.map((opt, i) => (
+              <div key={i} className="flex gap-2">
+                <Input
+                  label={`Option ${i + 1}`}
+                  value={opt}
+                  onChange={(e) => {
+                    const next = [...pollOptions];
+                    next[i] = e.target.value;
+                    setPollOptions(next);
+                  }}
+                  placeholder={`Option ${i + 1}`}
+                />
+                {pollOptions.length > 2 && (
+                  <button
+                    type="button"
+                    onClick={() => setPollOptions(pollOptions.filter((_, idx) => idx !== i))}
+                    className="mt-6 text-xs text-red-500 hover:underline"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setPollOptions([...pollOptions, ""])}
+              className="text-sm text-amber-600 hover:underline dark:text-amber-400"
+            >
+              + Add option
+            </button>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={pollMultiple} onChange={(e) => setPollMultiple(e.target.checked)} />
+              Allow multiple choices
+            </label>
+          </div>
+        </details>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 

@@ -108,6 +108,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
               {user.role === "founder" && <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">FOUNDER</span>}
               {user.role === "admin" && <span className="rounded bg-purple-100 px-2 py-0.5 text-xs font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">ADMIN</span>}
               {user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">BUG HUNTER</span>}
+              <span className="text-sm text-zinc-400">({user.points} pts - {user.rank})</span>
             </div>
             {user.profile?.bio && (
               <p className="mt-2 text-zinc-500 dark:text-zinc-400">{user.profile.bio}</p>

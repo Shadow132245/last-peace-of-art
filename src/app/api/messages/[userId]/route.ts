@@ -23,6 +23,11 @@ export async function GET(_request: Request, { params }: { params: Promise<{ use
       orderBy: { createdAt: "asc" },
     });
 
+    await prisma.message.updateMany({
+      where: { senderId: userId, receiverId: session.user.id, read: false },
+      data: { read: true, readAt: new Date() },
+    });
+
     return NextResponse.json(messages);
   } catch (error) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

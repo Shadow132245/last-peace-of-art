@@ -35,6 +35,7 @@ function AvatarDropdown({ session }: { session: any }) {
     { href: "/dashboard/projects", label: t("nav.myProjects") },
     { href: "/dashboard/messages", label: t("nav.messages") },
     { href: "/dashboard/friends", label: t("nav.friends") },
+    { href: "/dashboard/saved", label: t("nav.saved") || "Saved" },
     { href: "/dashboard/settings", label: t("nav.settings") },
     ...(role === "admin" || role === "founder" ? [{ href: "/admin", label: t("nav.admin") }] : []),
   ];
@@ -220,6 +221,7 @@ export function Navbar() {
                   <Link href="/dashboard/projects" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.myProjects")}</Link>
                   <Link href="/dashboard/messages" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.messages")}</Link>
                   <Link href="/dashboard/friends" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.friends")}</Link>
+                  <Link href="/dashboard/saved" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.saved") || "Saved"}</Link>
                   <Link href="/dashboard/settings" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.settings")}</Link>
                   {["admin", "founder"].includes((session.user as any).role) && (
                     <Link href="/admin" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.admin")}</Link>

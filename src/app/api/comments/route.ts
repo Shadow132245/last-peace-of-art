@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
+import { extractMentions, notifyMentioned } from "@/lib/mentions";
 
 async function getSession() {
   return auth.api.getSession({ headers: await headers() });
@@ -34,6 +35,12 @@ export async function POST(request: Request) {
       data: data as any,
       include: { user: { select: { name: true, image: true } } },
     });
+
+    const mentions = extractMentions(content);
+    if (mentions.length > 0) {
+      const link = entityType === "thread" ? `/forum/${entityId}` : entityType === "post" ? `/blog/${entityId}` : `/projects/${entityId}`;
+      await notifyMentioned(mentions, session.user.name, link, prisma);
+    }
 
     logger.info({ commentId: comment.id, entityType, entityId }, "Comment created");
     return NextResponse.json(comment, { status: 201 });

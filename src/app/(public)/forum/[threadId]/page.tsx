@@ -4,8 +4,10 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { Markdown } from "@/components/ui/markdown";
 import { LikeButton } from "@/components/likes/like-button";
+import { BookmarkButton } from "@/components/bookmarks/bookmark-button";
 import { ReportButton } from "@/components/reports/report-button";
 import { CommentSection } from "@/components/comments/comment-section";
+import { PollDisplay } from "@/components/forum/poll-display";
 import { ViewTracker } from "@/components/views/view-tracker";
 import { FadeInView } from "@/components/ui/fade-in-view";
 import { AnimateCard } from "@/components/ui/animate-card";
@@ -22,7 +24,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ threadI
   const { threadId } = await params;
   const thread = await prisma.thread.findUnique({
     where: { id: threadId },
-    include: { user: { select: { name: true, image: true, role: true } } },
+    include: { user: { select: { name: true, image: true, role: true, points: true, rank: true } } },
   });
 
   if (!thread) notFound();
@@ -45,6 +47,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ threadI
                 </span>
               )}
               <span className="font-medium">{thread.user.name}</span>
+              <span className="text-[10px] text-zinc-400">({thread.user.points} pts - {thread.user.rank})</span>
             {thread.user.role === "founder" && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">{t("roles.founder")}</span>}
             {thread.user.role === "admin" && <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">{t("roles.admin")}</span>}
             {thread.user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">{t("roles.bugHunter")}</span>}
@@ -65,8 +68,9 @@ export default async function ThreadPage({ params }: { params: Promise<{ threadI
       </FadeInView>
 
       <FadeInView delay={0.1}>
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4 mb-6">
           <LikeButton entityType="thread" entityId={thread.id} />
+          <BookmarkButton entityType="thread" entityId={thread.id} />
           <ReportButton entityType="thread" entityId={thread.id} />
         </div>
       </FadeInView>
@@ -75,6 +79,10 @@ export default async function ThreadPage({ params }: { params: Promise<{ threadI
         <div className="leading-relaxed">
           <Markdown content={thread.content} />
         </div>
+      </FadeInView>
+
+      <FadeInView delay={0.175}>
+        <PollDisplay threadId={thread.id} />
       </FadeInView>
 
       <FadeInView delay={0.2}>

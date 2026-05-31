@@ -17,6 +17,7 @@
     "myPosts": "My Posts",
     "myThreads": "My Threads",
     "myProjects": "My Projects",
+    "saved": "Saved",
     "toggleDark": "Toggle dark mode",
     "toggleMenu": "Toggle menu"
   },
@@ -170,6 +171,8 @@
     "messagesDesc": "Chat with other members",
     "friends": "Friends",
     "friendsDesc": "Manage friends and requests",
+    "saved": "Saved",
+    "savedDesc": "View your bookmarked items",
     "newProject": "New Project",
     "newProjectDesc": "Upload and showcase your work",
     "newPost": "New Post",
@@ -536,6 +539,16 @@
     "mission": "Our Mission",
     "missionDesc": "To provide a welcoming and inspiring space where creativity meets community. We believe everyone has something valuable to share, and we're here to help you share it with the world.",
     "footer": "Last Peace of Art — Created with passion."
+  },
+  "saved": {
+    "title": "Saved Items",
+    "loading": "Loading...",
+    "empty": "No saved items yet",
+    "posts": "Posts",
+    "projects": "Projects",
+    "threads": "Discussions",
+    "comments": "Comments",
+    "deleted": "Content no longer available"
   },
   "notFound": {
     "title": "404",

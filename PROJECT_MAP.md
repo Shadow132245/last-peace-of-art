@@ -81,6 +81,7 @@
 | M43 | Admin verify-users API fixed for founder + Verify button UI polish | ✅ |
 | M44 | Dashboard StaggerList fix, wrong i18n keys fixed, locale switch flash fix | ✅ |
 | M45 | Ban system rewrite (direct DB check), /banned page redirect on unban, Contact Support email fix | ✅ |
+| M46 | Gamification (points/auto-rank), @Mentions, Bookmarks, Polls, Upload Progress Bar, Read Receipts, Rich Embeds | ✅ |
 
 ---
 
