@@ -80,6 +80,7 @@
 | M42 | Google OAuth agree-to-terms, hardcoded date translated, overflow-x-hidden fix, PROJECT_MAP.md recorded SMTP on Vercel | ✅ |
 | M43 | Admin verify-users API fixed for founder + Verify button UI polish | ✅ |
 | M44 | Dashboard StaggerList fix, wrong i18n keys fixed, locale switch flash fix | ✅ |
+| M45 | Ban system rewrite (direct DB check), /banned page redirect on unban, Contact Support email fix | ✅ |
 
 ---
 
@@ -171,6 +172,13 @@
 1. **StaggerList chain fixed** — `dashboard/page.tsx` had a plain `<div>` wrapper between `<StaggerList>` and `<StaggerItem>`, breaking the stagger animation chain. Moved the grid className directly onto `<StaggerList>` so staggerChildren propagates correctly to direct `motion` children
 2. **Wrong i18n keys fixed** — `posts/new/page.tsx` used `dashboard.createProject.titleLabel/tagsLabel/cancel` instead of `dashboard.createPost.*`. `forum/new/page.tsx` used `dashboard.createProject.*` instead of `dashboard.createThread.*`. Added missing translation keys (`titleLabel`, `tagsLabel`, `cancel`) to both `createPost` and `createThread` in `en.json` and `ar.json`, then updated all code references
 3. **Locale switch flash fixed** — Changed `AnimatePresence mode="wait"` to `mode="popLayout"` and removed `exit` animation in `i18n-provider.tsx`. The previous `mode="wait"` caused the entire page to fade out (white flash) before fading in the new locale. Now uses `popLayout` for instant layout swap with a quick fade-in only
+4. **All pushed to GitHub** — commit `d70c12a`
+
+### Session 45 — 2026-05-31 (Ban system rewrite, Contact Support fix)
+
+1. **Ban system rewritten** — The layouts (`(public)`, `dashboard`) used `session.user.banned` from Better Auth's getSession(), which returns cached session data. When an admin unbanned a user, the session still had `banned: true` for up to 1 day (updateAge), so the user stayed stuck on /banned. Fix: layouts now fetch the `banned` and `suspended` statuses directly from Prisma via `prisma.user.findUnique()` with the session's user ID, bypassing the session cache entirely
+2. **/banned page redirect on unban** — The banned page is now also a redirect guard: it calls `authClient.getSession()` on mount and checks if the user is still banned. If the ban was lifted, it redirects to `/dashboard` instead of staying stuck on the banned page
+3. **Contact Support email fixed** — The /banned page had `mailto:support@lastpeace.art` which is a non-existent domain. Changed to the real contact email `fghfghffdgfhfgh@gmail.com` (same as used in Terms/Privacy pages). The button now opens the user's email client with a working address
 4. **All pushed to GitHub**
 
 1. **Beautiful HTML email templates** — `auth.ts` email templates redesigned: branded gradient header, responsive layout, styled buttons, clean typography. Both verification email (big "Verify Email" button with fallback link) and OTP email (large monospace code display with expiry notice) now look professional

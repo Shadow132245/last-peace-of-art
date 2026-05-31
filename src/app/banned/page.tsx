@@ -1,13 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { useI18n } from "@/providers/i18n-provider";
-
-export const dynamic = "force-dynamic";
+import { authClient } from "@/lib/auth-client";
 
 export default function BannedPage() {
   const { t } = useI18n();
+  const router = useRouter();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    authClient.getSession().then((res) => {
+      const user = res.data?.user as any;
+      if (!user || !user.banned) router.push("/dashboard");
+      else setChecking(false);
+    });
+  }, [router]);
+
+  if (checking) return null;
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -55,7 +68,7 @@ export default function BannedPage() {
         transition={{ delay: 0.5, duration: 0.3 }}
       >
         <Link
-          href="mailto:support@lastpeace.art"
+          href="mailto:fghfghffdgfhfgh@gmail.com"
           className="rounded-xl bg-zinc-900 px-6 py-3 font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
         >
           {t("banned.contactButton")}
