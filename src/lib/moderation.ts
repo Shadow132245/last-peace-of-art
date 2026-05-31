@@ -85,3 +85,16 @@ export async function notifyAdmins(type: string, title: string, message: string,
     })),
   });
 }
+
+export async function notifyUser(userId: string, type: string, title: string, message: string, link: string) {
+  await prisma.notification.create({
+    data: {
+      id: crypto.randomUUID(),
+      userId,
+      type,
+      title,
+      message,
+      link,
+    },
+  });
+}

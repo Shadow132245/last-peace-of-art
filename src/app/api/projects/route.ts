@@ -22,8 +22,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Title and description are required" }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } });
-    const isBugHunter = user?.role === "bug_hunter";
+    const { flagged, matches } = checkContent(title + " " + description + " " + (content ?? ""));
+    if (flagged) {
+      await notifyAdmins(
+        "moderation",
+        "🚩 Flagged content blocked",
+        `User "${session.user.name}" tried to post project with: ${matches.join(", ")}`,
+        `/admin/projects`
+      );
+      return NextResponse.json({
+        error: `Your project was blocked because it contains prohibited words: ${matches.join(", ")}. Please remove them and try again.`,
+        flagged: true,
+        matches,
+      }, { status: 403 });
+    }
 
     const project = await prisma.project.create({
       data: {
@@ -33,22 +45,10 @@ export async function POST(request: Request) {
         content: content ?? null,
         tags: tags ?? [],
         media: media ?? [],
-        published: isBugHunter,
+        published: true,
         userId: session.user.id,
       },
     });
-
-    if (isBugHunter) {
-      const { flagged, matches } = checkContent(title + " " + description + " " + (content ?? ""));
-      if (flagged) {
-        await notifyAdmins(
-          "moderation",
-          "⚠️ Flagged project",
-          `Bug Hunter "${session.user.name}" posted content with: ${matches.join(", ")}`,
-          `/admin/projects`
-        );
-      }
-    }
 
     logger.info({ projectId: project.id }, "Project created");
     return NextResponse.json(project, { status: 201 });

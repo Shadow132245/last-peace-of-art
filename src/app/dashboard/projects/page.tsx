@@ -47,6 +47,12 @@ export default async function ProjectsPage() {
                     </div>
                     <p className="mt-1 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{project.description}</p>
                   </div>
+                  <Link
+                    href={`/dashboard/projects/${project.id}/edit`}
+                    className="ml-4 shrink-0 rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  >
+                    Edit
+                  </Link>
                 </div>
               </div>
             </StaggerItem>

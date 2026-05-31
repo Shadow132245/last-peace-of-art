@@ -24,7 +24,21 @@ export async function POST(request: Request) {
     }
 
     const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true, name: true } });
-    const isBugHunter = user?.role === "bug_hunter";
+
+    const { flagged, matches } = checkContent(title + " " + content);
+    if (flagged) {
+      await notifyAdmins(
+        "moderation",
+        "🚩 Flagged content blocked",
+        `User "${session.user.name}" tried to post thread with: ${matches.join(", ")}`,
+        `/admin/threads`
+      );
+      return NextResponse.json({
+        error: `Your thread was blocked because it contains prohibited words: ${matches.join(", ")}. Please remove them and try again.`,
+        flagged: true,
+        matches,
+      }, { status: 403 });
+    }
 
     const thread = await prisma.thread.create({
       data: {
@@ -32,7 +46,7 @@ export async function POST(request: Request) {
         title,
         content,
         tags: tags ?? [],
-        published: isBugHunter,
+        published: true,
         userId: session.user.id,
       },
     });
@@ -55,18 +69,6 @@ export async function POST(request: Request) {
     const mentions = extractMentions(content);
     if (mentions.length > 0) {
       await notifyMentioned(mentions, user?.name ?? session.user.name, `/forum/${thread.id}`, prisma);
-    }
-
-    if (isBugHunter) {
-      const { flagged, matches } = checkContent(title + " " + content);
-      if (flagged) {
-        await notifyAdmins(
-          "moderation",
-          "\u26a0\ufe0f Flagged thread",
-          `Bug Hunter "${session.user.name}" posted content with: ${matches.join(", ")}`,
-          `/admin/threads`
-        );
-      }
     }
 
     logger.info({ threadId: thread.id }, "Thread created");

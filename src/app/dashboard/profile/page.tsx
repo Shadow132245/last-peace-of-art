@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useCallback } from "react";
 import { useI18n } from "@/providers/i18n-provider";
+import { ImageCropDialog } from "@/components/ui/image-crop-dialog";
 
 export default function ProfilePage() {
   const { t } = useI18n();
@@ -23,7 +24,16 @@ export default function ProfilePage() {
   const [uploading, setUploading] = useState<"avatar" | "banner" | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // Crop state
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropUrl, setCropUrl] = useState<string | null>(null);
+  const [cropType, setCropType] = useState<"avatar" | "banner">("avatar");
   const [saved, setSaved] = useState(false);
+  const [username, setUsername] = useState("");
+  const [savingUsername, setSavingUsername] = useState(false);
+  const [usernameSaved, setUsernameSaved] = useState(false);
+  const [usernameError, setUsernameError] = useState("");
 
   useEffect(() => {
     fetch("/api/profile")
@@ -44,20 +54,32 @@ export default function ProfilePage() {
         }
       })
       .catch(() => {});
-  }, []);
+    if (session?.user.name) setUsername(session.user.name);
+  }, [session]);
 
-  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>, type: "avatar" | "banner") => {
+  const selectFile = useCallback((e: React.ChangeEvent<HTMLInputElement>, type: "avatar" | "banner") => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setCropType(type);
+    setCropFile(file);
+    setCropUrl(URL.createObjectURL(file));
+    e.target.value = "";
+  }, []);
+
+  const handleCropComplete = useCallback(async (croppedBlob: Blob) => {
+    if (!cropFile) return;
+    setCropUrl(null);
+    setCropFile(null);
+
     setUploadError(null);
-    const localUrl = URL.createObjectURL(file);
-    if (type === "avatar") setAvatar(localUrl);
+    const localUrl = URL.createObjectURL(croppedBlob);
+    if (cropType === "avatar") setAvatar(localUrl);
     else setBanner(localUrl);
 
-    setUploading(type);
+    setUploading(cropType);
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", croppedBlob, cropFile.name);
 
     try {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
@@ -69,20 +91,41 @@ export default function ProfilePage() {
       }
 
       if (res.ok && data.url) {
-        if (type === "avatar") setAvatar(data.url);
+        if (cropType === "avatar") setAvatar(data.url);
         else setBanner(data.url);
       } else {
         setUploadError(data.error || t("dashboard.editProfile.uploadFailed"));
-        if (type === "avatar") setAvatar(avatarPrev);
+        if (cropType === "avatar") setAvatar(avatarPrev);
         else setBanner(bannerPrev);
       }
     } catch {
       setUploadError(t("dashboard.editProfile.networkError"));
-      if (type === "avatar") setAvatar(avatarPrev);
+      if (cropType === "avatar") setAvatar(avatarPrev);
       else setBanner(bannerPrev);
     }
     setUploading(null);
-  }, [avatarPrev, bannerPrev]);
+  }, [cropFile, cropType, avatarPrev, bannerPrev]);
+
+  const handleUsernameUpdate = async () => {
+    setSavingUsername(true);
+    setUsernameSaved(false);
+    setUsernameError("");
+
+    const res = await fetch("/api/profile/update-username", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: username.trim() }),
+    });
+
+    if (res.ok) {
+      setUsernameSaved(true);
+      refetchSession();
+    } else {
+      const data = await res.json();
+      setUsernameError(data.error ?? "Failed to update username");
+    }
+    setSavingUsername(false);
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -106,7 +149,7 @@ export default function ProfilePage() {
     setSaving(false);
   };
 
-  const username = session?.user.name ?? t("dashboard.editProfile.username");
+  const displayName = session?.user.name ?? t("dashboard.editProfile.username");
 
   return (
     <motion.div
@@ -146,7 +189,7 @@ export default function ProfilePage() {
               <div className="flex flex-col gap-2">
                 <label className="cursor-pointer rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800">
                   {uploading === "avatar" ? t("dashboard.editProfile.uploading") : t("dashboard.editProfile.upload")}
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, "avatar")} />
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => selectFile(e, "avatar")} />
                 </label>
                 {avatar && (
                   <button onClick={() => setAvatar(null)} className="text-sm text-red-500 hover:underline">{t("dashboard.editProfile.remove")}</button>
@@ -180,7 +223,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-2">
               <label className="cursor-pointer rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800">
                 {uploading === "banner" ? t("dashboard.editProfile.uploading") : t("dashboard.editProfile.upload")}
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, "banner")} />
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => selectFile(e, "banner")} />
               </label>
               {banner && (
                 <button onClick={() => setBanner(null)} className="text-sm text-red-500 hover:underline">{t("dashboard.editProfile.remove")}</button>
@@ -222,6 +265,22 @@ export default function ProfilePage() {
             />
           </div>
 
+          {/* Username */}
+          <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
+            <h3 className="mb-4 font-semibold">Username</h3>
+            <input
+              className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 transition-colors focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Your username"
+            />
+            {usernameError && <p className="mt-2 text-sm text-red-500">{usernameError}</p>}
+            {usernameSaved && <p className="mt-2 text-sm text-green-500">Username updated!</p>}
+            <div className="mt-3">
+              <Button onClick={handleUsernameUpdate} loading={savingUsername} variant="outline" size="sm">Update Username</Button>
+            </div>
+          </div>
+
           {uploadError && <p className="text-sm text-red-500">{uploadError}</p>}
           {saved && <p className="text-sm text-green-500">{t("dashboard.editProfile.saved")}</p>}
 
@@ -258,7 +317,7 @@ export default function ProfilePage() {
                   )}
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-xl font-bold truncate">{session?.user.name ?? t("dashboard.editProfile.username")}</h2>
+                  <h2 className="text-xl font-bold truncate">{displayName}</h2>
                   {bio && <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{bio}</p>}
                   {skills && skills.split(",").map(s => s.trim()).filter(Boolean).length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-1.5">
@@ -273,6 +332,14 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-    </motion.div>
-  );
-}
+      <ImageCropDialog
+        open={!!cropUrl}
+        imageUrl={cropUrl ?? ""}
+        aspect={cropType === "avatar" ? 1 : 3}
+        title={cropType === "avatar" ? "Crop Avatar" : "Crop Banner"}
+        onCrop={handleCropComplete}
+        onClose={() => { setCropUrl(null); setCropFile(null); }}
+      />
+      </motion.div>
+    );
+  }

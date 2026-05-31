@@ -31,8 +31,21 @@ export async function POST(request: Request) {
     }
 
     const slug = slugify(title);
-    const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } });
-    const isBugHunter = user?.role === "bug_hunter";
+
+    const { flagged, matches } = checkContent(title + " " + content);
+    if (flagged) {
+      await notifyAdmins(
+        "moderation",
+        "🚩 Flagged content blocked",
+        `User "${session.user.name}" tried to post content with: ${matches.join(", ")}`,
+        `/admin/posts`
+      );
+      return NextResponse.json({
+        error: `Your content was blocked because it contains prohibited words: ${matches.join(", ")}. Please remove them and try again.`,
+        flagged: true,
+        matches,
+      }, { status: 403 });
+    }
 
     const post = await prisma.post.create({
       data: {
@@ -42,22 +55,10 @@ export async function POST(request: Request) {
         content,
         excerpt: excerpt ?? null,
         tags: tags ?? [],
-        published: isBugHunter,
+        published: true,
         userId: session.user.id,
       },
     });
-
-    if (isBugHunter) {
-      const { flagged, matches } = checkContent(title + " " + content);
-      if (flagged) {
-        await notifyAdmins(
-          "moderation",
-          "⚠️ Flagged post",
-          `Bug Hunter "${session.user.name}" posted content with: ${matches.join(", ")}`,
-          `/admin/posts`
-        );
-      }
-    }
 
     logger.info({ postId: post.id, slug }, "Post created");
     return NextResponse.json(post, { status: 201 });

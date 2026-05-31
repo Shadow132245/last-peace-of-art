@@ -44,6 +44,12 @@ export default async function ForumDashboardPage() {
                     <h3 className="font-semibold">{thread.title}</h3>
                   </Link>
                   <TogglePublish entityType="forum" entityId={thread.id} published={thread.published} />
+                  <Link
+                    href={`/dashboard/forum/${thread.id}/edit`}
+                    className="shrink-0 rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  >
+                    Edit
+                  </Link>
                 </div>
                 <p className="mt-1 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">{thread.content}</p>
                 <div className="mt-2 text-xs text-zinc-400">{thread.createdAt.toLocaleDateString()}</div>
