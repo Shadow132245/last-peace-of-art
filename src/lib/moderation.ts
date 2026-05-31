@@ -142,43 +142,7 @@ const ENG_SCAM: string[] = [
   "claim your prize", "claim now",
 ];
 
-const ENG_HACKING: string[] = [
-  "hack", "hacker", "hacking", "hacked",
-  "crack", "cracking", "cracked", "keygen",
-  "exploit", "vulnerability", "zero day", "0day",
-  "malware", "ransomware", "trojan", "virus", "worm", "spyware",
-  "ddos", "dos attack", "flood",
-  "phishing", "phish",
-  "sql injection", "xss", "csrf",
-  "bruteforce", "brute force",
-  "ddos", "botnet",
-  "social engineering",
-  "carding", "ccv", "dumps",
-  "cvv", "credit card hack",
-  "account takeover", "account cracker",
-  "ip grabber", "ip logger",
-  "rat", "remote access",
-  "keylogger", "keystroke logger",
-  "vpn crack", "vpn hack",
-  "spotify hack", "netflix hack",
-  "free accounts", "account generator",
-  "cracked account", "hacked account",
-  "sniffer", "packet sniffer",
-  "payload", "reverse shell", "web shell",
-  "c2 server", "command and control",
-  "spoof", "spoofing",
-  "proxy list", "socks list",
-  "bypass", "bypass filter",
-  "instagram hack", "facebook hack", "twitter hack",
-  "whatsapp hack", "snapchat hack",
-  "cheat engine", "game hack",
-  "mod menu", "modded",
-  "roblox hack", "free robux",
-  "fortnite hack", "aimbot", "wallhack",
-  "ip stresser", "ip booter",
-  "cracked software", "nulled",
-  "warez", "pirate", "piracy", "torrent",
-];
+
 
 // ═════════════════════════════════════════════════════════════════════
 // ARABIC BANNED WORDS
@@ -370,46 +334,17 @@ const AR_HARASSMENT: string[] = [
   "محتال", "محتالة",
 ];
 
-const AR_HACKING: string[] = [
-  "اختراق", "اخترق", "مخترق", "هاكر",
-  "تهكير", "تهكر",
-  "تجميد", "تجميد حسابات",
-  "بطاقات", "بطاقة مسبقة الدفع",
-  "كريديت كارد", "فيزا", "ماستركارد",
-  "شحن", "شحن مجاني",
-  "زيادة متابعين", "زيادة لايكات",
-  "برنامج تهكير", "لعبة مهكرة",
-  "باتش", "كريك",
-  "تفعيل", "تفعيل وهمي",
-  "باسورد", "كلمة سر", "كلمة المرور",
-  "حساب مسروق", "بيع حسابات",
-  "ايميل مخترق", "حساب وهمي",
-  "ثغرة", "ثغرات",
-  "سيرفر", "استضافة",
-  "دومين", "مجال",
-  "اختراق واتساب", "اختراق فيسبوك",
-  "اختراق انستقرام", "اختراق تيك توك",
-  "فضح", "ابتزاز", "تهديد",
-  "تصيد", "احتيال",
-  "استعادة حسابات", "استرجاع",
-  "محفظة الكترونية", "عملات رقمية",
-  "سحب", "سحب مبالغ",
-  "تحويل فلوس", "تحويل اموال",
-  "بونص", "مكافأة تسجيل",
-  "حسابات نتفلكس", "حسابات نت فلیکس",
-  "بث مباشر ممنوع",
-  "متجر هاك", "هاكات",
-];
+
 
 // ─── Combine all ─────────────────────────────────────────────────────
 const BANNED_WORDS: string[] = [
   ...ENG_SEXUAL, ...ENG_PROFANITY, ...ENG_SLURS,
-  ...ENG_VIOLENCE, ...ENG_DRUGS, ...ENG_HATE, ...ENG_SCAM, ...ENG_HACKING,
+  ...ENG_VIOLENCE, ...ENG_DRUGS, ...ENG_HATE, ...ENG_SCAM,
   ...AR_SEXUAL, ...AR_PROFANITY, ...AR_SLURS,
-  ...AR_VIOLENCE, ...AR_RELIGIOUS, ...AR_HARASSMENT, ...AR_HACKING,
+  ...AR_VIOLENCE, ...AR_RELIGIOUS, ...AR_HARASSMENT,
 ];
 
-// ─── Forbidden domain patterns (porn, hacking, malware) ────────────────
+// ─── Forbidden domain patterns (adult / +18 only) ─────────────────────
 const FORBIDDEN_DOMAIN_PATTERNS: string[] = [
   // Porn / adult
   "pornhub", "xvideos", "xnxx", "xhamster", "redtube", "youporn",
@@ -429,41 +364,7 @@ const FORBIDDEN_DOMAIN_PATTERNS: string[] = [
   "tinder", "badoo", "hornet", "grindr",
   "swinging", "swinger",
   "bondage", "bdsm",
-
-  // Hacking / malware / phishing
-  "hack", "hacker", "hacking", "h4ck",
-  "cracked", "cracking", "crack",
-  "warez", "nulled", "nulledto",
-  "leak", "leaks", "leaked",
-  "cheat", "cheats", "cheating",
-  "aimbot", "wallhack",
-  "free robux", "robux hack",
-  "free vbucks", "vbucks hack",
-  "cvv", "carding", "dumps",
-  "phishing", "phish",
-  "malware", "ransomware", "trojan",
-  "spyware", "keylogger",
-  "darknet", "dark web", "silk road",
-  "ddos", "stresser", "booter",
-  "spoof", "spoofing",
-  "fake id", "fake identity",
-  "proxy list", "socks proxy",
-  "instagram hack", "instagram password",
-  "facebook hack", "facebook password",
-  "hack instagram", "hack facebook", "hack twitter",
-  "hack snapchat", "hack whatsapp",
-  "account generator", "acc generator",
-  "combos", "combolist",
-  "sql injection", "sqli",
-  "proxy", "vpn crack",
-  "license key", "activation key",
-  "keygen", "patch",
-  "modded", "modapk",
-  "apk mod", "apk hack",
 ];
-
-// ─── Build banned-word lookup set ──────────────────────────────────
-const BANNED_SET = new Set(BANNED_WORDS.map((w) => w.toLowerCase()));
 
 // ─── Pre-compute "missing letter" variants ─────────────────────────
 const MISSING_LETTER_MAP = new Map<string, string[]>();

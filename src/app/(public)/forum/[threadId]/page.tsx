@@ -11,6 +11,7 @@ import { PollDisplay } from "@/components/forum/poll-display";
 import { ViewTracker } from "@/components/views/view-tracker";
 import { FadeInView } from "@/components/ui/fade-in-view";
 import { AnimateCard } from "@/components/ui/animate-card";
+import { DisclaimerBanner } from "@/components/ui/disclaimer-banner";
 import { getServerT } from "@/lib/server-i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ threadId: string }> }): Promise<Metadata> {
@@ -32,6 +33,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ threadI
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
+      <DisclaimerBanner />
       <ViewTracker entityType="thread" entityId={thread.id} />
 
       <FadeInView>

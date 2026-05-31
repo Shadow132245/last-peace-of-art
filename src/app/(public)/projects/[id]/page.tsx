@@ -9,6 +9,7 @@ import { ReportButton } from "@/components/reports/report-button";
 import { CommentSection } from "@/components/comments/comment-section";
 import { ViewTracker } from "@/components/views/view-tracker";
 import { FadeInView } from "@/components/ui/fade-in-view";
+import { DisclaimerBanner } from "@/components/ui/disclaimer-banner";
 import { getServerT } from "@/lib/server-i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -30,6 +31,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-12">
+      <DisclaimerBanner />
       <ViewTracker entityType="project" entityId={project.id} />
 
       <FadeInView>

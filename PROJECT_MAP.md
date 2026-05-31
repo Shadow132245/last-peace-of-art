@@ -90,20 +90,15 @@
 
 ## [SESSION_LOG]
 
-### Session 49 — 2026-06-01 → 2026-06-02 (Advanced moderation v2: massive word expansion, Google Gemini AI, link scanning)
+### Session 50 — 2026-06-02 (Remove hack/crack block + disclaimer banner on all content pages)
 
-1. **Massively expanded banned word list** — `src/lib/moderation.ts` now has 400+ English words and 300+ Arabic words across new categories: `ENG_HACKING`, `AR_HACKING` (hacking/carding/piracy), plus significant additions to all existing categories (step-sister/daddy/hentai/R34, additional slurs, drugs, hate, phishing/scam keywords, etc.)
-2. **Leetspeak normalizer** — `normalizeText()` converts common character substitutions before checking. Catches `f@ck`, `s3x`, `p0rn`, `n1gg3r`
-3. **Separator bypass detection** — Removes dots, dashes, underscores, pipes between chars. Catches `f.u.c.k`, `s-e-x`
-4. **Repeated character normalization** — Collapses 3+ same chars to 2. Catches `fuuuuck`
-5. **Missing-letter detection** — Pre-computed "remove-one-char" variant map. Catches `fck`→`fuck`, `sx`→`sex`, `assole`→`asshole`
-6. **Google Gemini AI (FREE)** — `src/lib/ai-moderation.ts` replaces the old `openai-moderation.ts`. Now supports **two AI providers**: Gemini (free tier, 1500 req/day, NO credit card needed) and OpenAI (optional). Just set `GEMINI_API_KEY` in `.env`. You can get one free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey). Falls back to OpenAI if Gemini isn't configured
-7. **Link scanning** — New `checkUrls()` function: extracts all URLs from text using regex, checks each against a comprehensive blocklist of 100+ forbidden domain patterns (porn sites, adult cams, dating/escort, hacking, malware, phishing, cheat sites, carding, pirate/warez, keygen). `checkContent()` now includes URL checking as a 5th layer
-8. **Multi-layer check** — `checkContent()` now runs 5 layers: (1) exact match, (2) normalized, (3) missing-letter, (4) URL domain blocklist, (5) AI moderation (Gemini → OpenAI). Returns `urlFlagged` and `urlMatches` alongside word matches
-9. **Comment moderation** — comments now also go through `checkContent()` before creation
-10. **Fix: profile session refetch overwrite** — `initialLoadDone` ref prevents unsaved bio/avatar/banner from being wiped on `refetchSession()`
-11. **Fix: Arabic post titles → empty slug** — `slugify()` falls back to post UUID when no Latin characters exist. PUT handler regenerates slug on title change
-12. **All pushed to GitHub** — commits `78f4987` `1a6d031` `5a2c116` `51902bd` `4d101ca` `773e1c9`
+1. **Removed all hacking/crack/piracy banned words** — `ENG_HACKING` and `AR_HACKING` arrays deleted entirely. Hacking domain patterns removed from `FORBIDDEN_DOMAIN_PATTERNS`. Users can now freely post cracks, hacks, mods, torrents etc.
+2. **+18 content STILL banned** — All sexual/adult/porn words and domain patterns remain. Moderation continues to block porn sites (pornhub, xvideos, onlyfans, chaturbate, etc.)
+3. **Disclaimer banner on every post/thread/project** — New `src/components/ui/disclaimer-banner.tsx` component. Displays in Arabic/English based on `locale`: "إدارة الموقع غير مسؤولة عن أي محتوى يتم نشره من قبل المستخدمين. تحميل أي ملفات أو الدخول إلى أي روابط منشورة يتم على مسؤوليتك الشخصية." Added to:
+   - `src/app/(public)/blog/[slug]/page.tsx`
+   - `src/app/(public)/forum/[threadId]/page.tsx`
+   - `src/app/(public)/projects/[id]/page.tsx`
+4. **All pushed to GitHub** — commit `...`
 
 ### Session 48 — 2026-06-01 (Auto-moderation for all users, edit pages, username change, crop system)
 
