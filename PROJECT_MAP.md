@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-05-31 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅**
+> Generated: 2026-06-01 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅**
 
 ---
 
@@ -83,10 +83,26 @@
 | M45 | Ban system rewrite (direct DB check), /banned page redirect on unban, Contact Support email fix | ✅ |
 | M46 | Gamification (points/auto-rank), @Mentions, Bookmarks, Polls, Upload Progress Bar, Read Receipts, Rich Embeds | ✅ |
 | M47 | Footer Arabic translation fix, friend button status fix, messages user link to profile, non-friends message privacy setting | ✅ |
+| M48 | Auto-moderation for all users (blocks flagged content + warning), auto-publish for everyone, edit pages + PUT API for posts/threads/projects, username change API + UI, admin edit notifications, image crop (react-easy-crop) for avatar/banner with zoom | ✅ |
 
 ---
 
 ## [SESSION_LOG]
+
+### Session 48 — 2026-06-01 (Auto-moderation for all users, edit pages, username change, crop system)
+
+1. **Auto-moderation rewrite** — `src/lib/moderation.ts` extended with `notifyUser()` for user-facing warnings. All 3 creation POST routes (posts, forum, projects) now check **ALL users** (not just bug_hunter) BEFORE creating content. If flagged: content is NOT created, user gets a 403 with the specific prohibited words listed in the error, and admins receive a notification. Bug_hunter-only check removed
+2. **Auto-publish for everyone** — All content (posts/threads/projects) is now `published: true` by default for all users. No more manual admin approval needed — the auto-moderation system is the gatekeeper that blocks bad content
+3. **Edit pages created** — Three new edit pages following the same pattern as new-content pages:
+   - `src/app/dashboard/posts/[id]/edit/page.tsx` — fetches post via GET, pre-fills form, PUT on save
+   - `src/app/dashboard/forum/[threadId]/edit/page.tsx` — same pattern for threads
+   - `src/app/dashboard/projects/[id]/edit/page.tsx` — same pattern for projects
+4. **PUT API handlers** — `[id]/route.ts` for posts, forum threads, and projects now all have GET (fetch single), PUT (update with moderation check), and PATCH (publish toggle) handlers. PUT validates content via `checkContent()` and blocks flagged edits
+5. **Edit buttons in dashboard lists** — Added "Edit" link button to posts, forum, and projects dashboard list pages next to the TogglePublish component
+6. **Username change** — Created `src/app/api/profile/update-username/route.ts` (PUT endpoint with validation for length, uniqueness, and admin notification). Added username input + "Update Username" button in dashboard profile page under the Skills section
+7. **Admin edit notifications** — All 3 PUT handlers send `notifyAdmins("edit", ...)` notifications on successful edits. Username change also notifies admins
+8. **Image crop system** — Installed `react-easy-crop@5.5.7`. Created `src/components/ui/image-crop-dialog.tsx` (reusable crop dialog with Cropper, zoom slider, configurable aspect ratio). Profile page now shows crop dialog on file select (1:1 for avatar, 3:1 for banner). User adjusts crop region + zoom, then clicks "Apply" to upload the cropped version
+9. **All pushed to GitHub** — commit `01108c9`
 
 ### Session 29 — 2026-05-30
 
