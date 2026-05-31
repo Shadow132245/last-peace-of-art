@@ -78,6 +78,7 @@
 | M40 | Smoother spring animations across all components + About page translation fix + dashboard/admin UI polish | ✅ |
 | M41 | Terms & Privacy full Arabic translation, agree-to-terms on register, custom scrollbar, ScrollToTop glitch fix | ✅ |
 | M42 | Google OAuth agree-to-terms, hardcoded date translated, overflow-x-hidden fix, PROJECT_MAP.md recorded SMTP on Vercel | ✅ |
+| M43 | Admin verify-users API fixed for founder + Verify button UI polish | ✅ |
 
 ---
 
@@ -156,7 +157,13 @@
 3. **Hardcoded English date fixed** — The `May 28, 2026` hardcoded in Terms page and Privacy page `.replace("{date}", ...)` is now replaced with translation key lookups: `t("legal.termsDate")` and `t("legal.privacyDate")`. Added `legal.termsDate` and `legal.privacyDate` to both `en.json` (`"May 28, 2026"`) and `ar.json` (`"٢٨ مايو ٢٠٢٦"`)
 4. **Overflow-x-hidden added** — Added `html { overflow-x: hidden; }` to `globals.css` to prevent horizontal scrollbar glitch where the scroll arrow would appear at the bottom of the page due to element overflow
 5. **Custom scrollbar updated to amber gradient** — Changed scrollbar thumb from zinc (`#d4d4d8`) to amber gradient (`#f59e0b` → `#d97706`) to match the site's amber theme. Added `background-clip: padding-box` + `border: 2px solid transparent` for rounded edges with transparent gaps. Firefox `scrollbar-color` updated to amber. Dark mode uses same amber gradient with slight opacity
-6. **All pushed to GitHub** — commit `7063fa5`
+6. **All pushed to GitHub** — commit `042e419`
+
+### Session 43 — 2026-05-31 (Admin verify-users API fix + Verify button UI polish)
+
+1. **verify-users API fixed for founder** — The `/api/admin/verify-users` route had `session.user.role !== "admin"` which blocked founder from verifying users. Changed to use `requireAdmin()` pattern that allows both `admin` and `founder`
+2. **Verify button UI polish** — `verify-button.tsx` updated: when verified, shows green "Verified" badge with amber dot and emerald background instead of plain text. Button now properly disabled after successful verification
+3. **All pushed to GitHub**
 
 1. **Beautiful HTML email templates** — `auth.ts` email templates redesigned: branded gradient header, responsive layout, styled buttons, clean typography. Both verification email (big "Verify Email" button with fallback link) and OTP email (large monospace code display with expiry notice) now look professional
 2. **2FA login flow confirmation step** — Login form now shows a confirmation screen: "Code sent to your email" with an email icon and an OK button before showing the code input. Resend also goes through the confirmation screen
