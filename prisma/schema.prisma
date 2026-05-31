@@ -26,6 +26,7 @@ model User {
   twoFactorEnabled Boolean @default(false)
   points        Int      @default(0)
   rank          String   @default("bronze")
+  messagesFromFriendsOnly Boolean @default(false)
 
   sessions    Session[]
   accounts    Account[]

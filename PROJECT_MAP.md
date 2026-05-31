@@ -82,6 +82,7 @@
 | M44 | Dashboard StaggerList fix, wrong i18n keys fixed, locale switch flash fix | ✅ |
 | M45 | Ban system rewrite (direct DB check), /banned page redirect on unban, Contact Support email fix | ✅ |
 | M46 | Gamification (points/auto-rank), @Mentions, Bookmarks, Polls, Upload Progress Bar, Read Receipts, Rich Embeds | ✅ |
+| M47 | Footer Arabic translation fix, friend button status fix, messages user link to profile, non-friends message privacy setting | ✅ |
 
 ---
 

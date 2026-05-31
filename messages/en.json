@@ -540,6 +540,10 @@
     "missionDesc": "To provide a welcoming and inspiring space where creativity meets community. We believe everyone has something valuable to share, and we're here to help you share it with the world.",
     "footer": "Last Peace of Art — Created with passion."
   },
+  "settings": {
+    "privacy": "Privacy",
+    "friendsOnlyMessages": "Only allow friends to send me messages"
+  },
   "saved": {
     "title": "Saved Items",
     "loading": "Loading...",

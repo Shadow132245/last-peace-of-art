@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
@@ -21,6 +21,15 @@ export default function SettingsPage() {
   const [totpUri, setTotpUri] = useState<string | null>(null);
   const [totpCode, setTotpCode] = useState("");
   const [verifying, setVerifying] = useState(false);
+  const [msgPrivacy, setMsgPrivacy] = useState(false);
+  const [msgPrivacyLoading, setMsgPrivacyLoading] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/user/privacy")
+      .then((r) => r.json())
+      .then((data) => setMsgPrivacy(data.messagesFromFriendsOnly ?? false))
+      .catch(() => {});
+  }, []);
 
   const twoFactorEnabled = (session?.user as any)?.twoFactorEnabled ?? false;
 
@@ -196,9 +205,40 @@ export default function SettingsPage() {
       </motion.div>
 
       <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25, duration: 0.3 }}
+        className="mt-6 rounded-xl border border-zinc-200 p-6 dark:border-zinc-800"
+      >
+        <h3 className="font-semibold">{t("settings.privacy") || "Privacy"}</h3>
+        <label className="mt-4 flex items-center gap-3">
+          <input
+            type="checkbox"
+            checked={msgPrivacy}
+            disabled={msgPrivacyLoading}
+            onChange={async (e) => {
+              setMsgPrivacyLoading(true);
+              const val = e.target.checked;
+              setMsgPrivacy(val);
+              await fetch("/api/user/privacy", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ messagesFromFriendsOnly: val }),
+              });
+              setMsgPrivacyLoading(false);
+            }}
+            className="h-4 w-4 rounded border-zinc-300 text-amber-600 focus:ring-amber-500 dark:border-zinc-600"
+          />
+          <span className="text-sm text-zinc-600 dark:text-zinc-400">
+            {t("settings.friendsOnlyMessages") || "Only allow friends to send me messages"}
+          </span>
+        </label>
+      </motion.div>
+
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.25, duration: 0.3 }}
+        transition={{ delay: 0.3, duration: 0.3 }}
         className="mt-6"
       >
         <Button variant="danger" onClick={handleLogout}>{t("nav.signOut")}</Button>

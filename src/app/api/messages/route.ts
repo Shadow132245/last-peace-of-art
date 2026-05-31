@@ -51,6 +51,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Receiver and content are required" }, { status: 400 });
     }
 
+    const receiverUser = await prisma.user.findUnique({
+      where: { id: receiverId },
+      select: { messagesFromFriendsOnly: true },
+    });
+    if (!receiverUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+    if (receiverUser.messagesFromFriendsOnly) {
+      const areFriends = await prisma.friendRequest.findFirst({
+        where: {
+          OR: [
+            { senderId: session.user.id, receiverId, status: "accepted" },
+            { senderId: receiverId, receiverId: session.user.id, status: "accepted" },
+          ],
+        },
+      });
+      if (!areFriends) {
+        return NextResponse.json({ error: "This user only accepts messages from friends" }, { status: 403 });
+      }
+    }
+
     const message = await prisma.message.create({
       data: {
         id: crypto.randomUUID(),

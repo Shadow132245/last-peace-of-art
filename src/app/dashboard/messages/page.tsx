@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { motion } from "motion/react";
 import { useI18n } from "@/providers/i18n-provider";
@@ -130,12 +131,12 @@ export default function MessagesPage() {
         <div className="flex flex-1 flex-col rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
           {selectedUser ? (
             <>
-              <div className="flex items-center gap-3 border-b border-zinc-200 p-4 dark:border-zinc-800">
+              <Link href={`/user/${encodeURIComponent(selectedUser.name)}`} className="flex items-center gap-3 border-b border-zinc-200 p-4 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium dark:bg-zinc-700">
                   {selectedUser.image ? <img src={selectedUser.image} alt="" className="h-full w-full rounded-full object-cover" /> : selectedUser.name[0]}
                 </div>
                 <span className="font-medium">{selectedUser.name}</span>
-              </div>
+              </Link>
 
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {messages.map((msg) => {
