@@ -80,7 +80,7 @@ function ActionCard({ title, desc, href }: { title: string; desc: string; href: 
   return (
     <Link
       href={href}
-      className="group rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-200 hover:-translate-y-1 hover:border-amber-300 hover:shadow-lg hover:shadow-amber-200/20 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-amber-600 dark:hover:shadow-amber-900/20"
+      className="group block rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-200 hover:-translate-y-1 hover:border-amber-300 hover:shadow-lg hover:shadow-amber-200/20 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-amber-600 dark:hover:shadow-amber-900/20"
     >
       <h3 className="font-semibold transition-colors group-hover:text-amber-600 dark:group-hover:text-amber-400">{title}</h3>
       <p className="mt-1.5 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">{desc}</p>
