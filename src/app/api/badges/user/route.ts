@@ -30,6 +30,7 @@ export async function PUT(request: Request) {
   if (badgeIds.length > 0) {
     await prisma.userBadge.createMany({
       data: badgeIds.map((badgeId: string, i: number) => ({
+        id: crypto.randomUUID(),
         userId: session.user.id,
         badgeId,
         order: i,
