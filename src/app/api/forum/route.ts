@@ -82,6 +82,7 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     const threads = await prisma.thread.findMany({
+      where: { published: true },
       include: { user: { select: { name: true, image: true } } },
       orderBy: { createdAt: "desc" },
     });

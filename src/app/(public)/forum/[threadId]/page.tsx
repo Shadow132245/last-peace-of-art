@@ -28,7 +28,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ threadI
     include: { user: { select: { name: true, image: true, role: true, points: true, rank: true } } },
   });
 
-  if (!thread) notFound();
+  if (!thread || !thread.published) notFound();
   const { t } = await getServerT();
 
   return (
