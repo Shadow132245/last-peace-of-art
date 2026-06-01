@@ -1149,3 +1149,8 @@ The user requested the following features be implemented all at once, and explai
 - Why: `dependencies` forces npm to install on all platforms → Vercel (Linux) fails with `EBADPLATFORM`
 - `optionalDependencies` lets npm skip gracefully on incompatible platforms
 - **Commit:** `a820687` — Fix Vercel build: move @esbuild/win32-x64 to optionalDependencies
+
+### Session 56 — 2026-06-02 (Vercel Speed Insights)
+- Installed `@vercel/speed-insights` package
+- Added `<SpeedInsights />` to root layout (`src/app/layout.tsx`) alongside `<Analytics />`
+- **Commit:** (see below)
