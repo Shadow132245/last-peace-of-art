@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
-const roles = ["user", "bug_hunter", "admin", "founder"] as const;
+const roles = ["user", "bug_hunter", "premium", "moderator", "admin"] as const;
 
 const roleColors: Record<string, { border: string; bg: string; text: string; dot: string }> = {
   founder: {
@@ -18,6 +18,18 @@ const roleColors: Record<string, { border: string; bg: string; text: string; dot
     bg: "bg-purple-50 dark:bg-purple-900/30",
     text: "text-purple-700 dark:text-purple-300",
     dot: "bg-purple-500",
+  },
+  moderator: {
+    border: "border-sky-300 dark:border-sky-700",
+    bg: "bg-sky-50 dark:bg-sky-900/30",
+    text: "text-sky-700 dark:text-sky-300",
+    dot: "bg-sky-500",
+  },
+  premium: {
+    border: "border-indigo-300 dark:border-indigo-700",
+    bg: "bg-indigo-50 dark:bg-indigo-900/30",
+    text: "text-indigo-700 dark:text-indigo-300",
+    dot: "bg-indigo-500",
   },
   bug_hunter: {
     border: "border-emerald-300 dark:border-emerald-700",
@@ -36,6 +48,8 @@ const roleColors: Record<string, { border: string; bg: string; text: string; dot
 const roleLabels: Record<string, string> = {
   founder: "Founder",
   admin: "Admin",
+  moderator: "Moderator",
+  premium: "Premium",
   bug_hunter: "Bug Hunter",
   user: "User",
 };
@@ -47,6 +61,8 @@ export function RoleButton({ userId, currentRole }: { userId: string; currentRol
   const [selected, setSelected] = useState(currentRole);
   const ref = useRef<HTMLDivElement>(null);
 
+  const isFounder = currentRole === "founder";
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -56,7 +72,7 @@ export function RoleButton({ userId, currentRole }: { userId: string; currentRol
   }, []);
 
   const handleSelect = async (role: string) => {
-    if (role === selected) { setOpen(false); return; }
+    if (role === selected || isFounder) { setOpen(false); return; }
     setLoading(true);
     setSelected(role);
     setOpen(false);
@@ -76,10 +92,11 @@ export function RoleButton({ userId, currentRole }: { userId: string; currentRol
     <div ref={ref} className="relative">
       <motion.button
         type="button"
-        onClick={() => setOpen(!open)}
-        disabled={loading}
-        whileTap={{ scale: 0.97 }}
-        className={`inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all ${colors.border} ${colors.bg} ${colors.text} disabled:opacity-50`}
+        onClick={() => !isFounder && setOpen(!open)}
+        disabled={loading || isFounder}
+        whileTap={isFounder ? {} : { scale: 0.97 }}
+        className={`inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all ${colors.border} ${colors.bg} ${colors.text} disabled:cursor-not-allowed disabled:opacity-50`}
+        title={isFounder ? "Founder role cannot be changed" : undefined}
       >
         {loading ? (
           <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -87,14 +104,16 @@ export function RoleButton({ userId, currentRole }: { userId: string; currentRol
           <>
             <span className={`h-1.5 w-1.5 rounded-full ${colors.dot}`} />
             {label}
-            <svg className="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
+            {!isFounder && (
+              <svg className="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            )}
           </>
         )}
       </motion.button>
       <AnimatePresence>
-        {open && (
+        {open && !isFounder && (
           <motion.div
             initial={{ opacity: 0, y: -4, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getServerT();
-  return { title: t("rules.title"), description: t("rules.metaDesc") };
+  return { title: t("roles.title"), description: t("roles.metaDesc") };
 }
 
 const ROLES = [
@@ -43,14 +43,14 @@ const ROLES = [
   },
 ];
 
-export default async function RulesPage() {
+export default async function RolesPage() {
   const { t, locale } = await getServerT();
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
       <FadeInView>
-        <h1 className="text-3xl font-bold">{t("rules.title")}</h1>
-        <p className="mt-2 text-zinc-500 dark:text-zinc-400">{t("rules.subtitle")}</p>
+        <h1 className="text-3xl font-bold">{t("roles.title")}</h1>
+        <p className="mt-2 text-zinc-500 dark:text-zinc-400">{t("roles.subtitle")}</p>
       </FadeInView>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2">
@@ -60,16 +60,16 @@ export default async function RulesPage() {
               <div className="flex items-start gap-4">
                 <span className="text-3xl">{role.icon}</span>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-lg font-bold">{t(`rules.${role.id}.name`)}</h3>
-                  <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{t(`rules.${role.id}.desc`)}</p>
+                  <h3 className="text-lg font-bold">{t(`roles.${role.id}.name`)}</h3>
+                  <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{t(`roles.${role.id}.desc`)}</p>
                   <div className="mt-4 space-y-2 text-sm">
                     <p>
-                      <span className="font-semibold">{t("rules.requirements")}:</span>{" "}
-                      <span className="text-zinc-600 dark:text-zinc-400">{t(`rules.${role.id}.req`)}</span>
+                      <span className="font-semibold">{t("roles.requirements")}:</span>{" "}
+                      <span className="text-zinc-600 dark:text-zinc-400">{t(`roles.${role.id}.req`)}</span>
                     </p>
                     <p>
-                      <span className="font-semibold">{t("rules.perks")}:</span>{" "}
-                      <span className="text-zinc-600 dark:text-zinc-400">{t(`rules.${role.id}.perk`)}</span>
+                      <span className="font-semibold">{t("roles.perks")}:</span>{" "}
+                      <span className="text-zinc-600 dark:text-zinc-400">{t(`roles.${role.id}.perk`)}</span>
                     </p>
                   </div>
                 </div>
@@ -81,9 +81,9 @@ export default async function RulesPage() {
 
       <FadeInView delay={0.6}>
         <div className="mt-12 rounded-xl border border-zinc-200 p-6 text-center dark:border-zinc-800">
-          <p className="text-zinc-500 dark:text-zinc-400">{t("rules.cta")}</p>
+          <p className="text-zinc-500 dark:text-zinc-400">{t("roles.cta")}</p>
           <Link href="/badges" className="mt-3 inline-block rounded-lg bg-zinc-900 px-6 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100">
-            {t("rules.viewBadges")}
+            {t("roles.viewBadges")}
           </Link>
         </div>
       </FadeInView>

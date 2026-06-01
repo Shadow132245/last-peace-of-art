@@ -16,6 +16,7 @@ const navItems = [
   { href: "/admin/reports", label: "Reports", icon: "🚩" },
   { href: "/admin/appeals", label: "Appeals", icon: "📨" },
   { href: "/admin/tickets", label: "Tickets", icon: "🎫" },
+  { href: "/admin/roles", label: "Roles & Badges", icon: "🏅" },
   { href: "/admin/applications", label: "Applications", icon: "📋" },
 ];
 

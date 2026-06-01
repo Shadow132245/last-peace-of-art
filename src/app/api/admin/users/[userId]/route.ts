@@ -21,7 +21,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
 
     if ("role" in body) {
       const { role } = body;
-      if (!["user", "bug_hunter", "admin", "founder"].includes(role)) {
+      if (!["user", "bug_hunter", "premium", "moderator", "admin"].includes(role)) {
         return NextResponse.json({ error: "Invalid role" }, { status: 400 });
       }
       const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });

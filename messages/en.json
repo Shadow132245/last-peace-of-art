@@ -19,7 +19,7 @@
     "myProjects": "My Projects",
     "saved": "Saved",
     "badges": "Badges",
-    "rules": "Roles & Ranks",
+    "roles": "Roles & Ranks",
     "toggleDark": "Toggle dark mode",
     "toggleMenu": "Toggle menu"
   },
@@ -568,7 +568,7 @@
     "goToProfile": "My Profile Settings",
     "selectUpTo6": "Click badges to select them (max 6). Changes save automatically."
   },
-  "rules": {
+  "roles": {
     "title": "Roles & Ranks",
     "metaDesc": "Learn about site roles, how to earn them, and their perks.",
     "subtitle": "Every member has a role that determines their permissions and perks on the site. Here's what each role means:",
@@ -581,7 +581,7 @@
     "premium": { "name": "💎 Premium", "desc": "Premium membership with exclusive perks.", "req": "Special contribution or sponsorship.", "perk": "Custom profile theme, priority support, and ad-free browsing." },
     "moderator": { "name": "🛡️ Moderator", "desc": "Trusted community member who helps keep the site clean.", "req": "Appointed by the admin/founder based on trust and activity.", "perk": "Ability to moderate content (edit, delete, toggle publish)." },
     "admin": { "name": "⚡ Admin", "desc": "Site administrator with full management access.", "req": "Appointed by the founder.", "perk": "Full access to admin panel, user management, and settings." },
-    "founder": { "name": "👑 Founder", "desc": "Site creator and owner.", "req": "Founder of the site.", "perk": "Full control over every aspect of the site." }
+    "founder": { "name": "👑 Founder", "desc": "Site creator and owner — this role cannot be obtained by anyone else.", "req": "Only the site founder has this role. It cannot be earned or assigned.", "perk": "Full control over every aspect of the site + ability to assign roles and badges to users." }
   },
   "notFound": {
     "title": "404",
