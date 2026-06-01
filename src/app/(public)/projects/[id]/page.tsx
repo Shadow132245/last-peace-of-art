@@ -24,7 +24,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
   const project = await prisma.project.findUnique({
     where: { id },
-    include: { user: { select: { name: true, image: true, role: true, points: true, rank: true } } },
+    include: { user: { select: { name: true, image: true, role: true, roles: true, points: true, rank: true } } },
   });
 
   if (!project || !project.published) notFound();

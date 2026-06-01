@@ -25,7 +25,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const { slug } = await params;
   const post = await prisma.post.findUnique({
     where: { slug },
-    include: { user: { select: { name: true, image: true, role: true, points: true, rank: true } } },
+    include: { user: { select: { name: true, image: true, role: true, roles: true, points: true, rank: true } } },
   });
 
   if (!post || !post.published) notFound();

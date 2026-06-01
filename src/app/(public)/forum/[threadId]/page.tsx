@@ -25,7 +25,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ threadI
   const { threadId } = await params;
   const thread = await prisma.thread.findUnique({
     where: { id: threadId },
-    include: { user: { select: { name: true, image: true, role: true, points: true, rank: true } } },
+    include: { user: { select: { name: true, image: true, role: true, roles: true, points: true, rank: true } } },
   });
 
   if (!thread || !thread.published) notFound();
