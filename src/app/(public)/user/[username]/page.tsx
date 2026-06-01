@@ -8,6 +8,7 @@ import { AddFriendButton } from "@/components/friends/friend-button";
 import { SafeImg, SafeBanner } from "@/components/ui/safe-image";
 import { FadeInView } from "@/components/ui/fade-in-view";
 import { getServerT } from "@/lib/server-i18n";
+import { BadgeDisplay } from "@/components/badges/badge-display";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
 }
 
 export default async function UserProfilePage({ params }: { params: Promise<{ username: string }> }) {
-  const { t: pt } = await getServerT();
+  const { t: pt, locale } = await getServerT();
   const { username } = await params;
   const decoded = decodeURIComponent(username);
 
@@ -50,6 +51,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
     where: { id: found.id },
     include: {
       profile: true,
+      badges: { include: { badge: true }, orderBy: { order: "asc" } },
       projects: { where: { published: true }, orderBy: { createdAt: "desc" } },
       posts: { where: { published: true }, orderBy: { createdAt: "desc" } },
       threads: {
@@ -117,6 +119,13 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
               <div className="mt-4 flex flex-wrap gap-2">
                 {user.profile.skills.map((skill) => (
                   <span key={skill} className="rounded-full bg-zinc-100 px-3 py-1 text-sm dark:bg-zinc-800">{skill}</span>
+                ))}
+              </div>
+            )}
+            {user.badges.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {user.badges.map((ub) => (
+                  <BadgeDisplay key={ub.id} badge={ub.badge} lang={locale} />
                 ))}
               </div>
             )}

@@ -48,6 +48,7 @@ model User {
   pollVotes   PollVote[]
   profile     Profile?
   twoFactor   TwoFactor?
+  badges      UserBadge[]
 
   @@unique([email])
   @@map("user")
@@ -375,6 +376,35 @@ model Poll {
   createdAt DateTime @default(now())
 
   @@map("poll")
+}
+
+model Badge {
+  id          String   @id
+  name        String
+  description String
+  icon        String
+  color       String   @default("zinc")
+  howToGet    String
+  perk        String
+  createdAt   DateTime @default(now())
+
+  users UserBadge[]
+  @@map("badge")
+}
+
+model UserBadge {
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId   String
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@index([badgeId])
+  @@map("user_badge")
 }
 
 model PollOption {

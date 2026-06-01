@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useI18n } from "@/providers/i18n-provider";
 import { ImageCropDialog } from "@/components/ui/image-crop-dialog";
+import { BadgeSelector } from "@/components/badges/badge-selector";
 
 export default function ProfilePage() {
   const { t } = useI18n();
@@ -35,6 +36,8 @@ export default function ProfilePage() {
   const [usernameSaved, setUsernameSaved] = useState(false);
   const [usernameError, setUsernameError] = useState("");
   const initialLoadDone = useRef(false);
+  const [badgeIds, setBadgeIds] = useState<string[]>([]);
+  const [badgeSaved, setBadgeSaved] = useState(false);
 
   useEffect(() => {
     if (session?.user.name) {
@@ -60,6 +63,13 @@ export default function ProfilePage() {
           setBio(data.profile.bio ?? "");
           setSkills((data.profile.skills ?? []).join(", "));
         }
+      })
+      .catch(() => {});
+
+    fetch("/api/badges/user")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setBadgeIds(data.map((ub: { badgeId: string }) => ub.badgeId));
       })
       .catch(() => {});
   }, [session]);
@@ -270,6 +280,23 @@ export default function ProfilePage() {
               onChange={(e) => setSkills(e.target.value)}
               placeholder={t("dashboard.editProfile.skillsPlaceholder")}
             />
+          </div>
+
+          {/* Badges */}
+          <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
+            <h3 className="mb-4 font-semibold">{t("dashboard.editProfile.badges")}</h3>
+            <BadgeSelector selected={badgeIds} onChange={(ids) => {
+              setBadgeIds(ids);
+              setBadgeSaved(false);
+              fetch("/api/badges/user", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ badgeIds: ids }),
+              }).then((r) => {
+                if (r.ok) setBadgeSaved(true);
+              }).catch(() => {});
+            }} />
+            {badgeSaved && <p className="mt-2 text-xs text-green-500">{t("dashboard.editProfile.badgesSaved")}</p>}
           </div>
 
           {/* Username */}

@@ -18,6 +18,8 @@
     "myThreads": "My Threads",
     "myProjects": "My Projects",
     "saved": "Saved",
+    "badges": "Badges",
+    "rules": "Roles & Ranks",
     "toggleDark": "Toggle dark mode",
     "toggleMenu": "Toggle menu"
   },
@@ -254,7 +256,9 @@
       "livePreview": "Live Preview",
       "uploadFailed": "Upload failed — try a smaller image or set up Vercel Blob",
       "networkError": "Network error — could not reach upload server",
-      "username": "Username"
+      "username": "Username",
+      "badges": "Profile Badges",
+      "badgesSaved": "Badges updated!"
     }
   },
   "comments": {
@@ -553,6 +557,31 @@
     "threads": "Discussions",
     "comments": "Comments",
     "deleted": "Content no longer available"
+  },
+  "badges": {
+    "title": "Badges",
+    "metaDesc": "Earn badges and show them off on your profile!",
+    "subtitle": "Earn badges through your activity on the site and show them off on your profile. You can display up to 6 badges.",
+    "howToGet": "How to get",
+    "perk": "Perk",
+    "showOnProfile": "Go to your profile settings to choose which badges to display!",
+    "goToProfile": "My Profile Settings",
+    "selectUpTo6": "Click badges to select them (max 6). Changes save automatically."
+  },
+  "rules": {
+    "title": "Roles & Ranks",
+    "metaDesc": "Learn about site roles, how to earn them, and their perks.",
+    "subtitle": "Every member has a role that determines their permissions and perks on the site. Here's what each role means:",
+    "requirements": "Requirements",
+    "perks": "Perks",
+    "cta": "Want to see what badges you can earn?",
+    "viewBadges": "Browse Badges",
+    "user": { "name": "👤 User", "desc": "Standard member with full access to all basic features.", "req": "Automatic upon registration.", "perk": "Create posts, threads, projects, and comments." },
+    "bug_hunter": { "name": "🐛 Bug Hunter", "desc": "Helped improve the site by reporting bugs.", "req": "Submit 3 confirmed bug reports via the ticket system.", "perk": "Bug Hunter role on your profile + access to private beta features." },
+    "premium": { "name": "💎 Premium", "desc": "Premium membership with exclusive perks.", "req": "Special contribution or sponsorship.", "perk": "Custom profile theme, priority support, and ad-free browsing." },
+    "moderator": { "name": "🛡️ Moderator", "desc": "Trusted community member who helps keep the site clean.", "req": "Appointed by the admin/founder based on trust and activity.", "perk": "Ability to moderate content (edit, delete, toggle publish)." },
+    "admin": { "name": "⚡ Admin", "desc": "Site administrator with full management access.", "req": "Appointed by the founder.", "perk": "Full access to admin panel, user management, and settings." },
+    "founder": { "name": "👑 Founder", "desc": "Site creator and owner.", "req": "Founder of the site.", "perk": "Full control over every aspect of the site." }
   },
   "notFound": {
     "title": "404",
