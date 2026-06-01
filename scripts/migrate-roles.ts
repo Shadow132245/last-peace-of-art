@@ -1,8 +1,11 @@
 import "dotenv/config";
-// @ts-ignore
 import { PrismaClient } from "../src/generated/prisma/client.ts";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const p = new PrismaClient();
+const p = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
+});
+
 try {
   const users = await p.user.findMany({ select: { id: true, role: true, roles: true } });
   const updates = users
@@ -10,12 +13,9 @@ try {
     .map((u) => p.user.update({ where: { id: u.id }, data: { roles: [u.role] } }));
   const r = await Promise.all(updates);
   console.log("Updated", r.length, "users");
-  
-  const withRoles = users.filter((u) => u.roles && u.roles.length > 0).length;
-  const withoutRoles = users.filter((u) => !u.roles || u.roles.length === 0).length;
-  console.log("Total users:", users.length, "| With roles:", withRoles, "| Without roles:", withoutRoles);
+  await p.$disconnect();
 } catch (e) {
   console.error(e);
-} finally {
   await p.$disconnect();
+  process.exit(1);
 }
