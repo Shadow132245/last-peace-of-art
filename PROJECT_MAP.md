@@ -140,7 +140,13 @@
 8. **i18n** — added `moderator: "MODERATOR"`/`"مشرف"` and `premium: "PREMIUM"`/`"مميز"` labels in both `en.json` and `ar.json` roles section. Updated roles page subtitle to mention "one or more roles" / "رتبة أو أكثر"
 9. **Vercel build fix** — `badges/route.ts` `createMany` was missing `id` field (Prisma v7 generated types require it when no `@default()`). Added `id: crypto.randomUUID()`
 10. **Migration script at `scripts/migrate-roles.ts`** — uses `npx tsx` to fill `roles` for existing users
-11. **All pushed to GitHub** — commit `7ddbeca`
+11. **Vercel build fixes (3 rounds):**
+    - `badges/route.ts` (admin): ضفت `id: crypto.randomUUID()` لـ `createMany` (Prisma v7 بيفرض الـ `id`)
+    - `badges/user/route.ts`: نفس المشكلة — ضفت `id` في `createMany`
+    - `scripts` مستبعد من `tsconfig.json` عشان Next.js متفحصش السكريبت
+    - `migrate-roles.ts`: ضفت `PrismaPg` adapter عشان Prisma v7
+    - Blog/forum/projects pages: ضفت `roles: true` في Prisma `select` بتاع الـ user
+12. **All pushed to GitHub** — commits `7ddbeca` `3843ef0` `321e40b` `143b97f` `7c565ab`
 
 ### Session 48 — 2026-06-01 (Auto-moderation for all users, edit pages, username change, crop system)
 
