@@ -17,7 +17,7 @@ import { getServerT } from "@/lib/server-i18n";
 export async function generateMetadata({ params }: { params: Promise<{ threadId: string }> }): Promise<Metadata> {
   const { threadId } = await params;
   const thread = await prisma.thread.findUnique({ where: { id: threadId } });
-  if (!thread) return { title: "Not Found" };
+  if (!thread || !thread.published) return { title: "Not Found" };
   return { title: thread.title, description: thread.content.slice(0, 160) };
 }
 

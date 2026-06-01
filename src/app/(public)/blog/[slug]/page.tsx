@@ -15,7 +15,7 @@ import { getServerT } from "@/lib/server-i18n";
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const post = await prisma.post.findUnique({ where: { slug } });
-  if (!post) return { title: "Not Found" };
+  if (!post || !post.published) return { title: "Not Found" };
   return { title: post.title, description: post.excerpt ?? undefined, openGraph: { title: post.title, description: post.excerpt ?? undefined } };
 }
 

@@ -15,7 +15,7 @@ import { getServerT } from "@/lib/server-i18n";
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const project = await prisma.project.findUnique({ where: { id } });
-  if (!project) return { title: "Not Found" };
+  if (!project || !project.published) return { title: "Not Found" };
   return { title: project.title, description: project.description };
 }
 
