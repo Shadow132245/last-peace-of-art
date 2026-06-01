@@ -1143,3 +1143,9 @@ The user requested the following features be implemented all at once, and explai
 - All 12 badges assigned (verified, early-bird, content-king, popular, bug-hunter, top-commenter, helper, veteran, rising-star, premium, elite, staff)
 - Points set to 999,999 — rank: diamond
 - All roles assigned (user, bug_hunter, premium, moderator, admin, founder)
+
+### Session 55b — 2026-06-02 (Fix Vercel build: esbuild platform)
+- Moved `@esbuild/win32-x64` from `dependencies` → `optionalDependencies`
+- Why: `dependencies` forces npm to install on all platforms → Vercel (Linux) fails with `EBADPLATFORM`
+- `optionalDependencies` lets npm skip gracefully on incompatible platforms
+- **Commit:** `a820687` — Fix Vercel build: move @esbuild/win32-x64 to optionalDependencies
