@@ -4,7 +4,7 @@ import { BanButton } from "./ban-button";
 import { SuspendButton } from "./suspend-button";
 import { RoleButton } from "./role-button";
 import { VerifyButton } from "./verify-button";
-import { Auth } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
 import { getServerT } from "@/lib/server-i18n";
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
   const { t } = await getServerT();
-  const session = await Auth.api.getSession({ headers: await headers() });
+  const session = await auth.api.getSession({ headers: await headers() });
   const currentUserRole = (session?.user as any)?.role ?? "user";
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },

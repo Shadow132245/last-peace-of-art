@@ -3,16 +3,28 @@
 import { motion } from "motion/react";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 
-export function AdminPageHeader({ title }: { title: string }) {
+export function AdminPageHeader({ title, description }: { title: string; description?: string }) {
   return (
-    <motion.h1
-      initial={{ opacity: 0, y: -12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35 }}
-      className="mb-8 text-3xl font-bold"
-    >
-      {title}
-    </motion.h1>
+    <div className="mb-8">
+      <motion.h1
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="text-3xl font-bold"
+      >
+        {title}
+      </motion.h1>
+      {description && (
+        <motion.p
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.05 }}
+          className="mt-1 text-sm text-zinc-500 dark:text-zinc-400"
+        >
+          {description}
+        </motion.p>
+      )}
+    </div>
   );
 }
 
