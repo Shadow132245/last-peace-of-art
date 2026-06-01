@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-06-01 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅**
+> Generated: 2026-06-02 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅**
 
 ---
 
@@ -85,6 +85,7 @@
 | M47 | Footer Arabic translation fix, friend button status fix, messages user link to profile, non-friends message privacy setting | ✅ |
 | M48 | Auto-moderation for all users (blocks flagged content + warning), auto-publish for everyone, edit pages + PUT API for posts/threads/projects, username change API + UI, admin edit notifications, image crop (react-easy-crop) for avatar/banner with zoom | ✅ |
 | M49 | Advanced moderation v2 — 700+ banned words across 11 categories + hacking, Google Gemini AI (free, no card), link scanning (porn/hack domains), comment moderation, profile fix, Arabic slug fix | ✅ |
+| M50 | Remove hack/crack block, keep +18 ban, disclaimer banner on all content pages, remove dating/tinder from banned domains | ✅ |
 
 ---
 
@@ -98,7 +99,8 @@
    - `src/app/(public)/blog/[slug]/page.tsx`
    - `src/app/(public)/forum/[threadId]/page.tsx`
    - `src/app/(public)/projects/[id]/page.tsx`
-4. **All pushed to GitHub** — commit `...`
+4. **Remove dating/tinder/sugar from forbidden domains** — `dating`, `tinder`, `badoo`, `hornet`, `grindr`, `sugardaddy/baby` removed to avoid blocking legitimate discussion
+5. **All pushed to GitHub** — commits `52049e7` `92a2091`
 
 ### Session 48 — 2026-06-01 (Auto-moderation for all users, edit pages, username change, crop system)
 
