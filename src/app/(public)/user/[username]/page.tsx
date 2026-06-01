@@ -107,9 +107,18 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-bold">{user.name}</h1>
-              {user.role === "founder" && <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">FOUNDER</span>}
-              {user.role === "admin" && <span className="rounded bg-purple-100 px-2 py-0.5 text-xs font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">ADMIN</span>}
-              {user.role === "bug_hunter" && <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">BUG HUNTER</span>}
+              {((user.roles as string[]) ?? [user.role]).map((r) => {
+                const style: Record<string, string> = {
+                  founder: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
+                  admin: "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300",
+                  moderator: "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300",
+                  premium: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300",
+                  bug_hunter: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300",
+                };
+                return r in style ? (
+                  <span key={r} className={`rounded px-2 py-0.5 text-xs font-semibold ${style[r]}`}>{r.toUpperCase()}</span>
+                ) : null;
+              })}
               <span className="text-sm text-zinc-400">({user.points} pts - {user.rank})</span>
             </div>
             {user.profile?.bio && (

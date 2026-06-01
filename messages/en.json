@@ -297,6 +297,8 @@
   "roles": {
     "founder": "FOUNDER",
     "admin": "ADMIN",
+    "moderator": "MODERATOR",
+    "premium": "PREMIUM",
     "bugHunter": "BUG HUNTER"
   },
   "banned": {
@@ -571,7 +573,7 @@
   "roles": {
     "title": "Roles & Ranks",
     "metaDesc": "Learn about site roles, how to earn them, and their perks.",
-    "subtitle": "Every member has a role that determines their permissions and perks on the site. Here's what each role means:",
+    "subtitle": "Every member has one or more roles that determine their permissions and perks on the site. Here's what each role means:",
     "requirements": "Requirements",
     "perks": "Perks",
     "cta": "Want to see what badges you can earn?",

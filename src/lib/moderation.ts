@@ -485,7 +485,7 @@ export async function checkContent(text: string, userRole?: string): Promise<{
 // ─── Notifications ──────────────────────────────────────────────────
 export async function notifyAdmins(type: string, title: string, message: string, link: string) {
   const admins = await prisma.user.findMany({
-    where: { OR: [{ role: "admin" }, { role: "founder" }] },
+    where: { OR: [{ role: "admin" }, { role: "founder" }, { roles: { has: "admin" } }, { roles: { has: "founder" } }] },
     select: { id: true },
   });
 

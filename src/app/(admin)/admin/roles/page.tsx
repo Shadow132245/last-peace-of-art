@@ -44,7 +44,7 @@ export default async function AdminRolesPage() {
               <AdminCell className="font-medium">{user.name}</AdminCell>
               <AdminCell className="text-zinc-500">{user.email}</AdminCell>
               <AdminCell>
-                <RoleButton userId={user.id} currentRole={user.role} />
+                <RoleButton userId={user.id} currentRoles={(user.roles as string[]) ?? [user.role]} />
               </AdminCell>
               <AdminCell>
                 <AdminBadgeManager

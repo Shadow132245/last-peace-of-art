@@ -19,6 +19,50 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
     const { userId } = await params;
     const body = await request.json();
 
+    if ("roles" in body) {
+      const { roles } = body;
+      if (!Array.isArray(roles) || roles.length === 0) {
+        return NextResponse.json({ error: "Invalid roles array" }, { status: 400 });
+      }
+
+      const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+      const isFounder = currentUser?.email === "fghfghffdgfhfgh@gmail.com";
+
+      const allowedRoles = isFounder
+        ? ["user", "bug_hunter", "premium", "moderator", "admin"]
+        : ["user", "bug_hunter", "premium", "moderator"];
+
+      const invalid = roles.filter((r: string) => !allowedRoles.includes(r));
+      if (invalid.length > 0) {
+        return NextResponse.json({ error: `Invalid roles: ${invalid.join(", ")}` }, { status: 400 });
+      }
+
+      const targetUser = await prisma.user.findUnique({ where: { id: userId }, select: { roles: true } });
+      const currRoles: string[] = (targetUser?.roles ?? []) as string[];
+      const addedAdmin = !currRoles.includes("admin") && roles.includes("admin");
+      const removedAdmin = currRoles.includes("admin") && !roles.includes("admin");
+
+      if (addedAdmin && !isFounder) {
+        return NextResponse.json({ error: "Only the founder can assign admin role" }, { status: 403 });
+      }
+      if (removedAdmin && !isFounder) {
+        return NextResponse.json({ error: "Only the founder can remove admin role" }, { status: 403 });
+      }
+
+      const highest = (["admin", "moderator", "premium", "bug_hunter", "user"] as const).find((r) => roles.includes(r)) ?? "user";
+
+      if (!isFounder && !["user", "bug_hunter", "premium", "moderator"].includes(highest)) {
+        return NextResponse.json({ error: "Only the founder can set admin role" }, { status: 403 });
+      }
+
+      const user = await prisma.user.update({
+        where: { id: userId },
+        data: { roles, role: highest },
+      });
+      logger.info({ userId, roles, highest }, `User roles changed to [${roles.join(", ")}]`);
+      return NextResponse.json({ user });
+    }
+
     if ("role" in body) {
       const { role } = body;
       if (!["user", "bug_hunter", "premium", "moderator", "admin"].includes(role)) {
@@ -30,7 +74,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
       }
       const user = await prisma.user.update({
         where: { id: userId },
-        data: { role },
+        data: { role, roles: [role] },
       });
       logger.info({ userId, role }, `User role changed to ${role}`);
       return NextResponse.json({ user });
