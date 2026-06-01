@@ -50,18 +50,20 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             )}
             <span className="font-medium">{project.user.name}</span>
             <span className="text-[10px] text-zinc-400">({project.user.points} pts - {project.user.rank})</span>
-            {((project.user.roles as string[]) ?? [project.user.role]).map((r) => {
-              const style: Record<string, string> = {
+            {(() => {
+              const roleStyles: Record<string, string> = {
                 founder: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
                 admin: "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300",
                 moderator: "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300",
                 premium: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300",
                 bug_hunter: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300",
               };
-              return r in style ? (
-                <span key={r} className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${style[r]}`}>{r.toUpperCase()}</span>
-              ) : null;
-            })}
+              const userRoles = ((project.user.roles as string[]) ?? []).filter((r) => r !== "user");
+              const displayRoles = userRoles.length ? userRoles : (project.user.role !== "user" ? [project.user.role] : []);
+              return displayRoles.map((r) => (
+                <span key={r} className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${roleStyles[r] ?? ""}`}>{r.toUpperCase()}</span>
+              ));
+            })()}
           </Link>
           <span>&middot;</span>
           <span>{project.createdAt.toLocaleDateString()}</span>

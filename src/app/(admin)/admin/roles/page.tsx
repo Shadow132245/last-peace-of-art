@@ -27,7 +27,7 @@ export default async function AdminRolesPage() {
 
   return (
     <div>
-      <AdminPageHeader title="Roles & Badges Management" description="Assign roles and badges to users (founder only)" />
+      <AdminPageHeader title={locale === "ar" ? "إدارة الرتب والشارات" : "Roles & Badges Management"} description={locale === "ar" ? "تعيين الرتب والشارات للمستخدمين (المؤسس فقط)" : "Assign roles and badges to users (founder only)"} />
 
       <AdminTable>
         <AdminTableHead>

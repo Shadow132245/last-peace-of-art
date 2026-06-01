@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
 const allRoles = ["user", "bug_hunter", "premium", "moderator", "admin"] as const;
+const allRolesReversed = [...allRoles].reverse();
 
 const roleColors: Record<string, { border: string; bg: string; text: string; dot: string }> = {
   founder: {
@@ -101,7 +102,7 @@ export function RoleButton({ userId, currentRoles }: { userId: string; currentRo
   const top = highestRole(selectedRoles);
   const colors = roleColors[top] ?? roleColors.user;
 
-  const availableRoles = allRoles.filter((r) => r !== "admin" || isFounder);
+  const availableRoles = allRolesReversed;
 
   return (
     <div ref={ref} className="relative">
@@ -150,13 +151,15 @@ export function RoleButton({ userId, currentRoles }: { userId: string; currentRo
               const l = roleLabels[r] ?? r;
               const checked = selectedRoles.includes(r);
               const isOnlyUser = selectedRoles.length === 1 && selectedRoles[0] === "user";
-              const disabled = r === "user" && isOnlyUser;
+              const isAdminLocked = r === "admin" && !isFounder;
+              const disabled = (r === "user" && isOnlyUser) || isAdminLocked;
               return (
                 <button
                   key={r}
                   type="button"
                   onClick={() => !disabled && handleToggle(r)}
                   disabled={disabled}
+                  title={isAdminLocked ? "Only the founder can assign Admin" : undefined}
                   className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-40 ${c.text}`}
                 >
                   <span

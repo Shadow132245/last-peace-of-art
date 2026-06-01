@@ -1011,6 +1011,46 @@ The user requested the following features be implemented all at once, and explai
 - Sensitive env vars go in Vercel Dashboard (Production only), never in committed files
 - Trusts Vercel build over local `next build` (local times out)
 
+### Session 54 — 2026-06-02 (Multi-role bug fixes: RoleButton admin visibility, role display on public pages, badge i18n, scroll fix)
+
+**User reported 9 issues in Egyptian Arabic after Session 53 deployment:**
+> Admin role missing from dropdown (replaced by moderator), role order reversed, founder and highest role not showing on posts/projects/threads/profile, roles/badges admin page not translating, badge-manager dropdown scroll broken, how to save roles/badges
+
+**Fixes applied:**
+
+1. **RoleButton admin visibility** (`role-button.tsx`):
+   - Changed `availableRoles = allRoles.filter((r) => r !== "admin" || isFounder)` → `allRolesReversed` (shows all 5 roles)
+   - Admin checkbox now visible but disabled for non-founders with tooltip: "Only the founder can assign Admin"
+   - Reversed dropdown order to show highest first: `admin → moderator → premium → bug_hunter → user`
+
+2. **Role display on blog/forum/projects/profile** (4 public pages):
+   - Fixed empty-array fallback: `((user.roles as string[]) ?? [user.role])` didn't handle `[]` (truthy in JS)
+   - New logic: `const userRoles = ((roles as string[]) ?? []).filter((r) => r !== "user")`
+   - If `userRoles` is empty, falls back to `[user.role]` only if role is not "user"
+   - This hides the "USER" badge (was showing for everyone) but shows founder/admin/bug_hunter/etc.
+
+3. **Admin roles page i18n** (`admin/roles/page.tsx`):
+   - Header title/description now conditionally translated via `locale === "ar" ? "..." : "..."`
+
+4. **BadgeManager i18n + scroll** (`badge-manager.tsx`):
+   - Added `useI18n()` import → uses `locale` for Arabic/English
+   - Badge names now show via `i18nBadge(badge.name, lang)` instead of `badge.name.split("||")[0]`
+   - "Select badges"/"اختر الشارات", "Cancel"/"إلغاء", "Save"/"حفظ", "None"/"لا يوجد" all translated
+   - Added `max-h-60 overflow-y-auto` on badge flex container for scrollable badge list
+
+5. **Save mechanism explained**:
+   - RoleButton: auto-saves on every checkbox toggle (immediate PATCH request)
+   - BadgeManager: select badges → click "Save" button (explicit save)
+
+**Files modified:**
+- `src/app/(admin)/admin/users/role-button.tsx`
+- `src/app/(public)/blog/[slug]/page.tsx`
+- `src/app/(public)/forum/[threadId]/page.tsx`
+- `src/app/(public)/projects/[id]/page.tsx`
+- `src/app/(public)/user/[username]/page.tsx`
+- `src/app/(admin)/admin/roles/page.tsx`
+- `src/app/(admin)/admin/roles/badge-manager.tsx`
+
 ### Session 37 — Forgot/Reset Password + Admin Verify Users (2026-05-30)
 
 **User reported in Egyptian Arabic:**

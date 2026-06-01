@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { i18nBadge } from "@/lib/badge-i18n";
+import { useI18n } from "@/providers/i18n-provider";
 
 type SlimBadge = { id: string; icon: string; name: string };
 
@@ -16,10 +18,12 @@ export function AdminBadgeManager({
   allBadges: SlimBadge[];
 }) {
   const router = useRouter();
+  const { locale } = useI18n();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string[]>(userBadges);
   const ref = useRef<HTMLDivElement>(null);
+  const lang = (locale === "ar" ? "ar" : "en") as "ar" | "en";
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -47,8 +51,8 @@ export function AdminBadgeManager({
   };
 
   const badgeLabel = userBadges.length === 0
-    ? "None"
-    : `${userBadges.length} badge${userBadges.length === 1 ? "" : "s"}`;
+    ? (lang === "ar" ? "لا يوجد" : "None")
+    : `${userBadges.length} ${lang === "ar" ? "شارة" : `badge${userBadges.length === 1 ? "" : "s"}`}`;
 
   return (
     <div ref={ref} className="relative">
@@ -77,10 +81,10 @@ export function AdminBadgeManager({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.95 }}
             transition={{ duration: 0.12 }}
-            className="absolute left-0 top-full z-50 mt-1 w-72 overflow-hidden rounded-lg border border-zinc-200 bg-white p-3 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
+            className="absolute left-0 top-full z-50 mt-1 w-72 rounded-lg border border-zinc-200 bg-white p-3 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
           >
-            <p className="mb-2 text-xs font-medium text-zinc-500">Select badges</p>
-            <div className="flex flex-wrap gap-1.5">
+            <p className="mb-2 text-xs font-medium text-zinc-500">{lang === "ar" ? "اختر الشارات" : "Select badges"}</p>
+            <div className="flex max-h-60 flex-wrap gap-1.5 overflow-y-auto">
               {allBadges.map((badge) => {
                 const active = selected.includes(badge.id);
                 return (
@@ -95,7 +99,7 @@ export function AdminBadgeManager({
                     }`}
                   >
                     <span>{badge.icon}</span>
-                    <span>{badge.name.split("||")[0].trim()}</span>
+                    <span>{i18nBadge(badge.name, lang)}</span>
                   </button>
                 );
               })}
@@ -106,7 +110,7 @@ export function AdminBadgeManager({
                 onClick={() => { setSelected(userBadges); setOpen(false); }}
                 className="rounded-lg px-3 py-1 text-xs text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
               >
-                Cancel
+                {lang === "ar" ? "إلغاء" : "Cancel"}
               </button>
               <button
                 type="button"
@@ -114,7 +118,7 @@ export function AdminBadgeManager({
                 disabled={loading}
                 className="rounded-lg bg-zinc-900 px-3 py-1 text-xs text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
               >
-                Save
+                {lang === "ar" ? "حفظ" : "Save"}
               </button>
             </div>
           </motion.div>
