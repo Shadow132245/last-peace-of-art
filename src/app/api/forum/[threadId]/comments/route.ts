@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
+import { checkAndAwardBadges } from "@/lib/auto-award";
 
 async function getSession() {
   return auth.api.getSession({ headers: await headers() });
@@ -33,6 +34,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ thr
     });
 
     logger.info({ commentId: comment.id, threadId }, "Comment created");
+    checkAndAwardBadges(session.user.id).catch((e) => logger.error({ error: e }, "checkAndAwardBadges failed"));
     return NextResponse.json(comment, { status: 201 });
   } catch (error) {
     logger.error({ error }, "Failed to create comment");

@@ -8,7 +8,7 @@ async function main() {
 
   const user = await prisma.user.update({
     where: { email: "fghfghffdgfhfgh@gmail.com" },
-    data: { role: "admin" },
+    data: { role: "admin", roles: ["user", "admin"] },
   });
 
   console.log("User updated: " + user.name + " -> " + user.role);

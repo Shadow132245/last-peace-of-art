@@ -3,6 +3,7 @@ import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { checkAndAwardBadges } from "@/lib/auto-award";
 
 async function requireAdmin() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -40,6 +41,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         link: "/dashboard",
       },
     });
+
+    if (status === "resolved") {
+      checkAndAwardBadges(ticket.userId).catch((e) => logger.error({ error: e }, "checkAndAwardBadges failed"));
+    }
 
     logger.info({ ticketId: id, status }, `Ticket ${status}`);
     return NextResponse.json(ticket);

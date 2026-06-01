@@ -475,6 +475,7 @@
   "admin": {
     "overview": "Overview",
     "users": "Users",
+    "roles": "Roles & Badges",
     "projects": "Projects",
     "posts": "Posts",
     "threads": "Threads",
@@ -482,6 +483,8 @@
     "applications": "Applications",
     "appeals": "Appeals",
     "tickets": "Tickets",
+    "badges": "Badges",
+    "rolesDesc": "Assign roles and badges to users (founder only)",
     "name": "Name",
     "email": "Email",
     "role": "Role",

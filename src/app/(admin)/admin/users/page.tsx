@@ -4,6 +4,7 @@ import { BanButton } from "./ban-button";
 import { SuspendButton } from "./suspend-button";
 import { RoleButton } from "./role-button";
 import { VerifyButton } from "./verify-button";
+import { DeleteUserButton } from "./delete-user-button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { AdminPageHeader, AdminTable, AdminTableHead, AdminTableBody, AdminTableRow, AdminCell, AdminBadge, AdminEmpty } from "@/components/ui/admin-page";
@@ -39,7 +40,7 @@ export default async function AdminUsersPage() {
               <AdminCell className="font-medium">{user.name}</AdminCell>
               <AdminCell className="text-zinc-500">{user.email}</AdminCell>
               <AdminCell>
-                <RoleButton userId={user.id} currentRoles={(user.roles as string[]) ?? [user.role]} />
+                <RoleButton userId={user.id} currentRoles={(user.roles as string[]) ?? [user.role]} currentUserRole={currentUserRole} />
               </AdminCell>
               <AdminCell>
                 {user.banned ? (
@@ -56,6 +57,9 @@ export default async function AdminUsersPage() {
                   <BanButton userId={user.id} banned={user.banned} targetRole={user.role} currentUserRole={currentUserRole} />
                   <SuspendButton userId={user.id} suspended={user.suspended} suspensionReason={user.suspensionReason} suspendedUntil={user.suspendedUntil?.toISOString() ?? null} targetRole={user.role} currentUserRole={currentUserRole} />
                   <VerifyButton userId={user.id} emailVerified={user.emailVerified} />
+                  {currentUserRole === "founder" && user.role !== "founder" && (
+                    <DeleteUserButton userId={user.id} userName={user.name} />
+                  )}
                 </div>
               </AdminCell>
             </AdminTableRow>

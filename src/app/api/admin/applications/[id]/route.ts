@@ -28,21 +28,57 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       },
     });
 
-    await prisma.notification.create({
-      data: {
-        id: crypto.randomUUID(),
-        userId: application.userId,
-        type: "application",
-        title: `Application ${status}`,
-        message: adminResponse || `Your staff application has been ${status}.`,
-        link: "/dashboard",
-      },
-    });
-
     if (status === "approved") {
+      const user = await prisma.user.findUnique({
+        where: { id: application.userId },
+        select: { roles: true },
+      });
+      const currRoles: string[] = (user?.roles ?? []) as string[];
+      const newRoles = currRoles.includes("moderator") ? currRoles : [...currRoles, "moderator"];
+
       await prisma.user.update({
         where: { id: application.userId },
-        data: { role: "admin" },
+        data: { role: "moderator", roles: newRoles },
+      });
+
+      const staffBadge = await prisma.badge.findUnique({ where: { id: "staff" } });
+      if (staffBadge) {
+        const existing = await prisma.userBadge.findUnique({
+          where: { userId_badgeId: { userId: application.userId, badgeId: "staff" } },
+        });
+        if (!existing) {
+          const count = await prisma.userBadge.count({ where: { userId: application.userId } });
+          await prisma.userBadge.create({
+            data: {
+              id: crypto.randomUUID(),
+              userId: application.userId,
+              badgeId: "staff",
+              order: count,
+            },
+          });
+        }
+      }
+
+      await prisma.notification.create({
+        data: {
+          id: crypto.randomUUID(),
+          userId: application.userId,
+          type: "role",
+          title: "You are now a Moderator!",
+          message: "Your staff application was approved. You now have the Moderator role and the Staff badge.",
+          link: "/dashboard",
+        },
+      });
+    } else {
+      await prisma.notification.create({
+        data: {
+          id: crypto.randomUUID(),
+          userId: application.userId,
+          type: "application",
+          title: "Application Rejected",
+          message: adminResponse || "Your staff application has been rejected.",
+          link: "/dashboard",
+        },
       });
     }
 

@@ -59,6 +59,30 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
         where: { id: userId },
         data: { roles, role: highest },
       });
+
+      const hasStaffRole = roles.includes("moderator") || roles.includes("admin");
+      const existingStaff = await prisma.userBadge.findUnique({
+        where: { userId_badgeId: { userId, badgeId: "staff" } },
+      });
+      if (hasStaffRole && !existingStaff) {
+        const count = await prisma.userBadge.count({ where: { userId } });
+        await prisma.userBadge.create({
+          data: { id: crypto.randomUUID(), userId, badgeId: "staff", order: count },
+        });
+        await prisma.notification.create({
+          data: {
+            id: crypto.randomUUID(),
+            userId,
+            type: "badge",
+            title: "New Badge Earned!",
+            message: "You have been awarded the Staff badge!",
+            link: "/badges",
+          },
+        });
+      } else if (!hasStaffRole && existingStaff) {
+        await prisma.userBadge.delete({ where: { id: existingStaff.id } });
+      }
+
       logger.info({ userId, roles, highest }, `User roles changed to [${roles.join(", ")}]`);
       return NextResponse.json({ user });
     }
@@ -126,6 +150,32 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
     }
 
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  } catch (error) {
+    const msg = error instanceof Error && error.message === "Forbidden" ? "Forbidden" : "Internal server error";
+    const status = msg === "Forbidden" ? 403 : 500;
+    return NextResponse.json({ error: msg }, { status });
+  }
+}
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ userId: string }> }) {
+  try {
+    const session = await requireAdmin();
+    const { userId } = await params;
+    const currentRole = (session.user as any).role;
+
+    const targetUser = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true, email: true } });
+    if (!targetUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+    if (targetUser.role === "founder") {
+      return NextResponse.json({ error: "Cannot delete the founder" }, { status: 403 });
+    }
+    if (targetUser.role === "admin" && currentRole !== "founder") {
+      return NextResponse.json({ error: "Only the founder can delete an admin" }, { status: 403 });
+    }
+
+    await prisma.user.delete({ where: { id: userId } });
+    logger.info({ userId, deletedBy: session.user.id }, `User ${userId} deleted by ${session.user.id}`);
+    return NextResponse.json({ success: true });
   } catch (error) {
     const msg = error instanceof Error && error.message === "Forbidden" ? "Forbidden" : "Internal server error";
     const status = msg === "Forbidden" ? 403 : 500;

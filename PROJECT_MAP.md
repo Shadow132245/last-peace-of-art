@@ -1072,3 +1072,74 @@ The user requested the following features be implemented all at once, and explai
 7. Added 13 new translation keys in `en.json` and `ar.json`
 
 **Commit:** `c14f28e` — Add forgot/reset password flow with email template, admin verify-users tool, and translation keys
+
+### Session 55 — 2026-06-02 (Founder role fix, admin assignment fix, delete user, auto-award, translation)
+
+**User reported in Egyptian Arabic:**
+> Founder role not in roles array, can't assign admin, need delete user button, roles page not translated, badges should auto-award when conditions met with notification
+
+**Changes:**
+
+1. **Founder `roles` array fixed** (`scripts/fix-founder-roles.ts` → run & deleted):
+   - Updated `roles` from `["user"]` to `["user", "founder"]` in DB
+   - Updated `set-admin.cjs`, `set-admin.mjs`, `set-admin.sql` to set `roles` array too
+
+2. **RoleButton admin assignment fixed** (`admin/users/role-button.tsx`, `admin/users/page.tsx`):
+   - Added `currentUserRole` prop to `RoleButton`
+   - Changed `isAdminLocked` from `!isFounder` (checked target user) to `currentUserRole !== "founder"` (checks current admin)
+   - Founder can now see and assign Admin role to any user
+   - Also passed `currentUserRole` in `admin/roles/page.tsx`
+
+3. **Delete user button added**:
+   - `api/admin/users/[userId]/route.ts` — Added `DELETE` handler (founder only, protects founder & admin-from-nonfounder)
+   - `admin/users/delete-user-button.tsx` — New client component with confirm dialog
+   - `admin/users/page.tsx` — Added `DeleteUserButton` next to other actions (only visible to founder, hidden for founder target)
+
+4. **Application approval → moderator + staff badge** (`api/admin/applications/[id]/route.ts`):
+   - Changed from setting `role: "admin"` → `role: "moderator"` + `roles` array updated
+   - Auto-assigns "staff" badge via `UserBadge` creation
+   - Sends notification: "You are now a Moderator!" with role + badge details
+
+5. **Auto-award system** (`lib/auto-award.ts`):
+   - New utility `checkAndAwardBadges(userId)` checks conditions and auto-awards badges + roles
+   - Badges: content-king (10 posts), popular (500 likes), top-commenter (100 comments), helper (50 comment likes), veteran (365 days), rising-star (has profile), elite (5000 points), bug-hunter (3 resolved tickets)
+   - Roles: bug_hunter (3 resolved tickets)
+   - Sends notification for each new badge and role
+   - Integrated into: post creation, comment creation (2 routes), like received, ticket resolved
+
+6. **Roles page Arabic translation** (`admin/roles/page.tsx`):
+   - Replaced manual `locale === "ar"` checks with `t("admin.roles")`, `t("admin.rolesDesc")`, `t("admin.badges")`
+   - Added `admin.roles`, `admin.badges`, `admin.rolesDesc` keys to `en.json` and `ar.json`
+
+**Files modified:**
+- `src/app/api/admin/applications/[id]/route.ts`
+- `src/app/api/admin/users/[userId]/route.ts`
+- `src/app/api/admin/tickets/[id]/route.ts`
+- `src/app/api/posts/route.ts`
+- `src/app/api/comments/route.ts`
+- `src/app/api/forum/[threadId]/comments/route.ts`
+- `src/app/api/likes/route.ts`
+- `src/app/(admin)/admin/users/page.tsx`
+- `src/app/(admin)/admin/users/role-button.tsx`
+- `src/app/(admin)/admin/users/delete-user-button.tsx` (new)
+- `src/app/(admin)/admin/roles/page.tsx`
+- `src/lib/auto-award.ts` (new)
+- `messages/en.json`
+- `messages/ar.json`
+- `set-admin.cjs`
+- `set-admin.mjs`
+- `set-admin.sql`
+
+**Follow-up addition** — Auto Staff badge on role assignment + protection:
+
+7. **Staff badge auto-assign + protection**:
+   - When user is given Moderator or Admin role → Staff badge is auto-assigned with notification
+   - When user loses both Moderator and Admin roles → Staff badge is auto-removed
+   - API (`api/admin/users/[userId]/badges/route.ts`) rejects removing Staff badge while user has staff role
+   - UI (`badge-manager.tsx`): Staff badge toggle disabled + locked with bilingual tooltip for staff users
+   - Passed `isStaff` prop from `admin/roles/page.tsx` to `AdminBadgeManager`
+
+**Follow-up** — Founder account fully unlocked:
+- All 12 badges assigned (verified, early-bird, content-king, popular, bug-hunter, top-commenter, helper, veteran, rising-star, premium, elite, staff)
+- Points set to 999,999 — rank: diamond
+- All roles assigned (user, bug_hunter, premium, moderator, admin, founder)

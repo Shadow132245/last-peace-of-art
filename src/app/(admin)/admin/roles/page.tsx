@@ -27,7 +27,7 @@ export default async function AdminRolesPage() {
 
   return (
     <div>
-      <AdminPageHeader title={locale === "ar" ? "إدارة الرتب والشارات" : "Roles & Badges Management"} description={locale === "ar" ? "تعيين الرتب والشارات للمستخدمين (المؤسس فقط)" : "Assign roles and badges to users (founder only)"} />
+      <AdminPageHeader title={t("admin.roles")} description={t("admin.rolesDesc")} />
 
       <AdminTable>
         <AdminTableHead>
@@ -35,7 +35,7 @@ export default async function AdminRolesPage() {
             <th className="px-4 py-3 font-medium">{t("admin.name")}</th>
             <th className="px-4 py-3 font-medium">{t("admin.email")}</th>
             <th className="px-4 py-3 font-medium">{t("admin.role")}</th>
-            <th className="px-4 py-3 font-medium">Badges</th>
+            <th className="px-4 py-3 font-medium">{t("admin.badges")}</th>
           </tr>
         </AdminTableHead>
         <AdminTableBody>
@@ -44,13 +44,14 @@ export default async function AdminRolesPage() {
               <AdminCell className="font-medium">{user.name}</AdminCell>
               <AdminCell className="text-zinc-500">{user.email}</AdminCell>
               <AdminCell>
-                <RoleButton userId={user.id} currentRoles={(user.roles as string[]) ?? [user.role]} />
+                <RoleButton userId={user.id} currentRoles={(user.roles as string[]) ?? [user.role]} currentUserRole={userRole} />
               </AdminCell>
               <AdminCell>
                 <AdminBadgeManager
                   userId={user.id}
                   userBadges={user.badges.map((ub) => ub.badgeId)}
                   allBadges={allBadges.map((b) => ({ id: b.id, icon: b.icon, name: b.name }))}
+                  isStaff={(user.roles as string[]).includes("moderator") || (user.roles as string[]).includes("admin")}
                 />
               </AdminCell>
             </AdminTableRow>

@@ -61,7 +61,7 @@ function highestRole(roles: string[]): string {
   return roleOrder.filter((r) => roles.includes(r)).pop() ?? "user";
 }
 
-export function RoleButton({ userId, currentRoles }: { userId: string; currentRoles: string[] }) {
+export function RoleButton({ userId, currentRoles, currentUserRole }: { userId: string; currentRoles: string[]; currentUserRole?: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -151,7 +151,7 @@ export function RoleButton({ userId, currentRoles }: { userId: string; currentRo
               const l = roleLabels[r] ?? r;
               const checked = selectedRoles.includes(r);
               const isOnlyUser = selectedRoles.length === 1 && selectedRoles[0] === "user";
-              const isAdminLocked = r === "admin" && !isFounder;
+              const isAdminLocked = r === "admin" && currentUserRole !== "founder";
               const disabled = (r === "user" && isOnlyUser) || isAdminLocked;
               return (
                 <button

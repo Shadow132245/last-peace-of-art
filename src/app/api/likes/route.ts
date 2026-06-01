@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { calculateRank } from "@/lib/ranks";
+import { checkAndAwardBadges } from "@/lib/auto-award";
 
 async function getSession() {
   return auth.api.getSession({ headers: await headers() });
@@ -55,6 +56,8 @@ async function awardPoints(entityType: string, entityId: string, likedByUserId: 
       },
     });
   }
+
+  checkAndAwardBadges(ownerId).catch((e) => logger.error({ error: e }, "checkAndAwardBadges failed"));
 }
 
 async function deductPoints(entityType: string, entityId: string, unlikedByUserId: string) {

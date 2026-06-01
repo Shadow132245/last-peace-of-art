@@ -12,16 +12,20 @@ export function AdminBadgeManager({
   userId,
   userBadges,
   allBadges,
+  isStaff,
 }: {
   userId: string;
   userBadges: string[];
   allBadges: SlimBadge[];
+  isStaff?: boolean;
 }) {
   const router = useRouter();
   const { locale } = useI18n();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState<string[]>(userBadges);
+  const staffLocked = isStaff && !userBadges.includes("staff");
+  const initialSelected = staffLocked ? [...userBadges, "staff"] : userBadges;
+  const [selected, setSelected] = useState<string[]>(initialSelected);
   const ref = useRef<HTMLDivElement>(null);
   const lang = (locale === "ar" ? "ar" : "en") as "ar" | "en";
 
@@ -33,17 +37,25 @@ export function AdminBadgeManager({
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  useEffect(() => {
+    if (isStaff && !selected.includes("staff")) {
+      setSelected((prev) => [...prev, "staff"]);
+    }
+  }, [isStaff]);
+
   const toggle = (id: string) => {
+    if (id === "staff" && isStaff) return;
     const next = selected.includes(id) ? selected.filter((s) => s !== id) : [...selected, id];
     setSelected(next);
   };
 
   const save = async () => {
     setLoading(true);
+    const badgeIds = isStaff && !selected.includes("staff") ? [...selected, "staff"] : selected;
     await fetch(`/api/admin/users/${userId}/badges`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ badgeIds: selected }),
+      body: JSON.stringify({ badgeIds }),
     });
     router.refresh();
     setLoading(false);
@@ -87,16 +99,19 @@ export function AdminBadgeManager({
             <div className="flex max-h-60 flex-wrap gap-1.5 overflow-y-auto">
               {allBadges.map((badge) => {
                 const active = selected.includes(badge.id);
+                const isStaffLocked = badge.id === "staff" && isStaff;
                 return (
                   <button
                     key={badge.id}
                     type="button"
                     onClick={() => toggle(badge.id)}
+                    disabled={isStaffLocked}
+                    title={isStaffLocked ? (lang === "ar" ? "لا يمكن إزالة شارة الفريق طالما لديك رتبة مشرف أو أدمن" : "Cannot remove Staff badge while user has Moderator or Admin role") : undefined}
                     className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs transition-all ${
                       active
                         ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
                         : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
-                    }`}
+                    } ${isStaffLocked ? "cursor-not-allowed opacity-60" : ""}`}
                   >
                     <span>{badge.icon}</span>
                     <span>{i18nBadge(badge.name, lang)}</span>

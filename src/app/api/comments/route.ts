@@ -5,6 +5,7 @@ import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { checkContent, notifyAdmins } from "@/lib/moderation";
 import { extractMentions, notifyMentioned } from "@/lib/mentions";
+import { checkAndAwardBadges } from "@/lib/auto-award";
 
 async function getSession() {
   return auth.api.getSession({ headers: await headers() });
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
     }
 
     logger.info({ commentId: comment.id, entityType, entityId }, "Comment created");
+    checkAndAwardBadges(session.user.id).catch((e) => logger.error({ error: e }, "checkAndAwardBadges failed"));
     return NextResponse.json(comment, { status: 201 });
   } catch (error) {
     logger.error({ error }, "Failed to create comment");

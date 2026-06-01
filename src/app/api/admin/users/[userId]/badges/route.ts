@@ -18,6 +18,17 @@ export async function PUT(request: Request, { params }: { params: Promise<{ user
       return NextResponse.json({ error: "badgeIds must be an array" }, { status: 400 });
     }
 
+    const targetUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { roles: true },
+    });
+    const userRoles: string[] = (targetUser?.roles ?? []) as string[];
+    const hasStaffRole = userRoles.includes("moderator") || userRoles.includes("admin");
+
+    if (hasStaffRole && !badgeIds.includes("staff")) {
+      return NextResponse.json({ error: "Cannot remove Staff badge while user has Moderator or Admin role" }, { status: 403 });
+    }
+
     await prisma.userBadge.deleteMany({ where: { userId } });
     if (badgeIds.length > 0) {
       await prisma.userBadge.createMany({
