@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-06-02 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅ M52✅**
+> Generated: 2026-06-02 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅ M52✅ M53✅**
 
 ---
 
@@ -88,6 +88,7 @@
 | M50 | Remove hack/crack block, keep +18 ban, disclaimer banner on all content pages, remove dating/tinder from banned domains | ✅ |
 | M51 | Badges system, Roles page, Founder protection, Admin badge/role assignment, published checks fix | ✅ |
 | M52 | Founder immunity — bypass moderation, ban/suspension checks, requireAdmin fix | ✅ |
+| M53 | Multi-role system — `roles String[]` + admin multi-select assignment + Vercel build fix | ✅ |
 
 ---
 
@@ -126,6 +127,20 @@
 2. **Ban/suspension bypass for founder** — `(public)/layout.tsx`, `dashboard/layout.tsx`: skip ban/suspend redirect if role is founder. `/banned/page.tsx`: redirects founder back to dashboard even if banned flag is set
 3. **`requireAdmin()` fixed** — `src/lib/admin.ts` now checks `session.user.role !== "admin" && session.user.role !== "founder"` instead of `!== "admin"` only
 4. **All pushed to GitHub**
+
+### Session 53 — 2026-06-02 (Multi-role system — `roles String[]` + admin multi-select assignment)
+
+1. **`roles String[] @default(["user"])`** added to `prisma/schema.prisma` alongside existing `role String`
+2. **SQL migration** — `UPDATE "user" SET roles = ARRAY[role] WHERE roles IS NULL OR array_length(roles, 1) IS NULL OR roles = '{}';` executed on Neon DB via `npx prisma db execute --file`
+3. **API route `PATCH /api/admin/users/[userId]`** — now accepts `roles` array in body. Founder can assign `["user","bug_hunter","premium","moderator","admin"]`, admin can assign `["user","bug_hunter","premium","moderator"]`. Saves to both `roles` (full array) and `role` (highest privilege). Founder-only protection for admin role additions/removals. Legacy `role` field still accepted (sets `roles: [role]`)
+4. **RoleButton rewritten** — from single-select dropdown to multi-select checkboxes. Shows all current roles as colored badges inside the button. Dropdown shows checkboxes for each available role. User cannot deselect the last remaining "user" role. Founder role is read-only
+5. **4 public pages updated** — user profile (`user/[username]`), projects detail (`projects/[id]`), blog detail (`blog/[slug]`), forum thread (`forum/[threadId]`): all now display ALL roles from `(user.roles as string[]) ?? [user.role]` array instead of checking just `user.role === "x"` for 3 roles. `moderator` and `premium` badges now show
+6. **Admin users/roles pages** — pass `currentRoles={(user.roles as string[]) ?? [user.role]}` to RoleButton component (backward-compatible with migrated data)
+7. **`notifyAdmins()`** — also checks `roles: { has: "admin" }` and `roles: { has: "founder" }` as fallback in addition to `role` field
+8. **i18n** — added `moderator: "MODERATOR"`/`"مشرف"` and `premium: "PREMIUM"`/`"مميز"` labels in both `en.json` and `ar.json` roles section. Updated roles page subtitle to mention "one or more roles" / "رتبة أو أكثر"
+9. **Vercel build fix** — `badges/route.ts` `createMany` was missing `id` field (Prisma v7 generated types require it when no `@default()`). Added `id: crypto.randomUUID()`
+10. **Migration script at `scripts/migrate-roles.ts`** — uses `npx tsx` to fill `roles` for existing users
+11. **All pushed to GitHub** — commit `7ddbeca`
 
 ### Session 48 — 2026-06-01 (Auto-moderation for all users, edit pages, username change, crop system)
 
