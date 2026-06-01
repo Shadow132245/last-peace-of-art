@@ -11,7 +11,8 @@ export const dynamic = "force-dynamic";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (session?.user?.id) {
+  const userRole = (session?.user as any)?.role;
+  if (session?.user?.id && userRole !== "founder") {
     const dbUser = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { banned: true },

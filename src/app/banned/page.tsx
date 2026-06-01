@@ -15,7 +15,7 @@ export default function BannedPage() {
   useEffect(() => {
     authClient.getSession().then((res) => {
       const user = res.data?.user as any;
-      if (!user || !user.banned) router.push("/dashboard");
+      if (!user || !user.banned || user.role === "founder") router.push("/dashboard");
       else setChecking(false);
     });
   }, [router]);

@@ -13,12 +13,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) redirect("/login");
 
-  const dbUser = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { banned: true, suspended: true },
-  });
-  if (dbUser?.banned) redirect("/banned");
-  if (dbUser?.suspended) redirect("/suspended");
+  const userRole = (session?.user as any)?.role;
+  if (userRole !== "founder") {
+    const dbUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { banned: true, suspended: true },
+    });
+    if (dbUser?.banned) redirect("/banned");
+    if (dbUser?.suspended) redirect("/suspended");
+  }
 
   return (
     <>

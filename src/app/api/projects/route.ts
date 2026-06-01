@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Title and description are required" }, { status: 400 });
     }
 
-    const { flagged, matches } = await checkContent(title + " " + description + " " + (content ?? ""));
+    const { flagged, matches } = await checkContent(title + " " + description + " " + (content ?? ""), (session.user as any).role);
     if (flagged) {
       await notifyAdmins(
         "moderation",

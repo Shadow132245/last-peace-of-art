@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-06-02 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅**
+> Generated: 2026-06-02 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅ M52✅**
 
 ---
 
@@ -87,6 +87,7 @@
 | M49 | Advanced moderation v2 — 700+ banned words across 11 categories + hacking, Google Gemini AI (free, no card), link scanning (porn/hack domains), comment moderation, profile fix, Arabic slug fix | ✅ |
 | M50 | Remove hack/crack block, keep +18 ban, disclaimer banner on all content pages, remove dating/tinder from banned domains | ✅ |
 | M51 | Badges system, Roles page, Founder protection, Admin badge/role assignment, published checks fix | ✅ |
+| M52 | Founder immunity — bypass moderation, ban/suspension checks, requireAdmin fix | ✅ |
 
 ---
 
@@ -118,6 +119,13 @@
 11. **Admin roles & badges page** (`/admin/roles`) — Founder-only route (non-founders get 404). Per-user `RoleButton` + `AdminBadgeManager` dropdown for badge assignment. Link added to admin sidebar (`navItems` at line 19)
 12. **Fixed published checks** — Forum thread page (`forum/[threadId]/page.tsx`), blog `generateMetadata`, forum `generateMetadata`, projects `generateMetadata` all check `published` before displaying content. `GET /api/forum` filters by `published: true`
 13. **All pushed to GitHub**
+
+### Session 52 — 2026-06-02 (Founder immunity — bypass moderation, ban/suspension, requireAdmin)
+
+1. **`checkContent()` bypass for founder** — `src/lib/moderation.ts` now accepts optional `userRole` param. When `"founder"`, returns `{ flagged: false }` immediately without scanning. Founder can post ANY content (including +18) without being blocked. All 7 callers (forum POST/PUT, posts POST/PUT, projects POST/PUT, comments POST) pass `(session.user as any).role`
+2. **Ban/suspension bypass for founder** — `(public)/layout.tsx`, `dashboard/layout.tsx`: skip ban/suspend redirect if role is founder. `/banned/page.tsx`: redirects founder back to dashboard even if banned flag is set
+3. **`requireAdmin()` fixed** — `src/lib/admin.ts` now checks `session.user.role !== "admin" && session.user.role !== "founder"` instead of `!== "admin"` only
+4. **All pushed to GitHub**
 
 ### Session 48 — 2026-06-01 (Auto-moderation for all users, edit pages, username change, crop system)
 

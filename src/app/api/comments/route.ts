@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const { flagged, matches } = await checkContent(text);
+    const { flagged, matches } = await checkContent(text, (session.user as any).role);
     if (flagged) {
       await notifyAdmins("moderation", "🚩 Flagged comment blocked", `User "${session.user.name}" tried to post comment with: ${matches.join(", ")}`, "/admin");
       return NextResponse.json({ error: `Comment blocked — prohibited words: ${matches.join(", ")}`, flagged: true, matches }, { status: 403 });

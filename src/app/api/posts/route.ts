@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     const postId = crypto.randomUUID();
     const slug = slugify(title, postId);
 
-    const { flagged, matches } = await checkContent(title + " " + content);
+    const { flagged, matches } = await checkContent(title + " " + content, (session.user as any).role);
     if (flagged) {
       await notifyAdmins(
         "moderation",

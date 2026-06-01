@@ -45,7 +45,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    const { flagged, matches } = await checkContent(title + " " + content);
+    const { flagged, matches } = await checkContent(title + " " + content, (session.user as any).role);
     if (flagged) {
       await notifyAdmins(
         "moderation",

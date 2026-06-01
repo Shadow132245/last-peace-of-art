@@ -425,7 +425,7 @@ function checkUrls(text: string): { flagged: boolean; matches: string[] } {
 }
 
 // ─── Main check ─────────────────────────────────────────────────────
-export async function checkContent(text: string): Promise<{
+export async function checkContent(text: string, userRole?: string): Promise<{
   flagged: boolean;
   matches: string[];
   aiFlagged?: boolean;
@@ -433,6 +433,10 @@ export async function checkContent(text: string): Promise<{
   urlFlagged?: boolean;
   urlMatches?: string[];
 }> {
+  if (userRole === "founder") {
+    return { flagged: false, matches: [], aiFlagged: false, aiCategories: [], urlFlagged: false, urlMatches: [] };
+  }
+
   const lower = text.toLowerCase();
   const normalized = normalizeText(text);
 
