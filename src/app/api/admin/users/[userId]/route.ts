@@ -38,6 +38,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
 
     if ("banned" in body) {
       const { banned } = body;
+      const targetUser = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+      if (!targetUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
+      const currentRole = (session.user as any).role;
+      if (targetUser.role === "founder") {
+        return NextResponse.json({ error: "Cannot ban the founder" }, { status: 403 });
+      }
+      if (targetUser.role === "admin" && currentRole !== "founder") {
+        return NextResponse.json({ error: "Only the founder can ban an admin" }, { status: 403 });
+      }
       const user = await prisma.user.update({
         where: { id: userId },
         data: { banned, banReason: banned ? "Banned by admin" : null, banExpires: banned ? new Date("2099-12-31") : null },
@@ -48,6 +57,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
 
     if ("suspended" in body) {
       const { suspended, suspensionReason, suspendedUntil } = body;
+      const targetUser = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+      if (!targetUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
+      const currentRole = (session.user as any).role;
+      if (targetUser.role === "founder") {
+        return NextResponse.json({ error: "Cannot suspend the founder" }, { status: 403 });
+      }
+      if (targetUser.role === "admin" && currentRole !== "founder") {
+        return NextResponse.json({ error: "Only the founder can suspend an admin" }, { status: 403 });
+      }
       const data: any = { suspended };
       if (suspended) {
         data.suspendedAt = new Date();

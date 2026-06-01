@@ -9,11 +9,15 @@ export function SuspendButton({
   suspended,
   suspensionReason,
   suspendedUntil,
+  targetRole,
+  currentUserRole,
 }: {
   userId: string;
   suspended: boolean;
   suspensionReason: string | null;
   suspendedUntil: string | null;
+  targetRole: string;
+  currentUserRole: string;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -21,7 +25,10 @@ export function SuspendButton({
   const [reason, setReason] = useState("");
   const [duration, setDuration] = useState("7");
 
+  const isProtected = targetRole === "founder" || (targetRole === "admin" && currentUserRole !== "founder");
+
   const handleUnsuspend = async () => {
+    if (isProtected) return;
     setLoading(true);
     await fetch(`/api/admin/users/${userId}`, {
       method: "PATCH",
@@ -33,7 +40,7 @@ export function SuspendButton({
   };
 
   const handleSuspend = async () => {
-    if (!reason.trim()) return;
+    if (isProtected || !reason.trim()) return;
     setLoading(true);
     let suspendedUntil: string | null = null;
     if (duration !== "permanent") {
@@ -62,10 +69,11 @@ export function SuspendButton({
         </span>
         <motion.button
           onClick={handleUnsuspend}
-          disabled={loading}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="cursor-pointer rounded-lg bg-emerald-100 px-3 py-1.5 text-xs font-medium text-emerald-700 transition-colors duration-200 hover:bg-emerald-200 disabled:opacity-50 dark:bg-emerald-900/50 dark:text-emerald-300 dark:hover:bg-emerald-800/50"
+          disabled={loading || isProtected}
+          whileHover={isProtected ? {} : { scale: 1.05 }}
+          whileTap={isProtected ? {} : { scale: 0.95 }}
+          title={isProtected ? (targetRole === "founder" ? "Cannot unsuspend the founder" : "Only the founder can unsuspend an admin") : undefined}
+          className="cursor-pointer rounded-lg bg-emerald-100 px-3 py-1.5 text-xs font-medium text-emerald-700 transition-colors duration-200 hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-emerald-900/50 dark:text-emerald-300 dark:hover:bg-emerald-800/50"
         >
           {loading ? (
             <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-emerald-700 border-t-transparent dark:border-emerald-300" />
@@ -80,10 +88,15 @@ export function SuspendButton({
   return (
     <>
       <motion.button
-        onClick={() => setOpen(true)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="cursor-pointer rounded-lg bg-amber-100 px-3 py-1.5 text-xs font-medium text-amber-700 transition-colors duration-200 hover:bg-amber-200 dark:bg-amber-900/50 dark:text-amber-300 dark:hover:bg-amber-800/50"
+        onClick={() => !isProtected && setOpen(true)}
+        whileHover={isProtected ? {} : { scale: 1.05 }}
+        whileTap={isProtected ? {} : { scale: 0.95 }}
+        title={isProtected ? (targetRole === "founder" ? "Cannot suspend the founder" : "Only the founder can suspend an admin") : undefined}
+        className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
+          isProtected
+            ? "bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500"
+            : "bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/50 dark:text-amber-300 dark:hover:bg-amber-800/50"
+        }`}
       >
         Suspend
       </motion.button>
