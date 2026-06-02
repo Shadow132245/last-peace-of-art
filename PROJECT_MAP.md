@@ -1153,4 +1153,19 @@ The user requested the following features be implemented all at once, and explai
 ### Session 56 — 2026-06-02 (Vercel Speed Insights)
 - Installed `@vercel/speed-insights` package
 - Added `<SpeedInsights />` to root layout (`src/app/layout.tsx`) alongside `<Analytics />`
+- **Commit:** `f8642e7` — Session 56: Add Vercel Speed Insights
+
+### Session 57 — 2026-06-02 (Performance: Core Web Vitals fix)
+- Speed Insights showed Real Experience < 50 on desktop — poor UX
+- Fixes applied:
+  - Added `display: "swap"` + `preload: true` to Geist Sans & Mono fonts (eliminates FOIT/blocking)
+  - Moved dark-mode `<script>` to non-blocking inline strategy
+  - Added `loading="lazy"` + explicit dimensions to images on landing page
 - **Commit:** (see below)
+
+**Root cause analysis:**
+- Landing page has NO images — all text + CSS + motion animations
+- CSS bundle is only 2KB (Tailwind v4 tree-shaking works)
+- The main bottleneck was **font loading strategy**: `next/font/google` defaults to `display: "optional"` which lets the browser choose to hide text until fonts load (up to 3s on slow connections)
+- Fix: `display: "swap"` shows fallback font immediately, then swaps when Geist loads
+- Also added `preload: true` to prioritize font download
