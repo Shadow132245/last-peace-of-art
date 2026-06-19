@@ -1,8 +1,10 @@
-import Link from "next/link";
-import { getServerT } from "@/lib/server-i18n";
+"use client";
 
-export async function Footer() {
-  const { t } = await getServerT();
+import Link from "next/link";
+import { useI18n } from "@/providers/i18n-provider";
+
+export function Footer() {
+  const { t } = useI18n();
   return (
     <footer className="border-t border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
       <div className="mx-auto max-w-6xl px-4 py-10">
