@@ -1192,3 +1192,8 @@ The user requested the following features be implemented all at once, and explai
 - **Build fixes**: Added missing `AnimatePresence` imports in `admin/layout.tsx` and `dashboard/messages/page.tsx` (build was failing with type errors)
 - **Footer translation fix**: Converted Footer from server component (`async function` + `getServerT`) to client component (`"use client"` + `useI18n`) so it re-renders when locale changes — previously it was a server component that rendered once and never updated
 - **RTL dropdown fix**: Changed avatar dropdown positioning from `right-0` to `end-0` — in Arabic/RTL mode, `right-0` made the dropdown appear off-screen on the left; `end-0` respects writing direction (`right: 0` in LTR, `left: 0` in RTL)
+
+### Session 58c — 2026-06-19 (Fix locale switching re-render)
+- Simplified `LocaleAnimation` in `i18n-provider.tsx`: removed `AnimatePresence mode="popLayout"` which was interfering with client component re-rendering on locale change
+- Replaced with plain `motion.div` with `key={locale}` — forces clean remount without CSS layout interference
+- Removed unused `AnimatePresence` import
