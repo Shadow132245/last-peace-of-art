@@ -1,58 +1,77 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { type Locale, defaultLocale, getLocaleFromCookie, setLocaleCookie, lookup } from "@/lib/i18n";
 import en from "../../messages/en.json";
 import ar from "../../messages/ar.json";
 
 const messagesMap = { en, ar } as const;
 
-type Messages = typeof en;
+// --- Module-level store (no React involved) ---
+let currentLocale: Locale = defaultLocale;
+const listeners = new Set<() => void>();
 
-interface I18nContextValue {
-  locale: Locale;
-  messages: Messages;
-  setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
+// Initialize from cookie immediately (before any component mounts)
+if (typeof window !== "undefined") {
+  const cookieLocale = getLocaleFromCookie();
+  if (cookieLocale !== defaultLocale) {
+    currentLocale = cookieLocale;
+  }
 }
 
-const I18nContext = createContext<I18nContextValue | null>(null);
+function notify() {
+  listeners.forEach((fn) => fn());
+}
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
-  const [tick, setTick] = useState(0);
-  const initialized = useRef(false);
+function setLocaleInStore(next: Locale) {
+  currentLocale = next;
+  setLocaleCookie(next);
+  notify();
+}
 
+function getT(): (key: string) => string {
+  const messages = messagesMap[currentLocale];
+  return (key: string) => lookup(messages, key);
+}
+
+// --- Provider ---
+export function I18nProvider({ children, locale: serverLocale }: { children: ReactNode; locale?: Locale }) {
+  // On server, use the server-provided locale so dir matches hydration
+  if (serverLocale && typeof window === "undefined") {
+    currentLocale = serverLocale;
+  }
+
+  const [, forceUpdate] = useState(0);
+
+  // Subscribe to locale changes
   useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
-    const cookieLocale = getLocaleFromCookie();
-    if (cookieLocale !== locale) {
-      setLocaleState(cookieLocale);
-      setTick((t) => t + 1);
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const setLocale = useCallback((next: Locale) => {
-    setLocaleState(next);
-    setLocaleCookie(next);
-    setTick((t) => t + 1);
+    const listener = () => forceUpdate((n) => n + 1);
+    listeners.add(listener);
+    return () => { listeners.delete(listener); };
   }, []);
 
-  const messages = messagesMap[locale];
-  const t = useCallback((key: string) => lookup(messages as unknown as Record<string, string | Record<string, unknown>>, key), [messages]);
+  const dir = currentLocale === "ar" ? "rtl" : "ltr";
 
   return (
-    <I18nContext.Provider value={{ locale, messages, setLocale, t }}>
-      <div key={tick} dir={locale === "ar" ? "rtl" : "ltr"}>
-        {children}
-      </div>
-    </I18nContext.Provider>
+    <div dir={dir}>
+      {children}
+    </div>
   );
 }
 
+// --- Hook ---
 export function useI18n() {
-  const ctx = useContext(I18nContext);
-  if (!ctx) throw new Error("useI18n must be used within I18nProvider");
-  return ctx;
+  const [, forceUpdate] = useState(0);
+
+  useEffect(() => {
+    const listener = () => forceUpdate((n) => n + 1);
+    listeners.add(listener);
+    return () => { listeners.delete(listener); };
+  }, []);
+
+  return {
+    locale: currentLocale,
+    setLocale: setLocaleInStore,
+    t: getT(),
+  };
 }

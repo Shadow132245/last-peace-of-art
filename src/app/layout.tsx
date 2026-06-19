@@ -55,7 +55,7 @@ export default async function RootLayout({
         }} />
       </head>
       <body className="flex min-h-full flex-col bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
-        <I18nProvider>{children}</I18nProvider>
+        <I18nProvider locale={locale}>{children}</I18nProvider>
         <Analytics />
         <SpeedInsights />
       </body>
