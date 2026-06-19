@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-06-19 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅ M52✅ M53✅ M54✅ M55✅ M56✅**
+> Generated: 2026-06-19 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅ M52✅ M53✅ M54✅ M55✅ M56✅ M57✅**
 
 ---
 
@@ -1204,4 +1204,15 @@ The user requested the following features be implemented all at once, and explai
 - Added `tick` state counter, incremented on every locale change (setLocale + cookie init)
 - Added `initialized` ref to prevent double cookie init in dev strict mode
 - Wrapped children in plain `<div key={tick}>` — changing key forces React to unmount/remount ALL children, ensuring every client component gets fresh context on locale switch
-- This is more aggressive than context-only re-render: all child state is reset on locale change (acceptable trade-off per user: "حتي لو هنستخدم لوكال ترانسليت")
+- ⚠️ Did NOT fix the issue — user still had to refresh (React context didn't propagate through server component boundaries even with key remount)
+
+### Session 58e — 2026-06-19 (Replace React Context with module-level pub/sub store)
+- **Complete rewrite of `i18n-provider.tsx`**: removed `createContext`, `useContext`, `useCallback`, `useRef` entirely
+- Implemented **module-level store** using `currentLocale` (module `let` variable) + `listeners` Set (pub/sub pattern)
+- `setLocaleInStore()` updates `currentLocale`, writes cookie, and calls all listeners synchronously
+- `useI18n()` uses `useState` + `useEffect` to subscribe to the store — each component independently registers its own `forceUpdate` listener
+- `I18nProvider` component: only provides `dir` attribute (based on `currentLocale`) and subscribes to store for re-rendering; no React context involved
+- Module-level initialization: reads cookie during module evaluation (client-side only, before any component mounts)
+- Server-side hydration fix: `I18nProvider` accepts `locale` prop from root layout (server reads cookie), sets `currentLocale` on server for consistent `dir` between server and client
+- Root layout (`layout.tsx`) updated to pass `locale={locale}` to `I18nProvider`
+- **Why this works**: bypasses React Context entirely — server component boundaries in Next.js App Router cannot block a direct subscription pattern; each component independently re-renders when locale changes via its own `forceUpdate` listener
