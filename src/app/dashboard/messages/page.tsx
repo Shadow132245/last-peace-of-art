@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { useI18n } from "@/providers/i18n-provider";
 
 type User = { id: string; name: string; image: string | null };
