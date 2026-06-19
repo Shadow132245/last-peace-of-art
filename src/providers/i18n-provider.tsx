@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { type Locale, defaultLocale, getLocaleFromCookie, setLocaleCookie, lookup } from "@/lib/i18n";
 import en from "../../messages/en.json";
 import ar from "../../messages/ar.json";
@@ -42,10 +43,16 @@ export function I18nProvider({ children, locale: serverLocale }: { children: Rea
   }
 
   const [, forceUpdate] = useState(0);
+  const router = useRouter();
+  const refreshRef = useRef(router.refresh);
+  refreshRef.current = router.refresh;
 
   // Subscribe to locale changes
   useEffect(() => {
-    const listener = () => forceUpdate((n) => n + 1);
+    const listener = () => {
+      forceUpdate((n) => n + 1);
+      refreshRef.current();
+    };
     listeners.add(listener);
     return () => { listeners.delete(listener); };
   }, []);
