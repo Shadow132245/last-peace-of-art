@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-06-19 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅ M52✅ M53✅ M54✅ M55✅ M56✅ M57✅**
+> Generated: 2026-06-19 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅ M52✅ M53✅ M54✅ M55✅ M56✅ M57✅ M58✅**
 
 ---
 
@@ -1216,3 +1216,10 @@ The user requested the following features be implemented all at once, and explai
 - Server-side hydration fix: `I18nProvider` accepts `locale` prop from root layout (server reads cookie), sets `currentLocale` on server for consistent `dir` between server and client
 - Root layout (`layout.tsx`) updated to pass `locale={locale}` to `I18nProvider`
 - **Why this works**: bypasses React Context entirely — server component boundaries in Next.js App Router cannot block a direct subscription pattern; each component independently re-renders when locale changes via its own `forceUpdate` listener
+
+### Session 58f — 2026-06-19 (Add router.refresh for server component re-render)
+- ⚠️ Pub/sub alone still didn't trigger re-render for all components (only Footer updated, Navbar didn't)
+- Added `useRouter` + `router.refresh()` call in I18nProvider's locale change listener
+- Used `useRef` to store `router.refresh` (stable, avoids effect re-run on router object change)
+- **Why**: `router.refresh()` triggers a server-side RSC payload re-fetch with the new locale cookie; the server re-renders all server components with the correct locale; client merges the payload without losing state
+- **Combined approach**: pub/sub for immediate client component updates + router.refresh for server component re-render = complete coverage at both levels
