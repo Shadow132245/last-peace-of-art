@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { authClient } from "@/lib/auth-client";
 import { FadeInView } from "@/components/ui/fade-in-view";
 
