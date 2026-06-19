@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, type ReactNode } from "react";
+import { useState, useEffect, useRef, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "motion/react";
 import { type Locale, defaultLocale, getLocaleFromCookie, setLocaleCookie, lookup } from "@/lib/i18n";
 import en from "../../messages/en.json";
 import ar from "../../messages/ar.json";
@@ -43,6 +44,7 @@ export function I18nProvider({ children, locale: serverLocale }: { children: Rea
   }
 
   const [, forceUpdate] = useState(0);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const refreshRef = useRef(router.refresh);
   refreshRef.current = router.refresh;
@@ -51,7 +53,9 @@ export function I18nProvider({ children, locale: serverLocale }: { children: Rea
   useEffect(() => {
     const listener = () => {
       forceUpdate((n) => n + 1);
-      refreshRef.current();
+      startTransition(() => {
+        refreshRef.current();
+      });
     };
     listeners.add(listener);
     return () => { listeners.delete(listener); };
@@ -60,9 +64,12 @@ export function I18nProvider({ children, locale: serverLocale }: { children: Rea
   const dir = currentLocale === "ar" ? "rtl" : "ltr";
 
   return (
-    <div dir={dir}>
-      {children}
-    </div>
+    <>
+      <LoadingOverlay visible={isPending} />
+      <div dir={dir}>
+        {children}
+      </div>
+    </>
   );
 }
 
@@ -81,4 +88,30 @@ export function useI18n() {
     setLocale: setLocaleInStore,
     t: getT(),
   };
+}
+
+// --- Loading overlay while locale transitions ---
+function LoadingOverlay({ visible }: { visible: boolean }) {
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          key="locale-loader"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-white dark:bg-zinc-950"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.04, 1] }}
+            transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
+            className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100"
+          >
+            Last Peace
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 }
