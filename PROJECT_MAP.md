@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-06-02 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅ M52✅ M53✅**
+> Generated: 2026-06-19 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅ M52✅ M53✅ M54✅**
 
 ---
 
@@ -1169,3 +1169,21 @@ The user requested the following features be implemented all at once, and explai
 - The main bottleneck was **font loading strategy**: `next/font/google` defaults to `display: "optional"` which lets the browser choose to hide text until fonts load (up to 3s on slow connections)
 - Fix: `display: "swap"` shows fallback font immediately, then swaps when Geist loads
 - Also added `preload: true` to prioritize font download
+
+### Session 58 — 2026-06-19 (Responsive Design Overhaul & Legal Update)
+**Mobile responsiveness fixes:**
+- **Navbar mobile menu**: Added dark mode toggle, locale switcher, and notification bell to the hamburger menu (previously missing — user couldn't access these on phone); grouped links under "Browse" and user name sections; made hamburger button more visible with padding and hover state; moved notification bell next to hamburger button on mobile
+- **Admin layout**: Added mobile sidebar drawer — fixed toggle button, slide-in overlay with backdrop blur, animated sidebar using `motion` spring physics; closes automatically on route change
+- **Messages page**: Desktop conversation list hidden on mobile; added mobile conversation drawer with toggle button next to selected user name; full-width chat on mobile; proper `AnimatePresence` for drawer open/close
+- **Profile page**: Avatar + info stack vertically on mobile (flex-col + text-center); responsive avatar sizing (max 96px on mobile); responsive banner height (max 160px); smaller font sizes on mobile (text-2xl on sm, text-3xl on desktop); hover effects on cards; card padding adjusts for mobile (p-3 sm:p-4); empty state now shows dashed border box
+
+**Design consistency improvements:**
+- **Badges & Roles pages**: Added hover effects (`hover:-translate-y-0.5 hover:shadow-md`); responsive font sizes (text-xs sm:text-sm, text-base sm:text-lg); consistent card padding (p-4 sm:p-5); improved CTA box with hover border effect
+- **Footer**: Redesigned with two-column layout (Quick Links + Legal sections); added About, Badges, Roles links; added brand name + description on left; section headers with uppercase tracking; better spacing on mobile (flex-col → sm:flex-row)
+- **globals.css**: Removed universal `min-height: 44px` rule from buttons (too aggressive); added `-webkit-tap-highlight-color: transparent` for cleaner mobile taps
+
+**Legal pages updated** (Terms of Service + Privacy Policy):
+- Updated dates to June 19, 2026
+- Terms: Expanded sections 3-14 with detailed legal language; added intro to s5 (Prohibited Conduct list); new sections for licensing (s4), dispute resolution (s13), survival clause (s11)
+- Privacy: Expanded all 11 sections with detailed explanations; added data sharing categories (consent, service providers, legal, safety, business transfers); added rights list with descriptions; added cookie details, third-party processor details
+- Full Arabic translations updated to match new English content

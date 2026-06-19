@@ -78,12 +78,12 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
   const bannerHeight = (social.bannerHeight as number) ?? 192;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12">
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:py-12">
       {banner && (
         <FadeInView>
           <div
             className="mb-6 w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800"
-            style={{ height: bannerHeight }}
+            style={{ height: Math.min(bannerHeight, 160) }}
           >
             <SafeBanner src={banner} alt="Banner" className="h-full w-full object-cover" />
           </div>
@@ -91,10 +91,10 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       )}
 
       <FadeInView>
-        <div className="mb-8 flex items-start gap-6">
+        <div className="mb-8 flex flex-col items-center gap-4 text-center sm:flex-row sm:items-start sm:gap-6 sm:text-start">
           <div
             className="shrink-0 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800"
-            style={{ width: avatarSize, height: avatarSize }}
+            style={{ width: Math.min(avatarSize, 96), height: Math.min(avatarSize, 96) }}
           >
             {avatar ? (
               <SafeImg src={avatar} alt={user.name} className="h-full w-full object-cover" fallback={user.name[0].toUpperCase()} />
@@ -105,8 +105,8 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
             )}
           </div>
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold">{user.name}</h1>
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+              <h1 className="text-2xl font-bold sm:text-3xl">{user.name}</h1>
               {(() => {
                 const roleStyles: Record<string, string> = {
                   founder: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
@@ -141,10 +141,10 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
               </div>
             )}
             {currentSession && !isOwnProfile && (
-              <div className="mt-4 flex gap-3">
+              <div className="mt-4 flex flex-wrap justify-center gap-3 sm:justify-start">
                 <Link
                   href={`/dashboard/messages?userId=${user.id}`}
-                  className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+                  className="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
                 >
                   {pt("profile.sendMessage")}
                 </Link>
@@ -158,17 +158,17 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       {user.threads.length > 0 && (
         <FadeInView>
           <section className="mb-8">
-            <h2 className="mb-4 text-xl font-semibold">{pt("profile.threads").replace("{count}", String(user.threads.length))}</h2>
+            <h2 className="mb-4 text-lg font-semibold sm:text-xl">{pt("profile.threads").replace("{count}", String(user.threads.length))}</h2>
             <div className="grid gap-3">
               {user.threads.map((thread) => (
                 <Link
                   key={thread.id}
                   href={`/forum/${thread.id}`}
-                  className="rounded-xl border border-zinc-200 p-4 transition-colors hover:border-amber-200 dark:border-zinc-800 dark:hover:border-zinc-600"
+                  className="rounded-xl border border-zinc-200 p-3 transition-colors hover:border-amber-200 sm:p-4 dark:border-zinc-800 dark:hover:border-zinc-600"
                 >
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">{thread.pinned && "📌 "}{thread.title}</h3>
-                    <span className="text-xs text-zinc-400">{thread._count.comments} {pt("forum.comments")}</span>
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-sm font-semibold sm:text-base">{thread.pinned && "📌 "}{thread.title}</h3>
+                    <span className="shrink-0 text-xs text-zinc-400">{thread._count.comments} {pt("forum.comments")}</span>
                   </div>
                   {thread.tags.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
@@ -187,16 +187,16 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       {user.projects.length > 0 && (
         <FadeInView delay={0.1}>
           <section className="mb-8">
-            <h2 className="mb-4 text-xl font-semibold">{pt("profile.projects").replace("{count}", String(user.projects.length))}</h2>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <h2 className="mb-4 text-lg font-semibold sm:text-xl">{pt("profile.projects").replace("{count}", String(user.projects.length))}</h2>
+            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
               {user.projects.map((project) => (
                 <Link
                   key={project.id}
                   href={`/projects/${project.id}`}
-                  className="block rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-transparent dark:shadow-none dark:hover:border-zinc-600"
+                  className="block rounded-xl border border-zinc-200 bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md sm:p-4 dark:border-zinc-800 dark:bg-transparent dark:shadow-none dark:hover:border-zinc-600"
                 >
-                  <h3 className="font-semibold">{project.title}</h3>
-                  <p className="mt-1 text-sm text-zinc-500 line-clamp-2">{project.description}</p>
+                  <h3 className="text-sm font-semibold sm:text-base">{project.title}</h3>
+                  <p className="mt-1 text-xs text-zinc-500 line-clamp-2 sm:text-sm">{project.description}</p>
                 </Link>
               ))}
             </div>
@@ -207,16 +207,16 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       {user.posts.length > 0 && (
         <FadeInView delay={0.2}>
           <section className="mb-8">
-            <h2 className="mb-4 text-xl font-semibold">{pt("profile.posts").replace("{count}", String(user.posts.length))}</h2>
-            <div className="grid gap-4">
+            <h2 className="mb-4 text-lg font-semibold sm:text-xl">{pt("profile.posts").replace("{count}", String(user.posts.length))}</h2>
+            <div className="grid gap-3 sm:gap-4">
               {user.posts.map((post) => (
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug}`}
-                  className="block rounded-xl border border-zinc-200 p-4 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-600"
+                  className="block rounded-xl border border-zinc-200 p-3 transition-all hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-sm sm:p-4 dark:border-zinc-800 dark:hover:border-zinc-600"
                 >
-                  <h3 className="font-semibold">{post.title}</h3>
-                  {post.excerpt && <p className="mt-1 text-sm text-zinc-500 line-clamp-2">{post.excerpt}</p>}
+                  <h3 className="text-sm font-semibold sm:text-base">{post.title}</h3>
+                  {post.excerpt && <p className="mt-1 text-xs text-zinc-500 line-clamp-2 sm:text-sm">{post.excerpt}</p>}
                 </Link>
               ))}
             </div>
@@ -227,11 +227,11 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
       {user.comments.length > 0 && (
         <FadeInView delay={0.3}>
           <section className="mb-8">
-            <h2 className="mb-4 text-xl font-semibold">{pt("profile.recentComments")}</h2>
+            <h2 className="mb-4 text-lg font-semibold sm:text-xl">{pt("profile.recentComments")}</h2>
             <div className="grid gap-3">
               {user.comments.map((comment) => (
-                <div key={comment.id} className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
-                  <p className="text-sm text-zinc-700 dark:text-zinc-300">{comment.content}</p>
+                <div key={comment.id} className="rounded-xl border border-zinc-200 p-3 transition-colors hover:border-zinc-300 sm:p-4 dark:border-zinc-800 dark:hover:border-zinc-600">
+                  <p className="text-sm text-zinc-700 dark:text-zinc-300 line-clamp-3">{comment.content}</p>
                   {comment.thread && (
                     <Link href={`/forum/${comment.thread.id}`} className="mt-1 inline-block text-xs text-amber-600 hover:underline dark:text-amber-400">
                       {pt("profile.onComment").replace("{title}", comment.thread.title)}
@@ -247,7 +247,9 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
 
       {!user.threads.length && !user.projects.length && !user.posts.length && !user.comments.length && (
         <FadeInView>
-          <p className="text-zinc-400">{pt("profile.noContent")}</p>
+          <div className="rounded-xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
+            <p className="text-zinc-400">{pt("profile.noContent")}</p>
+          </div>
         </FadeInView>
       )}
     </div>

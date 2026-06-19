@@ -189,19 +189,22 @@ export function Navbar() {
           )}
         </div>
 
-        <button
-          className="flex items-center gap-2 md:hidden"
-          onClick={() => setOpen(!open)}
-          aria-label={t("nav.toggleMenu")}
-        >
-          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {open ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
+        <div className="flex items-center gap-1 md:hidden">
+          {session && <NotificationBell />}
+          <button
+            className="flex items-center justify-center rounded-lg p-2 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            onClick={() => setOpen(!open)}
+            aria-label={t("nav.toggleMenu")}
+          >
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {open ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -212,32 +215,63 @@ export function Navbar() {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden border-t border-zinc-200 dark:border-zinc-800"
           >
-            <div className="flex flex-col gap-3 px-4 py-4">
-              <Link href="/projects" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.projects")}</Link>
-              <Link href="/blog" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.posts")}</Link>
-              <Link href="/forum" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.forum")}</Link>
-              <Link href="/search" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.search")}</Link>
-              <Link href="/about" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.aboutUs")}</Link>
-              <Link href="/badges" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.badges")}</Link>
-              <Link href="/roles" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.roles")}</Link>
+            <div className="flex flex-col px-4 py-4">
+              {/* Controls row */}
+              <div className="mb-4 flex items-center gap-3 border-b border-zinc-200 pb-4 dark:border-zinc-800">
+                <button onClick={toggleDark} className="flex items-center gap-2 text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+                  {dark ? (
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                  )}
+                  <span className="text-xs">{dark ? t("nav.toggleDark") : t("nav.toggleDark")}</span>
+                </button>
+                <span className="text-zinc-300 dark:text-zinc-600">|</span>
+                <LocaleSwitcher />
+              </div>
+
+              {/* Public links */}
+              <div className="mb-4 space-y-2">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Browse</p>
+                <Link href="/projects" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.projects")}</Link>
+                <Link href="/blog" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.posts")}</Link>
+                <Link href="/forum" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.forum")}</Link>
+                <Link href="/search" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.search")}</Link>
+                <Link href="/about" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.aboutUs")}</Link>
+                <Link href="/badges" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.badges")}</Link>
+                <Link href="/roles" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.roles")}</Link>
+              </div>
+
+              {/* Auth links */}
               {session ? (
                 <>
-                  <Link href={`/user/${encodeURIComponent(session.user.name)}`} className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.viewProfile")}</Link>
-                  <Link href="/dashboard" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.dashboard")}</Link>
-                  <Link href="/dashboard/posts" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.myPosts")}</Link>
-                  <Link href="/dashboard/forum" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.myThreads")}</Link>
-                  <Link href="/dashboard/projects" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.myProjects")}</Link>
-                  <Link href="/dashboard/messages" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.messages")}</Link>
-                  <Link href="/dashboard/friends" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.friends")}</Link>
-                  <Link href="/dashboard/saved" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.saved") || "Saved"}</Link>
-                  <Link href="/dashboard/settings" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.settings")}</Link>
-                  {["admin", "founder"].includes((session.user as any).role) && (
-                    <Link href="/admin" className="text-sm text-zinc-600 dark:text-zinc-400" onClick={() => setOpen(false)}>{t("nav.admin")}</Link>
-                  )}
-                  <button onClick={() => authClient.signOut()} className="text-left text-sm text-red-500">{t("nav.signOut")}</button>
+                  <div className="mb-4 space-y-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{session.user.name}</p>
+                    <Link href={`/user/${encodeURIComponent(session.user.name)}`} className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.viewProfile")}</Link>
+                    <Link href="/dashboard" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.dashboard")}</Link>
+                    <Link href="/dashboard/posts" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.myPosts")}</Link>
+                    <Link href="/dashboard/forum" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.myThreads")}</Link>
+                    <Link href="/dashboard/projects" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.myProjects")}</Link>
+                    <Link href="/dashboard/messages" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.messages")}</Link>
+                    <Link href="/dashboard/friends" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.friends")}</Link>
+                    <Link href="/dashboard/saved" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.saved") || "Saved"}</Link>
+                    <Link href="/dashboard/settings" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.settings")}</Link>
+                    {["admin", "founder"].includes((session.user as any).role) && (
+                      <Link href="/admin" className="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" onClick={() => setOpen(false)}>{t("nav.admin")}</Link>
+                    )}
+                  </div>
+                  <div className="border-t border-zinc-200 pt-4 dark:border-zinc-800">
+                    <button onClick={() => authClient.signOut()} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30">{t("nav.signOut")}</button>
+                  </div>
                 </>
               ) : (
-                <Link href="/login" className="text-sm font-medium text-zinc-900 dark:text-zinc-100" onClick={() => setOpen(false)}>{t("nav.signIn")}</Link>
+                <div className="border-t border-zinc-200 pt-4 dark:border-zinc-800">
+                  <Link href="/login" className="flex w-full items-center justify-center rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100" onClick={() => setOpen(false)}>{t("nav.signIn")}</Link>
+                </div>
               )}
             </div>
           </motion.div>

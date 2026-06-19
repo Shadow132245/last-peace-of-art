@@ -99,51 +99,73 @@ export default function MessagesPage() {
     setSending(false);
   };
 
+  const [showConversations, setShowConversations] = useState(false);
+
   if (!session) return null;
 
+  const conversationList = (
+    <>
+      <div className="flex items-center justify-between border-b border-zinc-200 p-4 dark:border-zinc-800">
+        <h2 className="font-semibold">{t("messages.title")}</h2>
+      </div>
+      <div className="overflow-y-auto" style={{ height: "calc(100% - 57px)" }}>
+        {loading ? (
+          <p className="p-4 text-sm text-zinc-400">{t("messages.loading")}</p>
+        ) : conversations.length === 0 ? (
+          <p className="p-4 text-sm text-zinc-400">{t("messages.noConversations")}</p>
+        ) : (
+          conversations.map((conv) => (
+            <button
+              key={conv.id}
+              onClick={() => {
+                selectUser(conv);
+                setShowConversations(false);
+              }}
+              className={`flex w-full items-center gap-3 p-3 text-start transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 ${selectedUser?.id === conv.id ? "bg-zinc-50 dark:bg-zinc-800" : ""}`}
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium dark:bg-zinc-700">
+                {conv.image ? <img src={conv.image} alt="" className="h-full w-full rounded-full object-cover" /> : conv.name[0]}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">{conv.name}</p>
+                <p className="truncate text-xs text-zinc-400">{conv.lastMessage}</p>
+              </div>
+            </button>
+          ))
+        )}
+      </div>
+    </>
+  );
+
   return (
-    <div className="mx-auto flex h-[calc(100vh-12rem)] max-w-4xl px-4 py-6">
+    <div className="mx-auto flex h-[calc(100vh-12rem)] max-w-6xl px-4 py-6">
       <div className="flex w-full gap-4">
-        <div className="w-72 shrink-0 rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="border-b border-zinc-200 p-4 dark:border-zinc-800">
-            <h2 className="font-semibold">{t("messages.title")}</h2>
-          </div>
-          <div className="overflow-y-auto" style={{ height: "calc(100% - 57px)" }}>
-            {loading ? (
-              <p className="p-4 text-sm text-zinc-400">{t("messages.loading")}</p>
-            ) : conversations.length === 0 ? (
-              <p className="p-4 text-sm text-zinc-400">{t("messages.noConversations")}</p>
-            ) : (
-              conversations.map((conv) => (
-                <button
-                  key={conv.id}
-                  onClick={() => selectUser(conv)}
-                  className={`flex w-full items-center gap-3 p-3 text-start transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 ${selectedUser?.id === conv.id ? "bg-zinc-50 dark:bg-zinc-800" : ""}`}
-                >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium dark:bg-zinc-700">
-                    {conv.image ? <img src={conv.image} alt="" className="h-full w-full rounded-full object-cover" /> : conv.name[0]}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{conv.name}</p>
-                    <p className="truncate text-xs text-zinc-400">{conv.lastMessage}</p>
-                  </div>
-                </button>
-              ))
-            )}
-          </div>
+        {/* Desktop conversation list */}
+        <div className="hidden w-72 shrink-0 rounded-xl border border-zinc-200 bg-white sm:flex sm:flex-col dark:border-zinc-800 dark:bg-zinc-900">
+          {conversationList}
         </div>
 
         <div className="flex flex-1 flex-col rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
           {selectedUser ? (
             <>
-              <Link href={`/user/${encodeURIComponent(selectedUser.name)}`} className="flex items-center gap-3 border-b border-zinc-200 p-4 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium dark:bg-zinc-700">
-                  {selectedUser.image ? <img src={selectedUser.image} alt="" className="h-full w-full rounded-full object-cover" /> : selectedUser.name[0]}
-                </div>
-                <span className="font-medium">{selectedUser.name}</span>
-              </Link>
+              <div className="flex items-center gap-2 border-b border-zinc-200 p-3 sm:p-4 dark:border-zinc-800">
+                <button
+                  onClick={() => setShowConversations(true)}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 sm:hidden dark:hover:bg-zinc-800"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+                <Link href={`/user/${encodeURIComponent(selectedUser.name)}`} className="flex items-center gap-3 transition-colors hover:opacity-80">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium dark:bg-zinc-700 sm:h-9 sm:w-9">
+                    {selectedUser.image ? <img src={selectedUser.image} alt="" className="h-full w-full rounded-full object-cover" /> : selectedUser.name[0]}
+                  </div>
+                  <span className="text-sm font-medium sm:text-base">{selectedUser.name}</span>
+                </Link>
+              </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              <div className="flex-1 overflow-y-auto space-y-3 p-3 sm:p-4">
                 {messages.map((msg) => {
                   const isMine = msg.sender.id === session.user.id;
                   return (
@@ -153,7 +175,7 @@ export default function MessagesPage() {
                       animate={{ opacity: 1, y: 0 }}
                       className={`flex ${isMine ? "justify-end" : "justify-start"}`}
                     >
-                      <div className={`max-w-[70%] rounded-2xl px-4 py-2 text-sm ${isMine ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "bg-zinc-100 dark:bg-zinc-800"}`}>
+                      <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm sm:max-w-[70%] sm:px-4 ${isMine ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "bg-zinc-100 dark:bg-zinc-800"}`}>
                         <p>{msg.content}</p>
                         <div className={`mt-1 flex items-center gap-1 text-[10px] ${isMine ? "justify-end text-zinc-400 dark:text-zinc-500" : "text-zinc-400"}`}>
                           <span>{new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
@@ -187,7 +209,7 @@ export default function MessagesPage() {
                   {sendError}
                 </div>
               )}
-              <form onSubmit={sendMessage} className="flex gap-3 border-t border-zinc-200 p-4 dark:border-zinc-800">
+              <form onSubmit={sendMessage} className="flex gap-3 border-t border-zinc-200 p-3 dark:border-zinc-800 sm:p-4">
                 <input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
@@ -209,11 +231,73 @@ export default function MessagesPage() {
             </>
           ) : (
             <div className="flex flex-1 items-center justify-center">
-              <p className="text-sm text-zinc-400">{t("messages.selectConversation")}</p>
+              <div className="text-center">
+                <p className="text-sm text-zinc-400">{t("messages.selectConversation")}</p>
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Mobile conversation drawer */}
+      <AnimatePresence>
+        {showConversations && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowConversations(false)}
+              className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm sm:hidden"
+            />
+            <motion.div
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col border-r border-zinc-200 bg-white sm:hidden dark:border-zinc-800 dark:bg-zinc-950"
+            >
+              <div className="flex items-center justify-between border-b border-zinc-200 p-4 dark:border-zinc-800">
+                <h2 className="font-semibold">{t("messages.title")}</h2>
+                <button
+                  onClick={() => setShowConversations(false)}
+                  className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                {loading ? (
+                  <p className="p-4 text-sm text-zinc-400">{t("messages.loading")}</p>
+                ) : conversations.length === 0 ? (
+                  <p className="p-4 text-sm text-zinc-400">{t("messages.noConversations")}</p>
+                ) : (
+                  conversations.map((conv) => (
+                    <button
+                      key={conv.id}
+                      onClick={() => {
+                        selectUser(conv);
+                        setShowConversations(false);
+                      }}
+                      className={`flex w-full items-center gap-3 p-3 text-start transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 ${selectedUser?.id === conv.id ? "bg-zinc-50 dark:bg-zinc-800" : ""}`}
+                    >
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium dark:bg-zinc-700">
+                        {conv.image ? <img src={conv.image} alt="" className="h-full w-full rounded-full object-cover" /> : conv.name[0]}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">{conv.name}</p>
+                        <p className="truncate text-xs text-zinc-400">{conv.lastMessage}</p>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
