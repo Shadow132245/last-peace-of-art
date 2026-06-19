@@ -1223,3 +1223,11 @@ The user requested the following features be implemented all at once, and explai
 - Used `useRef` to store `router.refresh` (stable, avoids effect re-run on router object change)
 - **Why**: `router.refresh()` triggers a server-side RSC payload re-fetch with the new locale cookie; the server re-renders all server components with the correct locale; client merges the payload without losing state
 - **Combined approach**: pub/sub for immediate client component updates + router.refresh for server component re-render = complete coverage at both levels
+- ⚠️ Some delay during refresh is noticeable
+
+### Session 58g — 2026-06-19 (Add locale switching loading overlay)
+- Added `useTransition` in I18nProvider to wrap `router.refresh()` — provides `isPending` state during refresh
+- Created `LoadingOverlay` component with `AnimatePresence` fade in/out (0.15s)
+- Overlay shows full-screen theme background + "Last Peace" logo with subtle scale pulse animation
+- Effect masks the router.refresh delay with a polished loading experience
+- Imported `AnimatePresence` and `motion` from "motion/react"
