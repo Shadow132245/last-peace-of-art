@@ -1,7 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
-import { motion } from "motion/react";
+import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react";
 import { type Locale, defaultLocale, getLocaleFromCookie, setLocaleCookie, lookup } from "@/lib/i18n";
 import en from "../../messages/en.json";
 import ar from "../../messages/ar.json";
@@ -19,38 +18,25 @@ interface I18nContextValue {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-function LocaleAnimation({ locale, children }: { locale: Locale; children: ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => { setMounted(true); }, []);
-
-  if (!mounted) return <>{children}</>;
-
-  return (
-    <motion.div
-      key={locale}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.1 }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
+  const [tick, setTick] = useState(0);
+  const initialized = useRef(false);
 
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
     const cookieLocale = getLocaleFromCookie();
     if (cookieLocale !== locale) {
       setLocaleState(cookieLocale);
+      setTick((t) => t + 1);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
     setLocaleCookie(next);
+    setTick((t) => t + 1);
   }, []);
 
   const messages = messagesMap[locale];
@@ -58,8 +44,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   return (
     <I18nContext.Provider value={{ locale, messages, setLocale, t }}>
-      <div dir={locale === "ar" ? "rtl" : "ltr"}>
-        <LocaleAnimation locale={locale}>{children}</LocaleAnimation>
+      <div key={tick} dir={locale === "ar" ? "rtl" : "ltr"}>
+        {children}
       </div>
     </I18nContext.Provider>
   );
