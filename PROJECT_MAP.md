@@ -1,6 +1,6 @@
 # PROJECT_MAP — "The Last Peace of Art"
 
-> Generated: 2026-06-19 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅ M52✅ M53✅ M54✅**
+> Generated: 2026-06-19 | Status: **M1✅ M2✅ M3✅ M4✅ M5✅ M6✅ M6.5✅ M7✅ M8✅ M9✅ M10✅ M11✅ M12✅ M13✅ M14✅ M15✅ M16✅ M17✅ M18✅ M19✅ M20✅ M21✅ M22✅ M23✅ M24✅ M25✅ M26✅ M27✅ M28✅ M29✅ M30✅ M31✅ M32✅ M33✅ M34✅ M35✅ M36✅ M37✅ M38✅ M39✅ M40✅ M41✅ M42✅ M43✅ M44✅ M45✅ M46✅ M47✅ M48✅ M49✅ M50✅ M51✅ M52✅ M53✅ M54✅ M55✅**
 
 ---
 
@@ -1187,3 +1187,8 @@ The user requested the following features be implemented all at once, and explai
 - Terms: Expanded sections 3-14 with detailed legal language; added intro to s5 (Prohibited Conduct list); new sections for licensing (s4), dispute resolution (s13), survival clause (s11)
 - Privacy: Expanded all 11 sections with detailed explanations; added data sharing categories (consent, service providers, legal, safety, business transfers); added rights list with descriptions; added cookie details, third-party processor details
 - Full Arabic translations updated to match new English content
+
+### Session 58b — 2026-06-19 (Build fixes + RTL + Footer translation)
+- **Build fixes**: Added missing `AnimatePresence` imports in `admin/layout.tsx` and `dashboard/messages/page.tsx` (build was failing with type errors)
+- **Footer translation fix**: Converted Footer from server component (`async function` + `getServerT`) to client component (`"use client"` + `useI18n`) so it re-renders when locale changes — previously it was a server component that rendered once and never updated
+- **RTL dropdown fix**: Changed avatar dropdown positioning from `right-0` to `end-0` — in Arabic/RTL mode, `right-0` made the dropdown appear off-screen on the left; `end-0` respects writing direction (`right: 0` in LTR, `left: 0` in RTL)

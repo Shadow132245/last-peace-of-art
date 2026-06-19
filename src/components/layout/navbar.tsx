@@ -63,7 +63,7 @@ function AvatarDropdown({ session }: { session: any }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.95 }}
             transition={{ duration: 0.12 }}
-            className="absolute right-0 top-full z-50 mt-2 min-w-[180px] overflow-hidden rounded-xl border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
+            className="absolute end-0 top-full z-50 mt-2 min-w-[180px] overflow-hidden rounded-xl border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
           >
             <div className="border-b border-zinc-100 px-3 py-2 dark:border-zinc-800">
               <p className="truncate text-sm font-medium">{name}</p>
